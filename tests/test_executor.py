@@ -1,21 +1,23 @@
 """These basic tests may be applied to most types of executors."""
 
 from concurrent.futures import ThreadPoolExecutor, CancelledError
-from retry import RetryExecutor
-from hamcrest import assert_that, equal_to, any_of, has_items, calling, raises
+from hamcrest import assert_that, equal_to, calling, raises
 from pytest import fixture
 import time
-from Queue import Queue
+from six.moves.queue import Queue
 
-import logging; logging.basicConfig(level=logging.DEBUG)
+from more_executors.retry import RetryExecutor
+
 
 @fixture
 def retry_executor():
     return RetryExecutor.new_default(ThreadPoolExecutor())
 
+
 @fixture
 def threadpool_executor():
     return ThreadPoolExecutor()
+
 
 @fixture(params=['retry', 'threadpool'])
 def any_executor(request):
@@ -28,7 +30,8 @@ def test_submit_results(any_executor):
     values = [1, 2, 3]
     expected_results = [2, 4, 6]
 
-    fn = lambda x: x*2
+    def fn(x):
+        return x*2
 
     futures = [any_executor.submit(fn, x) for x in values]
 
@@ -67,8 +70,7 @@ def test_submit_delayed_results(any_executor):
 
     # They're not guaranteed to be "running" yet, but should
     # become so soon
-    all_running = lambda: all([f.running() for f in futures])
-    assert_soon(all_running)
+    assert_soon(lambda: all([f.running() for f in futures]))
 
     # OK, they're not done yet though.
     for f in futures:
@@ -87,7 +89,9 @@ def test_cancel(any_executor):
     for _ in range(0, 100):
         values = [1, 2, 3]
         expected_results = set([2, 4, 6])
-        fn = lambda x: x*2
+
+        def fn(x):
+            return x*2
 
         futures = [any_executor.submit(fn, x) for x in values]
 

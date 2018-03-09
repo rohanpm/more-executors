@@ -10,6 +10,7 @@ _LOG = logging.getLogger('RetryExecutor')
 
 
 class RetryPolicy(object):
+
     def should_retry(self, attempt, return_value, exception):
         return False
 
@@ -21,6 +22,7 @@ class ExceptionRetryPolicy(RetryPolicy):
     """Retries on any exceptions under the given base class,
     up to a fixed number of attempts, with an exponential
     backoff between each attempt."""
+
     def __init__(self, max_attempts, exponent, max_sleep, exception_base):
         self._max_attempts = max_attempts
         self._exponent = exponent
@@ -42,10 +44,13 @@ class ExceptionRetryPolicy(RetryPolicy):
         return min(attempt ** self._exponent, self._max_sleep)
 
 
-_RetryJob = namedtuple('_RetryJob', ['policy', 'delegate_future', 'future',
-                                     'attempt', 'when', 'fn', 'args', 'kwargs'])
+_RetryJob = namedtuple('_RetryJob',
+                       ['policy', 'delegate_future', 'future',
+                        'attempt', 'when', 'fn', 'args', 'kwargs'])
+
 
 class _RetryFuture(Future):
+
     def __init__(self, executor):
         super(_RetryFuture, self).__init__()
         self.delegate_future = None
@@ -66,7 +71,6 @@ class _RetryFuture(Future):
             if not self._executor._cancel(self):
                 return False
             return super(_RetryFuture, self).cancel()
-
 
 
 class RetryExecutor(Executor):
@@ -90,7 +94,8 @@ class RetryExecutor(Executor):
         self._delegate = delegate
         self._default_retry_policy = retry_policy
         self._jobs = []
-        self._submit_thread = Thread(name='RetryExecutor', target=self._submit_loop)
+        self._submit_thread = Thread(
+            name='RetryExecutor', target=self._submit_loop)
         self._submit_thread.daemon = True
         self._submit_cond = Condition()
         self._shutdown = False
@@ -119,14 +124,16 @@ class RetryExecutor(Executor):
 
     def submit(self, fn, *args, **kwargs):
         """Submit a callable with this executor's default retry policy."""
-        return self.submit_retry(self._default_retry_policy, fn, *args, **kwargs)
+        return self.submit_retry(
+            self._default_retry_policy, fn, *args, **kwargs)
 
     def submit_retry(self, retry_policy, fn, *args, **kwargs):
         """Submit a callable with a specific retry policy."""
         future = _RetryFuture(self)
         # assert future.set_running_or_notify_cancel(), "cancelled already?"
 
-        job = _RetryJob(retry_policy, None, future, 0, datetime.utcnow(), fn, args, kwargs)
+        job = _RetryJob(retry_policy, None, future, 0,
+                        datetime.utcnow(), fn, args, kwargs)
         self._append_job(job)
 
         # Let the submit thread know it should wake up to check for new jobs
@@ -193,10 +200,13 @@ class RetryExecutor(Executor):
             self._pop_job(job)
 
             if job.future.cancelled():
-                _LOG.debug("future cancelled %s - not submitting to delegate", job.future)
+                _LOG.debug(
+                    "future cancelled %s - not submitting to delegate",
+                    job.future)
                 return
 
-            delegate_future = self._delegate.submit(job.fn, *job.args, **job.kwargs)
+            delegate_future = self._delegate.submit(
+                job.fn, *job.args, **job.kwargs)
             job.future.delegate_future = delegate_future
             _LOG.debug("Submitted: %s", job)
 
@@ -278,7 +288,9 @@ class RetryExecutor(Executor):
         return True
 
     def _delegate_callback(self, delegate_future):
-        assert delegate_future.done(), "BUG: callback invoked while future not done!"
+        assert delegate_future.done(), \
+            "BUG: callback invoked while future not done!"
+
         _LOG.debug("Callback activated for %s", delegate_future)
 
         job = self._job_for_delegate(delegate_future)
@@ -310,29 +322,3 @@ class RetryExecutor(Executor):
             job.future.set_result(result)
 
         _LOG.debug("Finalized %s", job)
-
-
-
-if __name__ == '__main__':
-    import logging
-    logging.basicConfig(level=logging.DEBUG)
-
-    from random import randint
-    from concurrent.futures import ThreadPoolExecutor, wait, as_completed
-    ex = RetryExecutor.new_default(ThreadPoolExecutor())
-
-    def crashy_fn(message):
-        print "Doing: %s" % message
-        if randint(0, 100) < 70:
-            raise ValueError("Oops, crashed %s" % message)
-        print "Done: %s" % message
-        return message
-
-    with ex:
-        f1 = ex.submit(crashy_fn, 'test 1')
-        f2 = ex.submit(crashy_fn, 'test 2')
-        f3 = ex.submit(crashy_fn, 'test 3')
-
-        for f in as_completed([f1, f2, f3]):
-            print "Got result: %s" % f.result()
-        print "Got all results"
