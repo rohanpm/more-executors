@@ -1,17 +1,24 @@
 """These basic tests may be applied to most types of executors."""
 
-from concurrent.futures import ThreadPoolExecutor, CancelledError
-from hamcrest import assert_that, equal_to, calling, raises
+from concurrent.futures import ThreadPoolExecutor, CancelledError, wait, FIRST_COMPLETED
+from hamcrest import assert_that, equal_to, calling, raises, instance_of, has_length
 from pytest import fixture
 import time
 from six.moves.queue import Queue
 
-from more_executors.retry import RetryExecutor
+from more_executors.retry import RetryExecutor, RetryPolicy
+
+
+class SimulatedError(RuntimeError):
+    pass
 
 
 @fixture
 def retry_executor():
-    return RetryExecutor.new_default(ThreadPoolExecutor())
+    # This retry executor uses the no-op retry policy so that
+    # the semantics shall match an ordinary executor.
+    # Retry behavior is tested explicitly from another test.
+    return RetryExecutor(ThreadPoolExecutor(), RetryPolicy())
 
 
 @fixture
@@ -117,3 +124,84 @@ def test_cancel(any_executor):
                 result = f.result()
                 assert_that(result in expected_results)
                 expected_results.remove(result)
+
+
+def test_submit_mixed(any_executor):
+    values = [1, 2, 3, 4]
+
+    def crash_on_even(x):
+        if (x % 2) == 0:
+            raise SimulatedError("Simulated error on %s" % x)
+        return x*2
+
+    futures = [any_executor.submit(crash_on_even, x) for x in values]
+
+    for f in futures:
+        assert_that(not f.cancelled())
+
+    # Success
+    assert_that(futures[0].result(), equal_to(2))
+
+    # Crash, via exception
+    assert_that(futures[1].exception(), instance_of(SimulatedError))
+
+    # Success
+    assert_that(futures[2].result(), equal_to(6))
+
+    # Crash, via result
+    assert_that(calling(futures[3].result), raises(SimulatedError, "Simulated error on 4"))
+
+
+def test_submit_staggered(any_executor):
+    for _ in range(0, 100):
+        values = [1, 2, 3]
+        expected_results = [2, 4, 6, 2, 4, 6]
+
+        q1 = Queue()
+        q2 = Queue()
+
+        def fn(value):
+            q1.get(True)
+            q2.get(True)
+            return value*2
+
+        futures = [any_executor.submit(fn, x) for x in values]
+
+        for f in futures:
+            assert_that(not f.cancelled())
+
+        # They're not guaranteed to be "running" yet, but should
+        # become so soon
+        assert_soon(lambda: all([f.running() for f in futures]))
+
+        # OK, they're not done yet though.
+        for f in futures:
+            assert_that(not f.done())
+
+        # Let them proceed to first checkpoint
+        [q1.put(None) for f in futures]
+
+        # Submit some more
+        futures.extend([any_executor.submit(fn, x) for x in values])
+
+        # Let a couple of futures complete
+        q2.put(True)
+        q2.put(True)
+
+        (done, not_done) = wait(futures, return_when=FIRST_COMPLETED)
+
+        # Might have received 1, or 2
+        if len(done) == 1:
+            (more_done, _more_not_done) = wait(not_done, return_when=FIRST_COMPLETED)
+            done = done | more_done
+
+        assert_that(done, has_length(2))
+        for f in done:
+            assert_that(f.done(), str(f))
+
+        # OK, let them all finish up now
+        [q1.put(None) for _ in (1, 2, 3)]
+        [q2.put(None) for _ in (1, 2, 3, 4)]
+
+        results = [f.result() for f in futures]
+        assert_that(results, equal_to(expected_results))
