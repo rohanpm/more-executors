@@ -100,6 +100,8 @@ class RetryExecutor(Executor):
         # - cancelling a future
         self._lock = RLock()
 
+        self._submit_thread.start()
+
     def shutdown(self, wait=True):
         _LOG.info("Shutting down.")
         self._shutdown = True
@@ -128,10 +130,7 @@ class RetryExecutor(Executor):
         self._append_job(job)
 
         # Let the submit thread know it should wake up to check for new jobs
-        if not self._submit_thread.is_alive():
-            self._submit_thread.start()
-        else:
-            self._wake_thread()
+        self._wake_thread()
 
         _LOG.debug("Returning future %s", future)
         return future
