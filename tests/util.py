@@ -2,7 +2,7 @@ import time
 
 
 def assert_soon(fn):
-    for _ in range(0, 100):
+    for _ in range(0, 1000):
         try:
             fn()
             break

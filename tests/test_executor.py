@@ -1,9 +1,11 @@
 """These basic tests may be applied to most types of executors."""
 
 from concurrent.futures import ThreadPoolExecutor, CancelledError, wait, FIRST_COMPLETED
-from hamcrest import assert_that, equal_to, calling, raises, instance_of, has_length
+from hamcrest import assert_that, equal_to, calling, raises, instance_of, has_length, is_
 from pytest import fixture
 from six.moves.queue import Queue
+from random import randint
+from threading import RLock
 
 from more_executors.retry import RetryExecutor, RetryPolicy
 
@@ -220,3 +222,107 @@ def test_submit_staggered(any_executor):
 
         results = [f.result() for f in futures]
         assert_that(results, equal_to(expected_results))
+
+
+def test_stress(any_executor):
+    FUTURES_LIMIT = 1000
+
+    cancelled = object()
+    lock = RLock()
+    futures = []
+    future_idents = {}
+    expected_results = {}
+    idents = [0]
+
+    def next_ident(msg):
+        with lock:
+            idents[0] = idents[0] + 1
+            return '%s %d' % (msg, idents[0])
+
+    def cancel_something():
+        # Try to pick and cancel some future
+        for f in futures:
+            if f.cancel():
+                with lock:
+                    ident = future_idents[f]
+                    expected_results[ident] = cancelled
+                return
+
+    def stress_fn(ident, behavior):
+        sub_future = None
+
+        if len(futures) < FUTURES_LIMIT:
+            sub_ident = next_ident('submit from [%s]' % ident)
+            sub_future = any_executor.submit(stress_fn, sub_ident, randint(0, 3))
+            with lock:
+                if len(futures) < FUTURES_LIMIT:
+                    futures.append(sub_future)
+                    future_idents[sub_future] = sub_ident
+                else:
+                    sub_future.cancel()
+
+        # Return a value
+        if behavior == 0:
+            with lock:
+                assert ident not in expected_results
+                expected_results[ident] = ident
+            return ident
+
+        # Raise an exception
+        if behavior == 1:
+            error = RuntimeError("error %s" % ident)
+            with lock:
+                assert ident not in expected_results
+                expected_results[ident] = error
+            raise error
+
+        # Submit again from callback
+        if behavior == 2 and sub_future:
+            sub_future.add_done_callback(
+                lambda f: stress_fn(next_ident('case2 from [%s]' % sub_ident), 2))
+            with lock:
+                assert ident not in expected_results
+                expected_results[ident] = ident*3
+            return ident*3
+
+        if behavior == 3:
+            cancel_something()
+            with lock:
+                expected_results[ident] = ident*4
+            return ident*4
+
+        expected_results[ident] = ident*5
+        return ident*5
+
+    for _ in range(0, 200):
+        value = randint(0, 3)
+        ident = next_ident('init')
+        future = any_executor.submit(stress_fn, ident, value)
+        with lock:
+            if len(futures) < FUTURES_LIMIT:
+                futures.append(future)
+                future_idents[future] = ident
+            else:
+                future.cancel()
+                break
+
+    # Wait until all the expected futures have been created
+    assert_soon(lambda: assert_that(len(futures), equal_to(FUTURES_LIMIT)))
+
+    # The timeout here is so that the test fails rather than hangs forever,
+    # if something goes wrong.
+    (done, _not_done) = wait(futures, 60.0)
+    assert_that(len(done), equal_to(len(futures)))
+
+    for f in futures:
+        assert f.done(), str(f)
+        ident = future_idents[f]
+        assert ident in expected_results, "missing entry %s for future %s" % (ident, f)
+        expected_result = expected_results[ident]
+
+        if expected_result is cancelled:
+            assert_that(f.cancelled())
+        elif isinstance(expected_result, Exception):
+            assert_that(f.exception(), is_(expected_result))
+        else:
+            assert_that(f.result(), equal_to(expected_result))
