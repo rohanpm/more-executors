@@ -1,7 +1,7 @@
 """Tests of the retry behavior in RetryExecutor."""
 
 from concurrent.futures import ThreadPoolExecutor
-from hamcrest import assert_that, equal_to, is_
+from hamcrest import assert_that, equal_to, is_, calling, raises, all_of, instance_of, has_string
 from pytest import fixture
 try:
     from unittest.mock import MagicMock, call
@@ -59,3 +59,29 @@ def test_basic_retry(executor):
             call('a1', 'a2', kw1=1, kw2=2),
             call('a1', 'a2', kw1=1, kw2=2),
         ])
+
+
+def test_fail(executor):
+
+    calls = []
+
+    def fn():
+        calls.append(None)
+        raise ValueError("error %s" % len(calls))
+
+    done_callback = MagicMock()
+
+    future = executor.submit(fn)
+    future.add_done_callback(done_callback)
+
+    # It should raise the exception from result()
+    assert_that(calling(future.result), raises(ValueError, 'error 10'))
+
+    # exception() should be the same
+    assert_that(future.exception(), all_of(
+            instance_of(ValueError),
+            has_string('error 10')))
+
+    # It should have called the done callback exactly once
+    # (It could still be queued for call from another thread)
+    assert_soon(lambda: done_callback.assert_called_once_with(future))

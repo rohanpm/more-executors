@@ -41,7 +41,7 @@ class ExceptionRetryPolicy(RetryPolicy):
     def should_retry(self, attempt, return_value, exception):
         if not exception:
             return False
-        if attempt > self._max_attempts:
+        if attempt >= self._max_attempts:
             return False
         return isinstance(exception, self._exception_base)
 
@@ -250,7 +250,7 @@ class RetryExecutor(Executor):
             job.policy,
             None,
             job.future,
-            job.attempt + 1,
+            job.attempt,
             datetime.utcnow() + timedelta(seconds=sleep_time),
             job.fn,
             job.args,
