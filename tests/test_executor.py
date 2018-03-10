@@ -116,6 +116,31 @@ def test_cancel(any_executor):
                 expected_results.remove(result)
 
 
+def test_blocked_cancel(any_executor):
+    to_fn = Queue(1)
+    from_fn = Queue(1)
+
+    def fn():
+        to_fn.get()
+        from_fn.put(None)
+        to_fn.get()
+        return 123
+
+    future = any_executor.submit(fn)
+
+    # Wait until fn is certainly running
+    to_fn.put(None)
+    from_fn.get()
+
+    # Since the function is in progress,
+    # it should NOT be possible to cancel it
+    assert_that(not future.cancel(), str(future))
+    assert_that(future.running(), str(future))
+
+    to_fn.put(None)
+    assert_that(future.result(), equal_to(123))
+
+
 def test_submit_mixed(any_executor):
     values = [1, 2, 3, 4]
 
