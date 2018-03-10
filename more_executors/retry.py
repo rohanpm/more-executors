@@ -9,6 +9,11 @@ import logging
 _LOG = logging.getLogger('RetryExecutor')
 
 
+def _total_seconds(td):
+    # Python 2.6 compat - equivalent of timedelta.total_seconds
+    return (td.microseconds + (td.seconds + td.days * 24 * 3600) * 10**6) / 10**6
+
+
 class RetryPolicy(object):
 
     def should_retry(self, attempt, return_value, exception):
@@ -188,7 +193,7 @@ class RetryExecutor(Executor):
                 # Sleep until either:
                 # - reaching the time of the nearest job, or...
                 # - woken up by condvar
-                delta = (job.when - now).total_seconds()
+                delta = _total_seconds(job.when - now)
                 _LOG.debug("No ready job.  Waiting: %s", delta)
                 self._submit_cond.wait(delta)
 

@@ -3,10 +3,11 @@
 from concurrent.futures import ThreadPoolExecutor, CancelledError, wait, FIRST_COMPLETED
 from hamcrest import assert_that, equal_to, calling, raises, instance_of, has_length
 from pytest import fixture
-import time
 from six.moves.queue import Queue
 
 from more_executors.retry import RetryExecutor, RetryPolicy
+
+from .util import assert_soon
 
 
 class SimulatedError(RuntimeError):
@@ -47,17 +48,6 @@ def test_submit_results(any_executor):
 
     results = [f.result() for f in futures]
     assert_that(results, equal_to(expected_results))
-
-
-def assert_soon(fn):
-    for _ in range(0, 100):
-        try:
-            fn()
-            break
-        except AssertionError:
-            time.sleep(0.01)
-    else:
-        fn()
 
 
 def test_submit_delayed_results(any_executor):
