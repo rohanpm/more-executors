@@ -267,8 +267,6 @@ class RetryExecutor(Executor):
 
     def _cancel(self, future):
         with self._lock:
-            if future.cancelled():
-                return True
             if future.done():
                 return False
             for idx, job in enumerate(self._jobs):
