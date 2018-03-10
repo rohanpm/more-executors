@@ -43,7 +43,7 @@ def test_basic_retry(executor):
         future.add_done_callback(done_callback)
 
         # It should give the correct result
-        assert_that(future.result(), equal_to('result'))
+        assert_that(future.result(10), equal_to('result'))
 
         # It should not have any exception
         assert_that(future.exception(), is_(None))
