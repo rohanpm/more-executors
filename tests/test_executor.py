@@ -67,7 +67,7 @@ def test_submit_delayed_results(any_executor):
 
     # They're not guaranteed to be "running" yet, but should
     # become so soon
-    assert_soon(lambda: all([f.running() for f in futures]))
+    assert_soon(lambda: assert_that(all([f.running() for f in futures])))
 
     # OK, they're not done yet though.
     for f in futures:
@@ -187,7 +187,7 @@ def test_submit_staggered(any_executor):
 
         # They're not guaranteed to be "running" yet, but should
         # become so soon
-        assert_soon(lambda: all([f.running() for f in futures]))
+        assert_soon(lambda: assert_that(all([f.running() for f in futures])))
 
         # OK, they're not done yet though.
         for f in futures:
