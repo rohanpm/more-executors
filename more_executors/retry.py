@@ -73,9 +73,14 @@ class _RetryFuture(Future):
 
     def cancel(self):
         with self._executor._lock:
+            if self.cancelled():
+                return True
             if not self._executor._cancel(self):
                 return False
-            return super(_RetryFuture, self).cancel()
+            out = super(_RetryFuture, self).cancel()
+            if out:
+                self.set_running_or_notify_cancel()
+        return out
 
 
 class RetryExecutor(Executor):
