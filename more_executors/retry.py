@@ -292,9 +292,11 @@ class RetryExecutor(Executor):
 
                     _LOG.debug("Could not cancel: %s", job)
                     return False
-        # We don't have the job at all then we probably cancelled it already
-        _LOG.debug("cancel called on orphan future %s", future)
-        return True
+
+        # Should not be able to get here.
+        # - If the future was already done, then we bailed out earlier.
+        # - If the future was not done, it MUST have been in _jobs - it's a bug otherwise.
+        assert False, ("BUG: cancel called on orphan future %s" % future)  # pragma: no cover
 
     def _delegate_callback(self, delegate_future):
         assert delegate_future.done(), \
@@ -303,8 +305,11 @@ class RetryExecutor(Executor):
         _LOG.debug("Callback activated for %s", delegate_future)
 
         job = self._job_for_delegate(delegate_future)
-        if not job:
-            return
+
+        # Callbacks are only installed after a job is added, and this is
+        # the only place a job with a delegate associated will be removed,
+        # thus it should not be possible for a job to be missing.
+        assert job, ("BUG: no job associated with delegate %s" % delegate_future)
 
         if delegate_future.cancelled():
             # nothing to do, retrying on cancel is not allowed
