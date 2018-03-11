@@ -3,11 +3,10 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 
-    <title>more_executors API documentation</title>
-    <meta name="description" content="A composable library of Python executors.
+    <title>more_executors.retry API documentation</title>
+    <meta name="description" content="Create futures which will retry implicitly.
 
-This library is intended for use with the
-[`concurrent.fu..." />
+The `more_executors.retry.RetryExecutor` class produces..." />
 
   <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300' rel='stylesheet' type='text/css'>
   
@@ -974,12 +973,43 @@ table {
     <ul id="index">
 
 
-
-    <li class="set"><h3><a href="#header-submodules">Sub-modules</a></h3>
+    <li class="set"><h3><a href="#header-classes">Classes</a></h3>
       <ul>
-        <li class="mono"><a href="retry.m.html">more_executors.retry</a></li>
+        <li class="mono">
+        <span class="class_name"><a href="#more_executors.retry.ExceptionRetryPolicy">ExceptionRetryPolicy</a></span>
+        
+          
+  <ul>
+    <li class="mono"><a href="#more_executors.retry.ExceptionRetryPolicy.__init__">__init__</a></li>
+    <li class="mono"><a href="#more_executors.retry.ExceptionRetryPolicy.new_default">new_default</a></li>
+  </ul>
+
+        </li>
+        <li class="mono">
+        <span class="class_name"><a href="#more_executors.retry.RetryExecutor">RetryExecutor</a></span>
+        
+          
+  <ul>
+    <li class="mono"><a href="#more_executors.retry.RetryExecutor.__init__">__init__</a></li>
+    <li class="mono"><a href="#more_executors.retry.RetryExecutor.submit">submit</a></li>
+    <li class="mono"><a href="#more_executors.retry.RetryExecutor.submit_retry">submit_retry</a></li>
+    <li class="mono"><a href="#more_executors.retry.RetryExecutor.new_default">new_default</a></li>
+  </ul>
+
+        </li>
+        <li class="mono">
+        <span class="class_name"><a href="#more_executors.retry.RetryPolicy">RetryPolicy</a></span>
+        
+          
+  <ul>
+    <li class="mono"><a href="#more_executors.retry.RetryPolicy.should_retry">should_retry</a></li>
+    <li class="mono"><a href="#more_executors.retry.RetryPolicy.sleep_time">sleep_time</a></li>
+  </ul>
+
+        </li>
       </ul>
     </li>
+
     </ul>
   </div>
 
@@ -991,14 +1021,10 @@ table {
 
 
   <header id="section-intro">
-  <h1 class="title"><span class="name">more_executors</span> module</h1>
-  <p>A composable library of Python executors.</p>
-<p>This library is intended for use with the
-<a href="https://docs.python.org/3/library/concurrent.futures.html"><code>concurrent.futures</code></a>
-module.  It includes a collection of <code>Executor</code> implementations in order to
-extend the behavior of <code>Future</code> objects.</p>
-<p>Compatible with Python 2.6, 2.7 and 3.x.</p>
-<p>This documentation was built from more-executors 1.0.0, revision 485a2dd.</p>
+  <h1 class="title"><span class="name">more_executors.retry</span> module</h1>
+  <p>Create futures which will retry implicitly.</p>
+<p>The <a href="#more_executors.retry.RetryExecutor"><code>RetryExecutor</code></a> class produces <code>Future</code> objects which will retry on
+failure. Subclassing <a href="#more_executors.retry.RetryPolicy"><code>RetryPolicy</code></a> allows customization of the retry behavior.</p>
   
 
   </header>
@@ -1006,17 +1032,253 @@ extend the behavior of <code>Future</code> objects.</p>
   <section id="section-items">
 
 
-
-    <h2 class="section-title" id="header-submodules">Sub-modules</h2>
+    <h2 class="section-title" id="header-classes">Classes</h2>
+      
       <div class="item">
-      <p class="name"><a href="retry.m.html">more_executors.retry</a></p>
+      <p id="more_executors.retry.ExceptionRetryPolicy" class="name">class <span class="ident">ExceptionRetryPolicy</span></p>
       
   
-    <div class="desc"><p>Create futures which will retry implicitly.</p>
-<p>The <a href="retry.m.html#more_executors.retry.RetryExecutor"><code>more_executors.retry.RetryExecutor</code></a> class produces <code>Future</code> objects which will retry on
-failure. Subclassing <a href="retry.m.html#more_executors.retry.RetryPolicy"><code>more_executors.retry.RetryPolicy</code></a> allows customization of the retry behavior.</p></div>
+    <div class="desc"><p>Retries on any exceptions under the given base class,
+up to a fixed number of attempts, with an exponential
+backoff between each attempt.</p></div>
+  <div class="source_cont">
+</div>
 
+
+      <div class="class">
+          <h3>Ancestors (in MRO)</h3>
+          <ul class="class_list">
+          <li><a href="#more_executors.retry.ExceptionRetryPolicy">ExceptionRetryPolicy</a></li>
+          <li><a href="#more_executors.retry.RetryPolicy">RetryPolicy</a></li>
+          <li>builtins.object</li>
+          </ul>
+          <h3>Static methods</h3>
+            
+  <div class="item">
+    <div class="name def" id="more_executors.retry.ExceptionRetryPolicy.__init__">
+    <p>def <span class="ident">__init__</span>(</p><p>self, max_attempts, exponent, sleep, max_sleep, exception_base)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Create a new policy.</p>
+<ul>
+<li><code>max_attempts</code>: maximum number of times a <code>Future</code> should be attempted</li>
+<li><code>exponent</code>: exponent used for backoff, e.g. <code>2.0</code> will result in a delay
+              which doubles between each attempt</li>
+<li><code>sleep</code>: base value for delay between attempts in seconds, e.g. <code>1.0</code>
+           will delay by one second between first two attempts</li>
+<li><code>max_sleep</code>: maximum delay between attempts, in seconds</li>
+<li><code>exception_base</code>: <code>Future</code> will be retried if (and only if) it raises
+                    an exception inheriting from this class</li>
+</ul></div>
+  <div class="source_cont">
+</div>
+
+  </div>
+  
+          <h3>Methods</h3>
+            
+  <div class="item">
+    <div class="name def" id="more_executors.retry.ExceptionRetryPolicy.new_default">
+    <p>def <span class="ident">new_default</span>(</p><p>cls)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Returns a new policy with a reasonable implementation:</p>
+<ul>
+<li>allows up to 10 attempts</li>
+<li>retries on any <code>Exception</code></li>
+</ul></div>
+  <div class="source_cont">
+</div>
+
+  </div>
+  
       </div>
+      </div>
+      
+      <div class="item">
+      <p id="more_executors.retry.RetryExecutor" class="name">class <span class="ident">RetryExecutor</span></p>
+      
+  
+    <div class="desc"><p>An <code>Executor</code> which delegates to another <code>Executor</code> while adding
+implicit retry behavior.</p>
+<ul>
+<li>
+<p>Callables are submitted to the delegate executor, and may be
+  submitted more than once if retries are required.</p>
+</li>
+<li>
+<p>The callables may be submitted to that executor from a different
+  thread than the calling thread.</p>
+</li>
+<li>
+<p>Cancelling is supported if the delegate executor allows it.</p>
+</li>
+<li>
+<p>Cancelling between retries is always supported.</p>
+</li>
+<li>
+<p>The returned futures from this executor are only resolved or
+  failed once the callable either succeeded, or all retries
+  were exhausted.  This includes activation of the done callback.</p>
+</li>
+<li>
+<p>This executor is thread-safe.</p>
+</li>
+</ul></div>
+  <div class="source_cont">
+</div>
+
+
+      <div class="class">
+          <h3>Ancestors (in MRO)</h3>
+          <ul class="class_list">
+          <li><a href="#more_executors.retry.RetryExecutor">RetryExecutor</a></li>
+          <li>concurrent.futures._base.Executor</li>
+          <li>builtins.object</li>
+          </ul>
+          <h3>Static methods</h3>
+            
+  <div class="item">
+    <div class="name def" id="more_executors.retry.RetryExecutor.__init__">
+    <p>def <span class="ident">__init__</span>(</p><p>self, delegate, retry_policy)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Create a new executor.</p>
+<ul>
+<li><code>delegate</code>: <code>Executor</code> instance to which callables will be submitted</li>
+<li><code>retry_policy</code>: <a href="#more_executors.retry.RetryPolicy"><code>RetryPolicy</code></a> instance used to determine
+                  when futures shall be retried</li>
+</ul></div>
+  <div class="source_cont">
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="more_executors.retry.RetryExecutor.submit">
+    <p>def <span class="ident">submit</span>(</p><p>self, fn, *args, **kwargs)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Submit a callable with this executor's retry policy.  Overrides <code>Executor.submit</code>.</p>
+<p>Returns a new <code>Future</code>.</p>
+<p>The callable may be invoked multiple times before the future's result
+(or exception) becomes available.</p></div>
+  <div class="source_cont">
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="more_executors.retry.RetryExecutor.submit_retry">
+    <p>def <span class="ident">submit_retry</span>(</p><p>self, retry_policy, fn, *args, **kwargs)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Submit a callable with a specific retry policy.</p>
+<ul>
+<li><code>retry_policy</code>: an instance of <a href="#more_executors.retry.RetryPolicy"><code>RetryPolicy</code></a> which
+                  is used for this call only</li>
+</ul></div>
+  <div class="source_cont">
+</div>
+
+  </div>
+  
+          <h3>Methods</h3>
+            
+  <div class="item">
+    <div class="name def" id="more_executors.retry.RetryExecutor.new_default">
+    <p>def <span class="ident">new_default</span>(</p><p>cls, delegate)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Returns an executor with a reasonable default retry policy.</p></div>
+  <div class="source_cont">
+</div>
+
+  </div>
+  
+      </div>
+      </div>
+      
+      <div class="item">
+      <p id="more_executors.retry.RetryPolicy" class="name">class <span class="ident">RetryPolicy</span></p>
+      
+  
+    <div class="desc"><p>Instances of this class may be supplied to <a href="#more_executors.retry.RetryExecutor"><code>RetryExecutor</code></a>
+to customize the retry behavior.</p>
+<p>This base class will never retry.  See <a href="#more_executors.retry.ExceptionRetryPolicy"><code>ExceptionRetryPolicy</code></a> for
+a general-purpose implementation.</p></div>
+  <div class="source_cont">
+</div>
+
+
+      <div class="class">
+          <h3>Ancestors (in MRO)</h3>
+          <ul class="class_list">
+          <li><a href="#more_executors.retry.RetryPolicy">RetryPolicy</a></li>
+          <li>builtins.object</li>
+          </ul>
+          <h3>Static methods</h3>
+            
+  <div class="item">
+    <div class="name def" id="more_executors.retry.RetryPolicy.should_retry">
+    <p>def <span class="ident">should_retry</span>(</p><p>self, attempt, result, exception)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Returns <code>True</code> if a <code>Future</code> should be retried.</p>
+<p>This method will be called after a <code>Future</code> completes or raises an exception.</p>
+<ul>
+<li><code>attempt</code>: number of times the future has been attempted; starts counting at 1</li>
+<li><code>result</code>: result of the future, or <code>None</code> on exception</li>
+<li><code>exception</code>: exception of the future, or <code>None</code> if no exception</li>
+</ul></div>
+  <div class="source_cont">
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="more_executors.retry.RetryPolicy.sleep_time">
+    <p>def <span class="ident">sleep_time</span>(</p><p>self, attempt, result, exception)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Returns the amount of time (in seconds) to delay before the next
+attempt at running a <code>Future</code>.</p>
+<p>See <code>should_retry</code> for the meaning of each argument.</p></div>
+  <div class="source_cont">
+</div>
+
+  </div>
+  
+      </div>
+      </div>
+
   </section>
 
     </article>
