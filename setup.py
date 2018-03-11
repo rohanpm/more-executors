@@ -9,7 +9,7 @@ else:
 
 setup(
     name='more-executors',
-    version='1.1.0-dev',
+    version='1.1.0.dev0',
     author='Rohan McGovern',
     author_email='rohan@mcgovern.id.au',
     packages=['more_executors'],

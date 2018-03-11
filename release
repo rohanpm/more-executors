@@ -61,13 +61,13 @@ def push():
 
 def run():
   old_version = get_version()
-  if not old_version.endswith('-dev'):
+  if not old_version.endswith('.dev0'):
     print("Assuming resumption of interrupted release")
     release_version = old_version
   else:
-    release_version = old_version[:-4]
+    release_version = old_version[:-5]
 
-  next_git_version = get_bumped_version(release_version) + '-dev'
+  next_git_version = get_bumped_version(release_version) + '.dev0'
 
   print("Old version:     %s" % old_version)
   print("Release version: %s" % release_version)
