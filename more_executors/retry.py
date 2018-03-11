@@ -1,3 +1,9 @@
+"""Create futures which will retry implicitly.
+
+The `more_executors.retry.RetryExecutor` class produces `Future` objects which will retry on
+failure. Subclassing `more_executors.retry.RetryPolicy` allows customization of the retry behavior.
+"""
+
 from collections import namedtuple
 from concurrent.futures import Executor, Future
 from threading import RLock, Thread, Event
@@ -8,6 +14,13 @@ import logging
 
 _LOG = logging.getLogger('RetryExecutor')
 
+# Hide some docs which would otherwise be repeated
+__pdoc__ = {}
+__pdoc__['ExceptionRetryPolicy.should_retry'] = None
+__pdoc__['ExceptionRetryPolicy.sleep_time'] = None
+__pdoc__['RetryExecutor.map'] = None
+__pdoc__['RetryExecutor.shutdown'] = None
+
 
 def _total_seconds(td):
     # Python 2.6 compat - equivalent of timedelta.total_seconds
@@ -15,11 +28,27 @@ def _total_seconds(td):
 
 
 class RetryPolicy(object):
+    """Instances of this class may be supplied to `more_executors.retry.RetryExecutor`
+    to customize the retry behavior.
 
-    def should_retry(self, attempt, return_value, exception):
+    This base class will never retry.  See `more_executors.retry.ExceptionRetryPolicy` for
+    a general-purpose implementation."""
+
+    def should_retry(self, attempt, result, exception):
+        """Returns `True` if a `Future` should be retried.
+
+        This method will be called after a `Future` completes or raises an exception.
+
+        - `attempt`: number of times the future has been attempted; starts counting at 1
+        - `result`: result of the future, or `None` on exception
+        - `exception`: exception of the future, or `None` if no exception"""
         return False
 
-    def sleep_time(self, attempt, return_value, exception):
+    def sleep_time(self, attempt, result, exception):
+        """Returns the amount of time (in seconds) to delay before the next
+        attempt at running a `Future`.
+
+        See `should_retry` for the meaning of each argument."""
         return 0
 
 
@@ -29,6 +58,16 @@ class ExceptionRetryPolicy(RetryPolicy):
     backoff between each attempt."""
 
     def __init__(self, max_attempts, exponent, sleep, max_sleep, exception_base):
+        """Create a new policy.
+
+        - `max_attempts`: maximum number of times a `Future` should be attempted
+        - `exponent`: exponent used for backoff, e.g. `2.0` will result in a delay
+                      which doubles between each attempt
+        - `sleep`: base value for delay between attempts in seconds, e.g. `1.0`
+                   will delay by one second between first two attempts
+        - `max_sleep`: maximum delay between attempts, in seconds
+        - `exception_base`: `Future` will be retried if (and only if) it raises
+                            an exception inheriting from this class"""
         self._max_attempts = max_attempts
         self._exponent = exponent
         self._sleep = sleep
@@ -37,6 +76,10 @@ class ExceptionRetryPolicy(RetryPolicy):
 
     @classmethod
     def new_default(cls):
+        """Returns a new policy with a reasonable implementation:
+
+        - allows up to 10 attempts
+        - retries on any `Exception`"""
         return cls(10, 2.0, 1.0, 120, Exception)
 
     def should_retry(self, attempt, return_value, exception):
@@ -85,23 +128,32 @@ class _RetryFuture(Future):
 
 
 class RetryExecutor(Executor):
-    """An Executor which delegates to another Executor while adding
-    transparent retry behavior.
+    """An `Executor` which delegates to another `Executor` while adding
+    implicit retry behavior.
 
-    Callables submitted to this Executor have the following semantics:
-
-    - The callables are submitted to the delegate Executor, and may be
+    - Callables are submitted to the delegate executor, and may be
       submitted more than once if retries are required.
 
     - The callables may be submitted to that executor from a different
       thread than the calling thread.
 
-    - The returned Futures from this executor are only resolved or
+    - Cancelling is supported if the delegate executor allows it.
+
+    - Cancelling between retries is always supported.
+
+    - The returned futures from this executor are only resolved or
       failed once the callable either succeeded, or all retries
-      were exhausted.
+      were exhausted.  This includes activation of the done callback.
+
+    - This executor is thread-safe.
     """
 
     def __init__(self, delegate, retry_policy):
+        """Create a new executor.
+
+        - `delegate`: `Executor` instance to which callables will be submitted
+        - `retry_policy`: `more_executors.retry.RetryPolicy` instance used to determine
+                          when futures shall be retried"""
         self._delegate = delegate
         self._default_retry_policy = retry_policy
         self._jobs = []
@@ -134,12 +186,21 @@ class RetryExecutor(Executor):
         return cls(delegate, ExceptionRetryPolicy.new_default())
 
     def submit(self, fn, *args, **kwargs):
-        """Submit a callable with this executor's default retry policy."""
+        """Submit a callable with this executor's retry policy.  Overrides `Executor.submit`.
+
+        Returns a new `Future`.
+
+        The callable may be invoked multiple times before the future's result
+        (or exception) becomes available."""
         return self.submit_retry(
             self._default_retry_policy, fn, *args, **kwargs)
 
     def submit_retry(self, retry_policy, fn, *args, **kwargs):
-        """Submit a callable with a specific retry policy."""
+        """Submit a callable with a specific retry policy.
+
+        - `retry_policy`: an instance of `more_executors.retry.RetryPolicy` which
+                          is used for this call only
+        """
         future = _RetryFuture(self)
 
         job = _RetryJob(retry_policy, None, future, 0,
