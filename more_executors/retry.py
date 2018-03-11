@@ -293,6 +293,7 @@ class RetryExecutor(Executor):
             self._append_job(new_job)
 
         delegate_future.add_done_callback(self._delegate_callback)
+        self._wake_thread()
 
     def _pop_job(self, job):
         with self._lock:
