@@ -21,6 +21,7 @@ deploy:
   skip-cleanup: true
   github-token: $GITHUB_TOKEN
   keep-history: true
+  verbose: true
   local-dir: docs/more_executors
   on:
     repo: rohanpm/more-executors
