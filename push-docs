@@ -1,0 +1,26 @@
+#!/bin/bash
+set -e
+
+if [ "$TRAVIS_BRANCH" != "master" ] || [ $TRAVIS_PULL_REQUEST != "false" ]; then
+  echo "Docs would now be pushed, if this were submitted to master."
+  exit 0
+fi
+
+rev=$(git rev-parse --short HEAD)
+
+cd docs/more_executors
+
+git init
+git config user.name "Rohan McGovern"
+git config user.email "rohan@mcgovern.id.au"
+
+git remote add origin "https://$GITHUB_TOKEN@github.com/rohanpm/more-executors.git"
+git fetch origin
+git reset origin/gh-pages
+
+# Create CNAME file here if needed, e.g.
+# echo myho.st > CNAME
+
+git add -A .
+git commit -m "Build documentation at ${rev}"
+git push -q origin HEAD:refs/heads/gh-pages
