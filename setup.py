@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='more-executors',
-    version='1.0.0',
+    version='1.1.0-git',
     author='Rohan McGovern',
     author_email='rohan@mcgovern.id.au',
     packages=['more_executors'],
