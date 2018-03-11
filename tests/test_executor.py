@@ -103,6 +103,9 @@ def test_cancel(any_executor):
                 assert_that(f.cancelled(), str(f))
                 assert_that(not f.running(), str(f))
                 assert_that(f.done(), str(f))
+                # Cancelling multiple times should be fine
+                assert_that(f.cancel())
+                assert_that(f.cancel())
             else:
                 # If we couldn't cancel it, that ought to mean it's either
                 # running or done.
