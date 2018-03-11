@@ -306,6 +306,11 @@ class RetryExecutor(Executor):
         if not job:
             return
 
+        if delegate_future.cancelled():
+            # nothing to do, retrying on cancel is not allowed
+            _LOG.debug("Delegate was cancelled: %s", delegate_future)
+            return
+
         exception = delegate_future.exception()
         if exception:
             result = None
@@ -321,9 +326,6 @@ class RetryExecutor(Executor):
         _LOG.debug("Finalizing %s", job)
 
         # OK, it won't be retried.  Resolve the future.
-        if delegate_future.cancelled():
-            # nothing to do
-            return
 
         if exception:
             job.future.set_exception(exception)
