@@ -5,10 +5,11 @@ default: help
 help:
 	@echo Try one of the following:
 	@echo
-	@echo "   make check - run all autotests"
-	@echo "   make cov   - run tests and open coverage report"
-	@echo "   make debug - run tests with configuration appropriate for debugging"
-	@echo "   make docs  - build documentation"
+	@echo "   make check   - run all autotests"
+	@echo "   make cov     - run tests and open coverage report"
+	@echo "   make debug   - run tests with configuration appropriate for debugging"
+	@echo "   make docs    - build documentation"
+	@echo "   make release - upload a release to PyPI"
 
 check:
 	@tox
@@ -22,3 +23,7 @@ debug:
 
 docs: .PHONY
 	@tox -e docs
+
+release: .PHONY
+	tox -e py35
+	.tox/py35/bin/python ./release
