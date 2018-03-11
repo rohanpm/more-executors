@@ -2,6 +2,7 @@
 
 - [Documentation](https://rohanpm.github.io/more-executors/)
 - [Source](https://github.com/rohanpm/more-executors)
+- [PyPI](https://pypi.python.org/pypi/more-executors)
 
 This library is intended for use with the
 [`concurrent.futures`](https://docs.python.org/3/library/concurrent.futures.html)
