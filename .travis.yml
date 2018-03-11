@@ -15,15 +15,5 @@ matrix:
   - python: "3.5"
     env: TOX_ENV=docs
 script: tox -e $TOX_ENV
-
-deploy:
-  provider: pages
-  skip-cleanup: true
-  github-token: $GITHUB_TOKEN
-  keep-history: false
-  verbose: true
-  local-dir: docs/more_executors
-  on:
-    repo: rohanpm/more-executors
-    branch: master
-    condition: $TOX_ENV = docs
+after_success:
+- test $TOX_ENV = docs && ./push-docs
