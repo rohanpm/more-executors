@@ -9,7 +9,7 @@ except ImportError:
     from mock import MagicMock, call
 from six.moves.queue import Queue
 
-from more_executors.retry import RetryExecutor, ExceptionRetryPolicy
+from more_executors.retry import RetryExecutor, ExceptionRetryPolicy, RetryPolicy
 
 from .util import assert_soon
 
@@ -19,7 +19,8 @@ def executor():
     policy = ExceptionRetryPolicy(
         max_attempts=10,
         exponent=2.0,
-        max_sleep=0.001,
+        sleep=0.004,
+        max_sleep=0.040,
         exception_base=Exception,
     )
     ex = RetryExecutor(ThreadPoolExecutor(), policy)
@@ -131,3 +132,76 @@ def test_cancel_delegate():
 
     # Calling cancel yet again should be harmless
     assert_that(f.cancel(), str(f))
+
+
+def test_order(executor):
+    f1_attempt = [0]
+    f2_attempt = [0]
+    calls = []
+    futures = []
+
+    def f2():
+        attempt = f2_attempt[0] + 1
+        f2_attempt[0] = attempt
+
+        calls.append('f2 %s' % attempt)
+
+        if attempt < 6:
+            raise ValueError("Simulated error %s" % attempt)
+
+        return 'f2 success'
+
+    def f1():
+        attempt = f1_attempt[0] + 1
+        f1_attempt[0] = attempt
+
+        calls.append('f1 %s' % attempt)
+
+        if attempt == 3:
+            futures.append(executor.submit(f2))
+
+        if attempt < 6:
+            raise ValueError("Simulated error %s" % attempt)
+
+        return 'f1 success'
+
+    futures.append(executor.submit(f1))
+
+    # Both should eventually succeed
+    assert_that(futures[0].result(), equal_to('f1 success'))
+    assert_that(futures[1].result(), equal_to('f2 success'))
+
+    assert_that(calls, equal_to([
+        # The calls should occur in this order.
+        # Comments list the number of time units expected until
+        # a function's next call.
+        'f1 1',  # f1: +1
+        'f1 2',  # f1: +2
+        'f1 3',  # f1: +4,  f2: +0
+        'f2 1',  # f1: +4,  f2: +1
+        'f2 2',  # f1: +3,  f2: +2
+        'f2 3',  # f1: +1,  f2: +4
+        'f1 4',  # f1: +8,  f2: +3
+        'f2 4',  # f1: +5,  f2: +8
+        # note: f1 hits max sleep time after next attempt
+        'f1 5',  # f1: +10, f2: +3
+        'f2 5',  # f1: +7,  f2: +10
+        'f1 6',  # f1: fin, f2: +3
+        'f2 6',  # f1: fin, f2: fin
+    ]))
+
+
+def test_override_policy(executor):
+    """Should be able to provide a custom policy by subclassing RetryPolicy."""
+    class SubRetryPolicy(RetryPolicy):
+        def should_retry(self, attempt, return_value, exception):
+            return return_value < 3
+
+    fn = MagicMock()
+    fn.side_effect = [1, 2, 3, AssertionError("unexpected call")]
+
+    policy = SubRetryPolicy()
+
+    result = executor.submit_retry(policy, fn).result()
+    assert_that(result, equal_to(3))
+    assert_that(fn.call_count, equal_to(3))
