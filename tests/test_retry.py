@@ -19,7 +19,8 @@ def executor():
     policy = ExceptionRetryPolicy(
         max_attempts=10,
         exponent=2.0,
-        max_sleep=0.001,
+        sleep=0.001,
+        max_sleep=0.010,
         exception_base=Exception,
     )
     ex = RetryExecutor(ThreadPoolExecutor(), policy)

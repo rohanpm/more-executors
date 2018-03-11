@@ -28,15 +28,16 @@ class ExceptionRetryPolicy(RetryPolicy):
     up to a fixed number of attempts, with an exponential
     backoff between each attempt."""
 
-    def __init__(self, max_attempts, exponent, max_sleep, exception_base):
+    def __init__(self, max_attempts, exponent, sleep, max_sleep, exception_base):
         self._max_attempts = max_attempts
         self._exponent = exponent
+        self._sleep = sleep
         self._max_sleep = max_sleep
         self._exception_base = exception_base
 
     @classmethod
     def new_default(cls):
-        return cls(10, 2.0, 120, Exception)
+        return cls(10, 2.0, 1.0, 120, Exception)
 
     def should_retry(self, attempt, return_value, exception):
         if not exception:
@@ -46,7 +47,7 @@ class ExceptionRetryPolicy(RetryPolicy):
         return isinstance(exception, self._exception_base)
 
     def sleep_time(self, attempt, return_value, exception):
-        return min(attempt ** self._exponent, self._max_sleep)
+        return min(self._sleep * (attempt ** self._exponent), self._max_sleep)
 
 
 _RetryJob = namedtuple('_RetryJob',
