@@ -21,4 +21,4 @@ debug:
 	env PYTHONPATH=$$PWD py.test -v --log-cli-level=DEBUG -o log_cli=true
 
 docs: .PHONY
-	pdoc --overwrite --html --html-no-source --html-dir docs more_executors
+	@tox -e docs
