@@ -8,6 +8,7 @@ from random import randint
 from threading import RLock
 
 from more_executors.retry import RetryExecutor, RetryPolicy
+from more_executors.map import MapExecutor
 
 from .util import assert_soon
 
@@ -29,7 +30,22 @@ def threadpool_executor():
     return ThreadPoolExecutor()
 
 
-@fixture(params=['retry', 'threadpool'])
+@fixture
+def map_executor():
+    return MapExecutor(ThreadPoolExecutor(), lambda x: x)
+
+
+@fixture
+def map_retry_executor(retry_executor):
+    return MapExecutor(retry_executor, lambda x: x)
+
+
+@fixture
+def retry_map_executor(map_executor):
+    return RetryExecutor(map_executor, RetryPolicy())
+
+
+@fixture(params=['threadpool', 'retry', 'map', 'retry_map', 'map_retry'])
 def any_executor(request):
     ex = request.getfixturevalue(request.param + '_executor')
     yield ex

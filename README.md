@@ -17,6 +17,7 @@ extend the behavior of `Future` objects.
 ## Features
 
 - Futures with implicit retry
+- Futures with transformed output values
 
 See the [API documentation](https://rohanpm.github.io/more-executors/) for detailed information on usage.
 

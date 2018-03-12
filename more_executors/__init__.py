@@ -14,4 +14,4 @@ Compatible with Python 2.6, 2.7 and 3.x.
 This documentation was built from an unknown revision.
 """
 
-__all__ = ['retry']
+__all__ = ['map', 'retry']
