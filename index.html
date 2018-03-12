@@ -973,6 +973,23 @@ table {
     <ul id="index">
 
 
+    <li class="set"><h3><a href="#header-classes">Classes</a></h3>
+      <ul>
+        <li class="mono">
+        <span class="class_name"><a href="#more_executors.Executors">Executors</a></span>
+        
+          
+  <ul>
+    <li class="mono"><a href="#more_executors.Executors.process_pool">process_pool</a></li>
+    <li class="mono"><a href="#more_executors.Executors.thread_pool">thread_pool</a></li>
+    <li class="mono"><a href="#more_executors.Executors.with_map">with_map</a></li>
+    <li class="mono"><a href="#more_executors.Executors.with_retry">with_retry</a></li>
+    <li class="mono"><a href="#more_executors.Executors.wrap">wrap</a></li>
+  </ul>
+
+        </li>
+      </ul>
+    </li>
 
     <li class="set"><h3><a href="#header-submodules">Sub-modules</a></h3>
       <ul>
@@ -1003,7 +1020,7 @@ table {
 module.  It includes a collection of <code>Executor</code> implementations in order to
 extend the behavior of <code>Future</code> objects.</p>
 <p>Compatible with Python 2.6, 2.7 and 3.x.</p>
-<p>This documentation was built from more-executors 1.1.0.dev0, revision e4596ff.</p>
+<p>This documentation was built from more-executors 1.1.0.dev0, revision e672853.</p>
   
 
   </header>
@@ -1011,6 +1028,117 @@ extend the behavior of <code>Future</code> objects.</p>
   <section id="section-items">
 
 
+    <h2 class="section-title" id="header-classes">Classes</h2>
+      
+      <div class="item">
+      <p id="more_executors.Executors" class="name">class <span class="ident">Executors</span></p>
+      
+  
+    <div class="desc"><p>Convenience methods for creating executors.</p>
+<p>This class produces wrapped executors which may be customized
+by use of the <code>with_*</code> methods, as in the following example:</p>
+<p><code>Executors.thread_pool(max_workers=4).with_retry().with_map(lambda x: x*2)</code></p>
+<p>Produces a thread pool executor which will retry on failure
+and multiply all output values by 2.</p></div>
+  <div class="source_cont">
+</div>
+
+
+      <div class="class">
+          <h3>Ancestors (in MRO)</h3>
+          <ul class="class_list">
+          <li><a href="#more_executors.Executors">Executors</a></li>
+          <li>builtins.object</li>
+          </ul>
+          <h3>Methods</h3>
+            
+  <div class="item">
+    <div class="name def" id="more_executors.Executors.process_pool">
+    <p>def <span class="ident">process_pool</span>(</p><p>cls, *args, **kwargs)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Creates a new <code>concurrent.futures.ProcessPoolExecutor</code> with the given arguments.</p></div>
+  <div class="source_cont">
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="more_executors.Executors.thread_pool">
+    <p>def <span class="ident">thread_pool</span>(</p><p>cls, *args, **kwargs)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Creates a new <code>concurrent.futures.ThreadPoolExecutor</code> with the given arguments.</p></div>
+  <div class="source_cont">
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="more_executors.Executors.with_map">
+    <p>def <span class="ident">with_map</span>(</p><p>cls, executor, fn)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Wrap an executor in a <a href="map.m.html#more_executors.map.MapExecutor"><code>more_executors.map.MapExecutor</code></a>.</p>
+<p>Submitted callables will have their output transformed by the given function.</p>
+<ul>
+<li><code>fn</code>: a function used to transform each output value from the executor</li>
+</ul></div>
+  <div class="source_cont">
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="more_executors.Executors.with_retry">
+    <p>def <span class="ident">with_retry</span>(</p><p>cls, executor, retry_policy=None)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Wrap an executor in a <a href="retry.m.html#more_executors.retry.RetryExecutor"><code>more_executors.retry.RetryExecutor</code></a>.</p>
+<p>Submitted functions will be retried on failure.</p>
+<ul>
+<li><code>retry_policy</code>: the <a href="retry.m.html#more_executors.retry.RetryPolicy"><code>more_executors.retry.RetryPolicy</code></a> to be used; if omitted,
+                  a reasonable default is applied which will retry for several minutes.</li>
+</ul></div>
+  <div class="source_cont">
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="more_executors.Executors.wrap">
+    <p>def <span class="ident">wrap</span>(</p><p>cls, executor)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Wrap an executor for configuration.</p>
+<p>This adds all <code>with_*</code> methods from this class onto the executor.
+When invoked, the executor is implicitly passed as the first argument to the method.</p></div>
+  <div class="source_cont">
+</div>
+
+  </div>
+  
+      </div>
+      </div>
 
     <h2 class="section-title" id="header-submodules">Sub-modules</h2>
       <div class="item">
