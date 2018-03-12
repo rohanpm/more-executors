@@ -3,10 +3,8 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 
-    <title>more_executors API documentation</title>
-    <meta name="description" content="A library of composable Python executors.
-
-- [Documentation](https://rohanpm.github.io/more-executor..." />
+    <title>more_executors.map API documentation</title>
+    <meta name="description" content="Transform the output value of a future." />
 
   <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300' rel='stylesheet' type='text/css'>
   
@@ -973,13 +971,21 @@ table {
     <ul id="index">
 
 
-
-    <li class="set"><h3><a href="#header-submodules">Sub-modules</a></h3>
+    <li class="set"><h3><a href="#header-classes">Classes</a></h3>
       <ul>
-        <li class="mono"><a href="map.m.html">more_executors.map</a></li>
-        <li class="mono"><a href="retry.m.html">more_executors.retry</a></li>
+        <li class="mono">
+        <span class="class_name"><a href="#more_executors.map.MapExecutor">MapExecutor</a></span>
+        
+          
+  <ul>
+    <li class="mono"><a href="#more_executors.map.MapExecutor.__init__">__init__</a></li>
+    <li class="mono"><a href="#more_executors.map.MapExecutor.submit">submit</a></li>
+  </ul>
+
+        </li>
       </ul>
     </li>
+
     </ul>
   </div>
 
@@ -991,19 +997,8 @@ table {
 
 
   <header id="section-intro">
-  <h1 class="title"><span class="name">more_executors</span> module</h1>
-  <p>A library of composable Python executors.</p>
-<ul>
-<li><a href="https://rohanpm.github.io/more-executors/">Documentation</a></li>
-<li><a href="https://github.com/rohanpm/more-executors">Source</a></li>
-<li><a href="https://pypi.python.org/pypi/more-executors">PyPI</a></li>
-</ul>
-<p>This library is intended for use with the
-<a href="https://docs.python.org/3/library/concurrent.futures.html"><code>concurrent.futures</code></a>
-module.  It includes a collection of <code>Executor</code> implementations in order to
-extend the behavior of <code>Future</code> objects.</p>
-<p>Compatible with Python 2.6, 2.7 and 3.x.</p>
-<p>This documentation was built from more-executors 1.1.0.dev0, revision e4596ff.</p>
+  <h1 class="title"><span class="name">more_executors.map</span> module</h1>
+  <p>Transform the output value of a future.</p>
   
 
   </header>
@@ -1011,24 +1006,66 @@ extend the behavior of <code>Future</code> objects.</p>
   <section id="section-items">
 
 
-
-    <h2 class="section-title" id="header-submodules">Sub-modules</h2>
+    <h2 class="section-title" id="header-classes">Classes</h2>
+      
       <div class="item">
-      <p class="name"><a href="map.m.html">more_executors.map</a></p>
+      <p id="more_executors.map.MapExecutor" class="name">class <span class="ident">MapExecutor</span></p>
       
   
-    <div class="desc"><p>Transform the output value of a future.</p></div>
+    <div class="desc"><p>An <code>Executor</code> which delegates to another <code>Executor</code> while mapping
+output values through a given function.</p></div>
+  <div class="source_cont">
+</div>
 
-      </div>
-      <div class="item">
-      <p class="name"><a href="retry.m.html">more_executors.retry</a></p>
-      
+
+      <div class="class">
+          <h3>Ancestors (in MRO)</h3>
+          <ul class="class_list">
+          <li><a href="#more_executors.map.MapExecutor">MapExecutor</a></li>
+          <li>concurrent.futures._base.Executor</li>
+          <li>builtins.object</li>
+          </ul>
+          <h3>Static methods</h3>
+            
+  <div class="item">
+    <div class="name def" id="more_executors.map.MapExecutor.__init__">
+    <p>def <span class="ident">__init__</span>(</p><p>self, delegate, fn)</p>
+    </div>
+    
+
+    
   
-    <div class="desc"><p>Create futures which will retry implicitly.</p>
-<p>The <a href="retry.m.html#more_executors.retry.RetryExecutor"><code>more_executors.retry.RetryExecutor</code></a> class produces <code>Future</code> objects which will retry on
-failure. Subclassing <a href="retry.m.html#more_executors.retry.RetryPolicy"><code>more_executors.retry.RetryPolicy</code></a> allows customization of the retry behavior.</p></div>
+    <div class="desc"><p>Create a new executor.</p>
+<ul>
+<li><code>delegate</code>: <code>Executor</code> instance to which callables will be submitted</li>
+<li><code>fn</code>: a callable applied to transform returned values</li>
+</ul></div>
+  <div class="source_cont">
+</div>
 
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="more_executors.map.MapExecutor.submit">
+    <p>def <span class="ident">submit</span>(</p><p>self, fn, *args, **kwargs)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Submit a callable.</p>
+<p>The returned <code>Future</code> will have its output value transformed by the
+map function passed to this executor.  If that map function raises
+an exception, the future will fail with that exception.</p></div>
+  <div class="source_cont">
+</div>
+
+  </div>
+  
       </div>
+      </div>
+
   </section>
 
     </article>
