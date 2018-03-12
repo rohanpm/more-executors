@@ -7,8 +7,10 @@ from six.moves.queue import Queue
 from random import randint
 from threading import RLock
 
-from more_executors.retry import RetryExecutor, RetryPolicy
-from more_executors.map import MapExecutor
+from more_executors.retry import RetryPolicy
+# This class is meant to be imported from the top-level module, but it's
+# confusing the coverage report, so import it directly here.
+from more_executors._executors import Executors
 
 from .util import assert_soon
 
@@ -19,10 +21,7 @@ class SimulatedError(RuntimeError):
 
 @fixture
 def retry_executor():
-    # This retry executor uses the no-op retry policy so that
-    # the semantics shall match an ordinary executor.
-    # Retry behavior is tested explicitly from another test.
-    return RetryExecutor(ThreadPoolExecutor(), RetryPolicy())
+    return Executors.thread_pool().with_retry(RetryPolicy())
 
 
 @fixture
@@ -32,17 +31,17 @@ def threadpool_executor():
 
 @fixture
 def map_executor():
-    return MapExecutor(ThreadPoolExecutor(), lambda x: x)
+    return Executors.thread_pool().with_map(lambda x: x)
 
 
 @fixture
-def map_retry_executor(retry_executor):
-    return MapExecutor(retry_executor, lambda x: x)
+def map_retry_executor():
+    return Executors.thread_pool().with_retry(RetryPolicy()).with_map(lambda x: x)
 
 
 @fixture
-def retry_map_executor(map_executor):
-    return RetryExecutor(map_executor, RetryPolicy())
+def retry_map_executor():
+    return Executors.thread_pool().with_map(lambda x: x).with_retry(RetryPolicy())
 
 
 @fixture(params=['threadpool', 'retry', 'map', 'retry_map', 'map_retry'])
