@@ -90,7 +90,7 @@ class ExceptionRetryPolicy(RetryPolicy):
         return isinstance(exception, self._exception_base)
 
     def sleep_time(self, attempt, return_value, exception):
-        return min(self._sleep * (attempt ** self._exponent), self._max_sleep)
+        return min(self._sleep * (self._exponent ** attempt), self._max_sleep)
 
 
 _RetryJob = namedtuple('_RetryJob',

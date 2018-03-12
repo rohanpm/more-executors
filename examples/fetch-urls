@@ -1,0 +1,61 @@
+#!/usr/bin/env python
+"""Example script: fetch URLs"""
+from __future__ import print_function
+import sys
+import requests
+from concurrent.futures import as_completed
+from more_executors import Executors
+from more_executors.retry import RetryPolicy, ExceptionRetryPolicy
+
+
+class LoggingRetryPolicy(RetryPolicy):
+    """A RetryPolicy which prints a message before each retry."""
+    def __init__(self):
+        # Inherit the behavior from the default policy
+        self.policy = ExceptionRetryPolicy.new_default()
+
+    def should_retry(self, attempt, result, exception):
+        retry = self.policy.should_retry(attempt, result, exception)
+        if retry:
+            delay = self.sleep_time(attempt, result, exception)
+            print("Error - retry in %ss: %s" % (delay, exception))
+        return retry
+
+    def sleep_time(self, attempt, result, exception):
+        return self.policy.sleep_time(attempt, result, exception)
+
+
+def get_content(response):
+    """If a request failed, raise exception.
+    Otherwise, return (url, content) tuple."""
+    response.raise_for_status()
+    return (response.url, response.content)
+
+
+def fetch_urls(urls):
+    # Configure an executor:
+    # - run up to 4 requests concurrently, in separate threads
+    # - run get_content on each response
+    # - retry up to several minutes on any errors
+    # - custom retry policy used to log before each retry
+    executor = Executors.\
+        thread_pool(max_workers=4).\
+        with_map(get_content).\
+        with_retry(LoggingRetryPolicy())
+
+    # Submit requests for each given URL
+    futures = [executor.submit(requests.get, url)
+               for url in urls]
+
+    # Iterate through completed futures.
+    # The status code has already been checked on each response.
+    # Requests may have been attempted several times if an error occurred.
+    for future in as_completed(futures):
+        (url, content) = future.result()
+        print("=========== %s" % url)
+        print(content)
+        print("")
+
+
+if __name__ == '__main__':
+    fetch_urls(sys.argv[1:])
