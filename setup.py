@@ -1,11 +1,23 @@
 from setuptools import setup
 import os
 
-if os.environ.get('USE_PANDOC') == '1':
+
+def get_description():
+    return 'A library of composable Python executors'
+
+
+def get_long_description():
+    if os.environ.get('USE_PANDOC') != '1':
+        return
+
     import pypandoc
-    long_description = pypandoc.convert('README.md', 'rst')
-else:
-    long_description = ''
+    converted = pypandoc.convert('README.md', 'rst')
+
+    # The README starts with the same text as "description",
+    # which makes sense, but on PyPI causes same text to be
+    # displayed twice.  So let's strip that.
+    return converted.replace(get_description() + '.\n\n', '', 1)
+
 
 setup(
     name='more-executors',
@@ -15,8 +27,8 @@ setup(
     packages=['more_executors'],
     url='https://github.com/rohanpm/more-executors',
     license='GNU General Public License',
-    description='A library of composable Python executors',
-    long_description=long_description,
+    description=get_description(),
+    long_description=get_long_description(),
     install_requires=[
         'futures;python_version<"3"',
         'six',
