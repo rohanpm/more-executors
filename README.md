@@ -18,6 +18,7 @@ extend the behavior of `Future` objects.
 
 - Futures with implicit retry
 - Futures with transformed output values
+- Futures resolved by a caller-provided polling function
 - Convenience API for creating executors
 
 See the [API documentation](https://rohanpm.github.io/more-executors/) for detailed information on usage.

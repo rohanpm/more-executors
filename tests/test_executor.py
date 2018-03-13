@@ -8,6 +8,7 @@ from random import randint
 from threading import RLock
 
 from more_executors.retry import RetryPolicy
+from more_executors.poll import PollExecutor
 # This class is meant to be imported from the top-level module, but it's
 # confusing the coverage report, so import it directly here.
 from more_executors._executors import Executors
@@ -44,7 +45,12 @@ def retry_map_executor():
     return Executors.thread_pool().with_map(lambda x: x).with_retry(RetryPolicy())
 
 
-@fixture(params=['threadpool', 'retry', 'map', 'retry_map', 'map_retry'])
+@fixture
+def poll_executor():
+    return Executors.thread_pool().with_poll(lambda ds: [d.yield_result(d.result) for d in ds])
+
+
+@fixture(params=['threadpool', 'retry', 'map', 'retry_map', 'map_retry', 'poll'])
 def any_executor(request):
     ex = request.getfixturevalue(request.param + '_executor')
     yield ex
@@ -122,10 +128,17 @@ def test_cancel(any_executor):
                 assert_that(f.cancel())
                 assert_that(f.cancel())
             else:
+                assert_that(not f.cancelled(), str(f))
                 # If we couldn't cancel it, that ought to mean it's either
                 # running or done.
-                assert_that(not f.cancelled(), str(f))
-                assert_that(f.running() or f.done(), str(f))
+                #
+                # PollExecutor is allowed to bend the rules a little:
+                # we might have tried to cancel while the delegate was running,
+                # but by now it might have transitioned to poll mode, meaning
+                # that the future is no longer 'running' and could be cancelled
+                # now.
+                if not isinstance(any_executor, PollExecutor):
+                    assert_that(f.running() or f.done(), str(f))
 
         for f in futures:
             if f in cancelled:
