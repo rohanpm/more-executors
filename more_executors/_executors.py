@@ -3,6 +3,7 @@ from functools import partial
 
 from more_executors.map import MapExecutor
 from more_executors.retry import RetryExecutor, ExceptionRetryPolicy
+from more_executors.poll import PollExecutor
 
 
 class Executors(object):
@@ -21,6 +22,7 @@ class Executors(object):
     _WRAP_METHODS = [
         'with_retry',
         'with_map',
+        'with_poll',
     ]
 
     @classmethod
@@ -65,3 +67,13 @@ class Executors(object):
 
         - `fn`: a function used to transform each output value from the executor"""
         return cls.wrap(MapExecutor(executor, fn))
+
+    @classmethod
+    def with_poll(cls, executor, fn):
+        """Wrap an executor in a `more_executors.poll.PollExecutor`.
+
+        Submitted callables will have their output passed into the poll function.
+
+        - `fn`: a function used for polling results.  See the class documentation for
+                expected behavior from this function."""
+        return cls.wrap(PollExecutor(executor, fn))
