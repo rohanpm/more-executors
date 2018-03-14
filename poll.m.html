@@ -3,10 +3,8 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 
-    <title>more_executors API documentation</title>
-    <meta name="description" content="A library of composable Python executors.
-
-- [Documentation](https://rohanpm.github.io/more-executor..." />
+    <title>more_executors.poll API documentation</title>
+    <meta name="description" content="Create futures resolved by polling with a provided function." />
 
   <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300' rel='stylesheet' type='text/css'>
   
@@ -976,29 +974,27 @@ table {
     <li class="set"><h3><a href="#header-classes">Classes</a></h3>
       <ul>
         <li class="mono">
-        <span class="class_name"><a href="#more_executors.Executors">Executors</a></span>
+        <span class="class_name"><a href="#more_executors.poll.PollDescriptor">PollDescriptor</a></span>
         
           
   <ul>
-    <li class="mono"><a href="#more_executors.Executors.process_pool">process_pool</a></li>
-    <li class="mono"><a href="#more_executors.Executors.thread_pool">thread_pool</a></li>
-    <li class="mono"><a href="#more_executors.Executors.with_map">with_map</a></li>
-    <li class="mono"><a href="#more_executors.Executors.with_poll">with_poll</a></li>
-    <li class="mono"><a href="#more_executors.Executors.with_retry">with_retry</a></li>
-    <li class="mono"><a href="#more_executors.Executors.wrap">wrap</a></li>
+    <li class="mono"><a href="#more_executors.poll.PollDescriptor.__init__">__init__</a></li>
+  </ul>
+
+        </li>
+        <li class="mono">
+        <span class="class_name"><a href="#more_executors.poll.PollExecutor">PollExecutor</a></span>
+        
+          
+  <ul>
+    <li class="mono"><a href="#more_executors.poll.PollExecutor.__init__">__init__</a></li>
+    <li class="mono"><a href="#more_executors.poll.PollExecutor.submit">submit</a></li>
   </ul>
 
         </li>
       </ul>
     </li>
 
-    <li class="set"><h3><a href="#header-submodules">Sub-modules</a></h3>
-      <ul>
-        <li class="mono"><a href="map.m.html">more_executors.map</a></li>
-        <li class="mono"><a href="poll.m.html">more_executors.poll</a></li>
-        <li class="mono"><a href="retry.m.html">more_executors.retry</a></li>
-      </ul>
-    </li>
     </ul>
   </div>
 
@@ -1010,19 +1006,8 @@ table {
 
 
   <header id="section-intro">
-  <h1 class="title"><span class="name">more_executors</span> module</h1>
-  <p>A library of composable Python executors.</p>
-<ul>
-<li><a href="https://rohanpm.github.io/more-executors/">Documentation</a></li>
-<li><a href="https://github.com/rohanpm/more-executors">Source</a></li>
-<li><a href="https://pypi.python.org/pypi/more-executors">PyPI</a></li>
-</ul>
-<p>This library is intended for use with the
-<a href="https://docs.python.org/3/library/concurrent.futures.html"><code>concurrent.futures</code></a>
-module.  It includes a collection of <code>Executor</code> implementations in order to
-extend the behavior of <code>Future</code> objects.</p>
-<p>Compatible with Python 2.6, 2.7 and 3.x.</p>
-<p>This documentation was built from more-executors 1.2.0.dev0, revision 9d01e76.</p>
+  <h1 class="title"><span class="name">more_executors.poll</span> module</h1>
+  <p>Create futures resolved by polling with a provided function.</p>
   
 
   </header>
@@ -1033,15 +1018,12 @@ extend the behavior of <code>Future</code> objects.</p>
     <h2 class="section-title" id="header-classes">Classes</h2>
       
       <div class="item">
-      <p id="more_executors.Executors" class="name">class <span class="ident">Executors</span></p>
+      <p id="more_executors.poll.PollDescriptor" class="name">class <span class="ident">PollDescriptor</span></p>
       
   
-    <div class="desc"><p>Convenience methods for creating executors.</p>
-<p>This class produces wrapped executors which may be customized
-by use of the <code>with_*</code> methods, as in the following example:</p>
-<p><code>Executors.thread_pool(max_workers=4).with_retry().with_map(lambda x: x*2)</code></p>
-<p>Produces a thread pool executor which will retry on failure
-and multiply all output values by 2.</p></div>
+    <div class="desc"><p>A <code>PollDescriptor</code> represents an unresolved <code>Future</code>.</p>
+<p>The poll function used by <a href="#more_executors.poll.PollExecutor"><code>PollExecutor</code></a> will be
+invoked with a list of <code>PollDescriptor</code> objects.</p></div>
   <div class="source_cont">
 </div>
 
@@ -1049,53 +1031,204 @@ and multiply all output values by 2.</p></div>
       <div class="class">
           <h3>Ancestors (in MRO)</h3>
           <ul class="class_list">
-          <li><a href="#more_executors.Executors">Executors</a></li>
+          <li><a href="#more_executors.poll.PollDescriptor">PollDescriptor</a></li>
           <li>builtins.object</li>
           </ul>
-          <h3>Methods</h3>
+          <h3>Static methods</h3>
             
   <div class="item">
-    <div class="name def" id="more_executors.Executors.process_pool">
-    <p>def <span class="ident">process_pool</span>(</p><p>cls, *args, **kwargs)</p>
+    <div class="name def" id="more_executors.poll.PollDescriptor.__init__">
+    <p>def <span class="ident">__init__</span>(</p><p>self, result, yield_result, yield_exception)</p>
     </div>
     
 
     
   
-    <div class="desc"><p>Creates a new <code>concurrent.futures.ProcessPoolExecutor</code> with the given arguments.</p></div>
+    <div class="desc"><p>Do not construct instances of <code>PollDescriptor</code> directly.</p></div>
   <div class="source_cont">
 </div>
 
   </div>
   
+          <h3>Instance variables</h3>
+            <div class="item">
+            <p id="more_executors.poll.PollDescriptor.result" class="name">var <span class="ident">result</span></p>
             
-  <div class="item">
-    <div class="name def" id="more_executors.Executors.thread_pool">
-    <p>def <span class="ident">thread_pool</span>(</p><p>cls, *args, **kwargs)</p>
-    </div>
-    
 
-    
+            
   
-    <div class="desc"><p>Creates a new <code>concurrent.futures.ThreadPoolExecutor</code> with the given arguments.</p></div>
+    <div class="desc"><p>The result from the delegate executor's future, which should
+be used to drive the poll.</p></div>
   <div class="source_cont">
 </div>
 
-  </div>
-  
+            </div>
+            <div class="item">
+            <p id="more_executors.poll.PollDescriptor.yield_exception" class="name">var <span class="ident">yield_exception</span></p>
             
-  <div class="item">
-    <div class="name def" id="more_executors.Executors.with_map">
-    <p>def <span class="ident">with_map</span>(</p><p>cls, executor, fn)</p>
-    </div>
-    
 
-    
+            
   
-    <div class="desc"><p>Wrap an executor in a <a href="map.m.html#more_executors.map.MapExecutor"><code>more_executors.map.MapExecutor</code></a>.</p>
-<p>Submitted callables will have their output transformed by the given function.</p>
+    <div class="desc"><p>The poll function can call this function to make the future
+raise the given exception.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="more_executors.poll.PollDescriptor.yield_result" class="name">var <span class="ident">yield_result</span></p>
+            
+
+            
+  
+    <div class="desc"><p>The poll function can call this function to make the future
+yield the given result.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+      </div>
+      </div>
+      
+      <div class="item">
+      <p id="more_executors.poll.PollExecutor" class="name">class <span class="ident">PollExecutor</span></p>
+      
+  
+    <div class="desc"><p>Instances of <code>PollExecutor</code> submit callables to a delegate <code>Executor</code>
+and resolve the returned futures via a provided poll function.</p>
+<p>The poll function has the following semantics:</p>
 <ul>
-<li><code>fn</code>: a function used to transform each output value from the executor</li>
+<li>
+<p>It's called with a single argument, a list of zero or more
+  <a href="#more_executors.poll.PollDescriptor"><code>PollDescriptor</code></a> objects.</p>
+</li>
+<li>
+<p>If the poll function can determine that a particular future should be
+  completed, either successfully or in error, it should call the <code>yield_result</code>
+  or <code>yield_exception</code> methods on the appropriate <code>PollDescriptor</code>.</p>
+</li>
+<li>
+<p>If the poll function raises an exception, all futures depending on that poll
+  will fail with that exception.  The poll function will be retried later.</p>
+</li>
+<li>
+<p>If the poll function returns an int or float, it is used as the delay
+  in seconds until the next poll.</p>
+</li>
+</ul>
+<h3><strong>Example</strong></h3>
+<p>Consider a web service which executes tasks asynchronously, with an API like this:</p>
+<ul>
+<li>To create a task: <code>POST https://myservice/object/:id/publish</code><ul>
+<li>Returns an identifier for a task, such as <code>{"task_id": 123}</code></li>
+</ul>
+</li>
+<li>To get status of a single task: <code>GET https://myservice/tasks/:id</code><ul>
+<li>Returns task status, such as <code>{"task_id": 123, "state": "finished"}</code></li>
+</ul>
+</li>
+<li>To search for status of multiple tasks:
+  <code>POST https://myservice/tasks/search {"task_id": [123, 456, ...]}</code><ul>
+<li>Returns array of task statuses, such as
+  <code>[{"task_id": 123, "state": "finished"},
+    {"task_id": 456, "state": "error", "error": "..."}]</code></li>
+</ul>
+</li>
+</ul>
+<p>Imagine we want to run many tasks concurrently and monitor their status.
+Two obvious approaches include:</p>
+<ul>
+<li>We could make a function which starts a task and polls that task until
+  it completes, and have several threads run that function for different tasks.<ul>
+<li>This could be easily encapsulated as a future using only the executors
+  from <code>concurrent.futures</code>, but is very inefficient - each task in progress
+  will consume a thread for polling.</li>
+</ul>
+</li>
+<li>We could maintain a list of all outstanding tasks and implement a special-purpose
+  function to wait for all of them to complete.<ul>
+<li>This is efficient as only one request is needed per poll interval, but since
+  tasks aren't represented as futures, useful features from <code>concurrent.futures</code>
+  cannot be used and different types of asynchronous work will be handled
+  inconsistently.</li>
+</ul>
+</li>
+</ul>
+<p><code>PollExecutor</code> bridges the gap between the two approaches.  By providing a custom
+poll function, the tasks can be monitored by one thread efficiently, while at the
+same time allowing full usage of the API provided by <code>Future</code> objects.</p>
+<p>In this example, the poll function would look similar to this:</p>
+<pre><code>def poll_tasks(poll_descriptors):
+    # Collect tasks we'll need to search for
+    task_ids = [d.result.get('task_id')
+                for d in poll_descriptors]
+
+    # Search for status of these tasks
+    search = {"task_id": task_ids}
+    response = requests.post(
+        'https://myservice/tasks/search', json=search)
+
+    # If request failed then all outstanding futures fail
+    response.raise_for_status()
+
+    # Request passed, resolve futures accordingly
+    tasks = {task.get('task_id'): task.get('state')
+            for task in response.json()}
+    for d in poll_descriptors:
+        task = tasks.get(d.result, {})
+        state = task.get('state')
+        if state == 'finished':
+            d.yield_result()
+        elif state == 'error':
+            d.yield_exception(TaskFailed())
+</code></pre>
+<p>With the poll function in place, futures could be created like this:</p>
+<pre><code>def publish(object_id):
+    response = requests.post(
+        'https://myservice/object/%s/publish' % object_id)
+    response.raise_for_status()
+    return response.json()
+
+# Submit up to 4 HTTP requests at a time,
+# and poll for the returned tasks using our poll function.
+executor = Executors.\
+    threadpool(max_workers=4).\
+    with_poll(poll_fn)
+futures = [executor.submit(publish, x)
+           for x in (10, 20, 30)]
+
+# Now we can use concurrent.futures API to get tasks as
+# the poll function determines they've completed
+for completed in as_completed(futures):
+    # ...
+</code></pre></div>
+  <div class="source_cont">
+</div>
+
+
+      <div class="class">
+          <h3>Ancestors (in MRO)</h3>
+          <ul class="class_list">
+          <li><a href="#more_executors.poll.PollExecutor">PollExecutor</a></li>
+          <li>concurrent.futures._base.Executor</li>
+          <li>builtins.object</li>
+          </ul>
+          <h3>Static methods</h3>
+            
+  <div class="item">
+    <div class="name def" id="more_executors.poll.PollExecutor.__init__">
+    <p>def <span class="ident">__init__</span>(</p><p>self, delegate, poll_fn, default_interval=5.0)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Create a new executor.</p>
+<ul>
+<li><code>delegate</code>: <code>Executor</code> instance to which callables will be submitted</li>
+<li><code>poll_fn</code>: a polling function used to decide when futures should be resolved;
+             see the class documentation for the required behavior from this function</li>
+<li><code>default_interval</code>: default interval between polls (in seconds)</li>
 </ul></div>
   <div class="source_cont">
 </div>
@@ -1104,56 +1237,15 @@ and multiply all output values by 2.</p></div>
   
             
   <div class="item">
-    <div class="name def" id="more_executors.Executors.with_poll">
-    <p>def <span class="ident">with_poll</span>(</p><p>cls, executor, fn)</p>
+    <div class="name def" id="more_executors.poll.PollExecutor.submit">
+    <p>def <span class="ident">submit</span>(</p><p>self, fn, *args, **kwargs)</p>
     </div>
     
 
     
   
-    <div class="desc"><p>Wrap an executor in a <a href="poll.m.html#more_executors.poll.PollExecutor"><code>more_executors.poll.PollExecutor</code></a>.</p>
-<p>Submitted callables will have their output passed into the poll function.</p>
-<ul>
-<li><code>fn</code>: a function used for polling results.  See the class documentation for
-        expected behavior from this function.</li>
-</ul></div>
-  <div class="source_cont">
-</div>
-
-  </div>
-  
-            
-  <div class="item">
-    <div class="name def" id="more_executors.Executors.with_retry">
-    <p>def <span class="ident">with_retry</span>(</p><p>cls, executor, retry_policy=None)</p>
-    </div>
-    
-
-    
-  
-    <div class="desc"><p>Wrap an executor in a <a href="retry.m.html#more_executors.retry.RetryExecutor"><code>more_executors.retry.RetryExecutor</code></a>.</p>
-<p>Submitted functions will be retried on failure.</p>
-<ul>
-<li><code>retry_policy</code>: the <a href="retry.m.html#more_executors.retry.RetryPolicy"><code>more_executors.retry.RetryPolicy</code></a> to be used; if omitted,
-                  a reasonable default is applied which will retry for several minutes.</li>
-</ul></div>
-  <div class="source_cont">
-</div>
-
-  </div>
-  
-            
-  <div class="item">
-    <div class="name def" id="more_executors.Executors.wrap">
-    <p>def <span class="ident">wrap</span>(</p><p>cls, executor)</p>
-    </div>
-    
-
-    
-  
-    <div class="desc"><p>Wrap an executor for configuration.</p>
-<p>This adds all <code>with_*</code> methods from this class onto the executor.
-When invoked, the executor is implicitly passed as the first argument to the method.</p></div>
+    <div class="desc"><p>Submit a callable.</p>
+<p>Returns a future which will be resolved via the poll function.</p></div>
   <div class="source_cont">
 </div>
 
@@ -1162,30 +1254,6 @@ When invoked, the executor is implicitly passed as the first argument to the met
       </div>
       </div>
 
-    <h2 class="section-title" id="header-submodules">Sub-modules</h2>
-      <div class="item">
-      <p class="name"><a href="map.m.html">more_executors.map</a></p>
-      
-  
-    <div class="desc"><p>Transform the output value of a future.</p></div>
-
-      </div>
-      <div class="item">
-      <p class="name"><a href="poll.m.html">more_executors.poll</a></p>
-      
-  
-    <div class="desc"><p>Create futures resolved by polling with a provided function.</p></div>
-
-      </div>
-      <div class="item">
-      <p class="name"><a href="retry.m.html">more_executors.retry</a></p>
-      
-  
-    <div class="desc"><p>Create futures which will retry implicitly.</p>
-<p>The <a href="retry.m.html#more_executors.retry.RetryExecutor"><code>more_executors.retry.RetryExecutor</code></a> class produces <code>Future</code> objects which will retry on
-failure. Subclassing <a href="retry.m.html#more_executors.retry.RetryPolicy"><code>more_executors.retry.RetryPolicy</code></a> allows customization of the retry behavior.</p></div>
-
-      </div>
   </section>
 
     </article>
