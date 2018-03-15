@@ -54,9 +54,10 @@ def upload():
   check_call([sys.executable or 'python', 'setup.py', 'sdist', 'bdist_wheel', 'upload'])
 
 
-def push():
+def push(release_version):
   check_call(['git', 'push', '--tags'])
   check_call(['git', 'push', 'origin', '+HEAD:refs/heads/release'])
+  check_call(['hub', 'pull-request', '-f', '-m', 'Release %s' % release_version, '-h', 'release'])
 
 
 def run():
@@ -83,7 +84,7 @@ def run():
   replace_version(release_version, next_git_version)
   commit("Bump to next development version")
 
-  push()
+  push(release_version)
 
 
 if __name__ == '__main__':
