@@ -69,11 +69,14 @@ class Executors(object):
         return cls.wrap(MapExecutor(executor, fn))
 
     @classmethod
-    def with_poll(cls, executor, fn):
+    def with_poll(cls, executor, fn, cancel_fn=None, default_interval=5.0):
         """Wrap an executor in a `more_executors.poll.PollExecutor`.
 
         Submitted callables will have their output passed into the poll function.
+        See the class documentation for more information on the poll and cancel
+        functions.
 
-        - `fn`: a function used for polling results.  See the class documentation for
-                expected behavior from this function."""
-        return cls.wrap(PollExecutor(executor, fn))
+        - `fn`: a function used for polling results.
+        - `cancel_fn`: a function called when a future is cancelled.
+        - `default_interval`: default interval between polls, in seconds."""
+        return cls.wrap(PollExecutor(executor, fn, cancel_fn, default_interval))

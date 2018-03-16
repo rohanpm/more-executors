@@ -1,9 +1,12 @@
 from concurrent.futures import ThreadPoolExecutor
 from pytest import fixture
-from hamcrest import assert_that, equal_to, calling, raises, has_length
+from hamcrest import assert_that, equal_to, calling, raises, has_length, has_item, contains, \
+                     matches_regexp
 from functools import partial
 from six.moves.queue import Queue
 from threading import Event
+import sys
+import logging
 
 from more_executors.poll import PollExecutor
 
@@ -13,6 +16,14 @@ from .util import assert_soon
 @fixture
 def executor():
     return ThreadPoolExecutor()
+
+
+if sys.version_info[0:1] < (2, 7):
+    # This python is too old for pytest's caplog,
+    # make a null caplog and skip that part of the test
+    @fixture
+    def caplog():
+        pass
 
 
 def poll_tasks(tasks, poll_descriptors):
@@ -29,7 +40,7 @@ def test_basic_poll(executor):
     task_id_queue = Queue()
     tasks = {}
     poll_fn = partial(poll_tasks, tasks)
-    poll_executor = PollExecutor(executor, poll_fn, 0.01)
+    poll_executor = PollExecutor(executor, poll_fn, default_interval=0.01)
 
     def make_task(x):
         return '%s-%s' % (x, task_id_queue.get(True))
@@ -66,6 +77,73 @@ def test_basic_poll(executor):
     assert_that(not futures[2].done())
 
 
+def test_cancel_fn(executor, caplog):
+    task_id_queue = Queue()
+    tasks = {}
+    poll_fn = partial(poll_tasks, tasks)
+
+    def cancel_fn(task):
+        if task.startswith('cancel-true-'):
+            return True
+        if task.startswith('cancel-false-'):
+            return False
+        raise RuntimeError('simulated cancel error')
+
+    poll_executor = PollExecutor(executor, poll_fn, cancel_fn, default_interval=0.01)
+
+    def make_task(x):
+        got = task_id_queue.get(True)
+        task_id_queue.task_done()
+        return '%s-%s' % (x, got)
+
+    inputs = ['cancel-true', 'cancel-false', 'cancel-error']
+    futures = [poll_executor.submit(make_task, x) for x in inputs]
+
+    # The futures should not currently be able to progress.
+    assert_that(not any([f.done() for f in futures]))
+
+    # Allow tasks to be created.
+    task_id_queue.put('x')
+    task_id_queue.put('y')
+    task_id_queue.put('z')
+
+    # Wait until all tasks were created and futures moved
+    # into poll mode
+    task_id_queue.join()
+
+    # Wait until the make_task function definitely completed in each thread,
+    # which can be determined by running==False
+    assert_soon(lambda: assert_that(all([not f.running() for f in futures])))
+
+    # Should be able to cancel soon.
+    # Why "soon" instead of "now" - because even though the futures above are
+    # not running, the delegate may not have been cleared yet.  Cancel needs
+    # to wait until the future's delegate is cleared and the future has
+    # transitioned fully into "poll mode".
+    assert_soon(lambda: assert_that(futures[0].cancel()))
+
+    # The other two futures don't need assert_soon since the cancel result is negative.
+
+    # Cancel behavior should be consistent (calling multiple times same
+    # as calling once)
+    for _ in 1, 2:
+        # Cancelling the cancel-true task should be allowed.
+        assert_that(futures[0].cancel())
+
+        # Cancelling the cancel-false task should not be allowed.
+        assert_that(not futures[1].cancel())
+
+        # Cancelling the cancel-error task should not be allowed.
+        assert_that(not futures[2].cancel())
+
+    # An error should have been logged due to the cancel function raising.
+    if caplog:
+        assert_that(caplog.record_tuples, has_item(
+            contains('PollExecutor',
+                    logging.ERROR,
+                    matches_regexp(r'Exception during cancel .*/cancel-error'))))
+
+
 def test_cancel_during_poll(executor):
     task_ran = Event()
     poll_ran = Event()
@@ -81,7 +159,7 @@ def test_cancel_during_poll(executor):
         task_ran.set()
         return 123
 
-    poll_executor = PollExecutor(executor, poll_fn, 0.01)
+    poll_executor = PollExecutor(executor, poll_fn, default_interval=0.01)
     future = poll_executor.submit(fn)
 
     # It shouldn't finish yet.
@@ -135,7 +213,7 @@ def test_cancel_during_poll_fn(executor):
                 else:
                     descriptor.yield_exception(RuntimeError('fail'))
 
-    poll_executor = PollExecutor(executor, poll_fn, 0.01)
+    poll_executor = PollExecutor(executor, poll_fn, default_interval=0.01)
     futures = [poll_executor.submit(lambda x: x, x) for x in ('pass', 'fail')]
 
     # Wait until both futures move to polling mode.
@@ -186,7 +264,7 @@ def test_poll_fail(executor):
             raise RuntimeError("simulated poll error")
         return poll_tasks(tasks, descriptors)
 
-    poll_executor = PollExecutor(executor, poll_fn, 0.01)
+    poll_executor = PollExecutor(executor, poll_fn, default_interval=0.01)
 
     def make_task(x):
         return '%s-%s' % (x, task_id_queue.get(True))

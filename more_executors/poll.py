@@ -56,6 +56,8 @@ class _PollFuture(Future):
                 return True
             if self._delegate and not self._delegate.cancel():
                 return False
+            if not self._executor._run_cancel_fn(self):
+                return False
             self._executor._deregister_poll(self)
             out = super(_PollFuture, self).cancel()
             if out:
@@ -67,7 +69,8 @@ class PollDescriptor(object):
     """A `PollDescriptor` represents an unresolved `Future`.
 
     The poll function used by `more_executors.poll.PollExecutor` will be
-    invoked with a list of `PollDescriptor` objects."""
+    invoked with a list of `PollDescriptor` objects.
+    """
 
     def __init__(self, result, yield_result, yield_exception):
         """Do not construct instances of `PollDescriptor` directly."""
@@ -89,6 +92,11 @@ class PollExecutor(Executor):
     """Instances of `PollExecutor` submit callables to a delegate `Executor`
     and resolve the returned futures via a provided poll function.
 
+    A cancel function may also be provided to perform additional processing
+    when a returned future is cancelled.
+
+    ### **Poll function**
+
     The poll function has the following semantics:
 
     - It's called with a single argument, a list of zero or more
@@ -104,6 +112,21 @@ class PollExecutor(Executor):
     - If the poll function returns an int or float, it is used as the delay
       in seconds until the next poll.
 
+    ### **Cancel function**
+
+    The cancel function has the following semantics:
+
+    - It's called when cancel is requested on a future returned by this executor,
+      if and only if the future is currently in the list of futures being polled,
+      i.e. it will not be called if the delegate future has not yet completed.
+
+    - It's called with a single argument: the value returned by the delegate future.
+
+    - It should return `True` if the future can be cancelled.
+
+    - If the cancel function raises an exception, the future's cancel method will
+      return `False` and a message will be logged.
+
     ### **Example**
 
     Consider a web service which executes tasks asynchronously, with an API like this:
@@ -112,6 +135,7 @@ class PollExecutor(Executor):
         * Returns an identifier for a task, such as `{"task_id": 123}`
     * To get status of a single task: `GET https://myservice/tasks/:id`
         * Returns task status, such as `{"task_id": 123, "state": "finished"}`
+    * To cancel a single task: `DELETE https://myservice/tasks/:id`
     * To search for status of multiple tasks:
       `POST https://myservice/tasks/search {"task_id": [123, 456, ...]}`
         * Returns array of task statuses, such as
@@ -163,7 +187,21 @@ class PollExecutor(Executor):
                 elif state == 'error':
                     d.yield_exception(TaskFailed())
 
-    With the poll function in place, futures could be created like this:
+    To ensure that calling `future.cancel()` also cancels tasks on the remote service,
+    we can also provide a cancel function:
+
+        def cancel_task(task):
+            task_id = task['task_id']
+
+            # Attempt to DELETE this task
+            response = requests.delete(
+                'https://myservice/tasks/%s' % task_id)
+
+            # Succeeded only if response was OK.
+            # Otherwise, we may have been too late to cancel.
+            return response.ok
+
+    With the poll and cancel functions in place, futures could be created like this:
 
         def publish(object_id):
             response = requests.post(
@@ -175,7 +213,7 @@ class PollExecutor(Executor):
         # and poll for the returned tasks using our poll function.
         executor = Executors.\\
             threadpool(max_workers=4).\\
-            with_poll(poll_fn)
+            with_poll(poll_tasks, cancel_task)
         futures = [executor.submit(publish, x)
                    for x in (10, 20, 30)]
 
@@ -185,17 +223,20 @@ class PollExecutor(Executor):
             # ...
     """
 
-    def __init__(self, delegate, poll_fn, default_interval=5.0):
+    def __init__(self, delegate, poll_fn, cancel_fn=None, default_interval=5.0):
         """Create a new executor.
 
         - `delegate`: `Executor` instance to which callables will be submitted
         - `poll_fn`: a polling function used to decide when futures should be resolved;
-                     see the class documentation for the required behavior from this function
+                     see the class documentation for more information
+        - `cancel_fn`: a cancel function invoked when future cancel is required; see the
+                       class documentation for more information
         - `default_interval`: default interval between polls (in seconds)
         """
         self._delegate = delegate
         self._default_interval = default_interval
         self._poll_fn = poll_fn
+        self._cancel_fn = cancel_fn
         self._poll_descriptors = []
         self._poll_event = Event()
         self._poll_thread = Thread(name='PollExecutor', target=self._poll_loop)
@@ -220,8 +261,8 @@ class PollExecutor(Executor):
             future.set_result,
             future.set_exception)
         with self._lock:
-            future._clear_delegate()
             self._poll_descriptors.append((future, descriptor))
+            future._clear_delegate()
             self._poll_event.set()
 
     def _deregister_poll(self, future):
@@ -229,6 +270,30 @@ class PollExecutor(Executor):
             self._poll_descriptors = [(f, d)
                                       for (f, d) in self._poll_descriptors
                                       if f is not future]
+
+    def _run_cancel_fn(self, future):
+        if not self._cancel_fn:
+            # no cancel function => no veto of cancel
+            return True
+
+        descriptor = [d
+                      for (f, d) in self._poll_descriptors
+                      if f is future]
+        if not descriptor:
+            # no record of this future => no veto of cancel.
+            # we can get here if the future is already done
+            # or if polling hasn't started yet
+            return True
+
+        assert len(descriptor) == 1, "Too many poll descriptors for %s" % future
+
+        descriptor = descriptor[0]
+
+        try:
+            return self._cancel_fn(descriptor.result)
+        except Exception:
+            _LOG.exception("Exception during cancel on %s/%s", future, descriptor.result)
+            return False
 
     def _run_poll_fn(self):
         with self._lock:
