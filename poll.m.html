@@ -1096,6 +1096,9 @@ yield the given result.</p></div>
   
     <div class="desc"><p>Instances of <code>PollExecutor</code> submit callables to a delegate <code>Executor</code>
 and resolve the returned futures via a provided poll function.</p>
+<p>A cancel function may also be provided to perform additional processing
+when a returned future is cancelled.</p>
+<h3><strong>Poll function</strong></h3>
 <p>The poll function has the following semantics:</p>
 <ul>
 <li>
@@ -1116,6 +1119,25 @@ and resolve the returned futures via a provided poll function.</p>
   in seconds until the next poll.</p>
 </li>
 </ul>
+<h3><strong>Cancel function</strong></h3>
+<p>The cancel function has the following semantics:</p>
+<ul>
+<li>
+<p>It's called when cancel is requested on a future returned by this executor,
+  if and only if the future is currently in the list of futures being polled,
+  i.e. it will not be called if the delegate future has not yet completed.</p>
+</li>
+<li>
+<p>It's called with a single argument: the value returned by the delegate future.</p>
+</li>
+<li>
+<p>It should return <code>True</code> if the future can be cancelled.</p>
+</li>
+<li>
+<p>If the cancel function raises an exception, the future's cancel method will
+  return <code>False</code> and a message will be logged.</p>
+</li>
+</ul>
 <h3><strong>Example</strong></h3>
 <p>Consider a web service which executes tasks asynchronously, with an API like this:</p>
 <ul>
@@ -1127,6 +1149,7 @@ and resolve the returned futures via a provided poll function.</p>
 <li>Returns task status, such as <code>{"task_id": 123, "state": "finished"}</code></li>
 </ul>
 </li>
+<li>To cancel a single task: <code>DELETE https://myservice/tasks/:id</code></li>
 <li>To search for status of multiple tasks:
   <code>POST https://myservice/tasks/search {"task_id": [123, 456, ...]}</code><ul>
 <li>Returns array of task statuses, such as
@@ -1182,7 +1205,20 @@ same time allowing full usage of the API provided by <code>Future</code> objects
         elif state == 'error':
             d.yield_exception(TaskFailed())
 </code></pre>
-<p>With the poll function in place, futures could be created like this:</p>
+<p>To ensure that calling <code>future.cancel()</code> also cancels tasks on the remote service,
+we can also provide a cancel function:</p>
+<pre><code>def cancel_task(task):
+    task_id = task['task_id']
+
+    # Attempt to DELETE this task
+    response = requests.delete(
+        'https://myservice/tasks/%s' % task_id)
+
+    # Succeeded only if response was OK.
+    # Otherwise, we may have been too late to cancel.
+    return response.ok
+</code></pre>
+<p>With the poll and cancel functions in place, futures could be created like this:</p>
 <pre><code>def publish(object_id):
     response = requests.post(
         'https://myservice/object/%s/publish' % object_id)
@@ -1193,7 +1229,7 @@ same time allowing full usage of the API provided by <code>Future</code> objects
 # and poll for the returned tasks using our poll function.
 executor = Executors.\
     threadpool(max_workers=4).\
-    with_poll(poll_fn)
+    with_poll(poll_tasks, cancel_task)
 futures = [executor.submit(publish, x)
            for x in (10, 20, 30)]
 
@@ -1217,7 +1253,7 @@ for completed in as_completed(futures):
             
   <div class="item">
     <div class="name def" id="more_executors.poll.PollExecutor.__init__">
-    <p>def <span class="ident">__init__</span>(</p><p>self, delegate, poll_fn, default_interval=5.0)</p>
+    <p>def <span class="ident">__init__</span>(</p><p>self, delegate, poll_fn, cancel_fn=None, default_interval=5.0)</p>
     </div>
     
 
@@ -1227,7 +1263,9 @@ for completed in as_completed(futures):
 <ul>
 <li><code>delegate</code>: <code>Executor</code> instance to which callables will be submitted</li>
 <li><code>poll_fn</code>: a polling function used to decide when futures should be resolved;
-             see the class documentation for the required behavior from this function</li>
+             see the class documentation for more information</li>
+<li><code>cancel_fn</code>: a cancel function invoked when future cancel is required; see the
+               class documentation for more information</li>
 <li><code>default_interval</code>: default interval between polls (in seconds)</li>
 </ul></div>
   <div class="source_cont">
