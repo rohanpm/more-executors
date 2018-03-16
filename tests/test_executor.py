@@ -45,9 +45,25 @@ def retry_map_executor():
     return Executors.thread_pool().with_map(lambda x: x).with_retry(RetryPolicy())
 
 
+def random_cancel(_value):
+    """cancel function for use with poll executor which randomly decides whether
+    cancel should succeed. This targets the stress test.  The point here is that
+    the futures should still satisfy the invariants of the Future API regardless
+    of what the cancel function does."""
+    select = randint(0, 300)
+    if select < 100:
+        return True
+    if select < 200:
+        return False
+    raise RuntimeError('simulated error from cancel')
+
+
 @fixture
 def poll_executor():
-    return Executors.thread_pool().with_poll(lambda ds: [d.yield_result(d.result) for d in ds])
+    return Executors.\
+        thread_pool().\
+        with_poll(lambda ds: [d.yield_result(d.result) for d in ds],
+                  random_cancel)
 
 
 @fixture(params=['threadpool', 'retry', 'map', 'retry_map', 'map_retry', 'poll'])
