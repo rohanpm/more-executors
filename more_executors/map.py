@@ -20,6 +20,9 @@ class _MapFuture(Future):
         assert delegate is self._delegate, \
             "BUG: called with %s, expected %s" % (delegate, self._delegate)
 
+        if delegate.cancelled():
+            return
+
         ex = delegate.exception()
         if not ex:
             result = delegate.result()

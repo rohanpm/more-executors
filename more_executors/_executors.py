@@ -4,6 +4,7 @@ from functools import partial
 from more_executors.map import MapExecutor
 from more_executors.retry import RetryExecutor, ExceptionRetryPolicy
 from more_executors.poll import PollExecutor
+from more_executors.cancel_on_shutdown import CancelOnShutdownExecutor
 
 
 class Executors(object):
@@ -23,6 +24,7 @@ class Executors(object):
         'with_retry',
         'with_map',
         'with_poll',
+        'with_cancel_on_shutdown',
     ]
 
     @classmethod
@@ -80,3 +82,11 @@ class Executors(object):
         - `cancel_fn`: a function called when a future is cancelled.
         - `default_interval`: default interval between polls, in seconds."""
         return cls.wrap(PollExecutor(executor, fn, cancel_fn, default_interval))
+
+    @classmethod
+    def with_cancel_on_shutdown(cls, executor):
+        """Wrap an executor in a `more_executors.cancel_on_shutdown.CancelOnShutdownExecutor`.
+
+        Returned futures will have `cancel` invoked if the executor is shut down
+        before the future has completed."""
+        return cls.wrap(CancelOnShutdownExecutor(executor))

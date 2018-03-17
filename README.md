@@ -17,6 +17,7 @@ extend the behavior of `Future` objects.
 ## Features
 
 - Futures with implicit retry
+- Futures with implicit cancel on executor shutdown
 - Futures with transformed output values
 - Futures resolved by a caller-provided polling function
 - Convenience API for creating executors
