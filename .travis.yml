@@ -1,7 +1,14 @@
 sudo: false
 language: python
 install: pip install tox
-
+branches:
+  only:
+    # This is where pull requests from "bors r+" are built.
+    - staging
+    # This is where pull requests from "bors try" are built.
+    - trying
+    # This is where changes end up
+    - master
 matrix:
   include:
   - python: "2.6"
