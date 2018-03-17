@@ -108,8 +108,8 @@ def any_executor(request):
 
 
 def test_submit_results(any_executor):
-    values = [1, 2, 3]
-    expected_results = [2, 4, 6]
+    values = range(0, 1000)
+    expected_results = [v*2 for v in values]
 
     def fn(x):
         return x*2
@@ -121,6 +121,37 @@ def test_submit_results(any_executor):
 
     results = [f.result() for f in futures]
     assert_that(results, equal_to(expected_results))
+
+
+def test_broken_callback(any_executor):
+    values = range(0, 1000)
+    expected_results = [v*2 for v in values]
+    callback_calls = []
+
+    def fn(x):
+        return x*2
+
+    def broken_callback(f):
+        callback_calls.append(f)
+        raise RuntimeError('simulated broken callback')
+
+    futures = [any_executor.submit(fn, x) for x in values]
+    for f in futures:
+        try:
+            f.add_done_callback(broken_callback)
+        except RuntimeError:
+            # This is allowed - if future is done already,
+            # the callback was invoked directly without exception handler.
+            pass
+
+    for f in futures:
+        assert_that(not f.cancelled())
+
+    results = [f.result(20.0) for f in futures]
+    assert_that(results, equal_to(expected_results))
+
+    for f in futures:
+        assert_that(f in callback_calls)
 
 
 def test_submit_delayed_results(any_executor):
@@ -303,7 +334,7 @@ def test_submit_staggered(any_executor):
         [q1.put(None) for _ in (1, 2, 3)]
         [q2.put(None) for _ in (1, 2, 3, 4)]
 
-        results = [f.result() for f in futures]
+        results = [f.result(20.0) for f in futures]
         assert_that(results, equal_to(expected_results))
 
 

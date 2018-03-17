@@ -1,7 +1,9 @@
 """Create futures resolved by polling with a provided function."""
-from concurrent.futures import Executor, Future
+from concurrent.futures import Executor
 from threading import RLock, Thread, Event
 import logging
+
+from more_executors._common import _Future
 
 _LOG = logging.getLogger('PollExecutor')
 
@@ -10,12 +12,11 @@ __pdoc__['PollExecutor.shutdown'] = None
 __pdoc__['PollExecutor.map'] = None
 
 
-class _PollFuture(Future):
+class _PollFuture(_Future):
     def __init__(self, delegate, executor):
         super(_PollFuture, self).__init__()
         self._delegate = delegate
         self._executor = executor
-        self._me_lock = RLock()
         self._delegate.add_done_callback(self._delegate_resolved)
 
     def _delegate_resolved(self, delegate):
@@ -23,7 +24,7 @@ class _PollFuture(Future):
             "BUG: called with %s, expected %s" % (delegate, self._delegate)
 
         if delegate.cancelled():
-            self.cancel()
+            return
         elif delegate.exception():
             self.set_exception(delegate.exception())
         else:
@@ -35,15 +36,17 @@ class _PollFuture(Future):
 
     def set_result(self, result):
         with self._me_lock:
-            if self.cancelled():
+            if self.done():
                 return
             super(_PollFuture, self).set_result(result)
+        self._me_invoke_callbacks()
 
     def set_exception(self, exception):
         with self._me_lock:
-            if self.cancelled():
+            if self.done():
                 return
             super(_PollFuture, self).set_exception(exception)
+        self._me_invoke_callbacks()
 
     def running(self):
         with self._me_lock:
@@ -66,10 +69,11 @@ class _PollFuture(Future):
             # The reason is that we would be called recursively if
             # delegate.cancel() succeeded, and we must avoid
             # calling notify twice.
-            was_cancelled = self.cancelled()
             out = super(_PollFuture, self).cancel()
-            if out and not was_cancelled:
+            if out:
                 self.set_running_or_notify_cancel()
+        if out:
+            self._me_invoke_callbacks()
         return out
 
 

@@ -19,8 +19,8 @@ def executor():
     policy = ExceptionRetryPolicy(
         max_attempts=10,
         exponent=2.0,
-        sleep=0.004,
-        max_sleep=0.040,
+        sleep=0.001,
+        max_sleep=0.010,
         exception_base=Exception,
     )
     ex = RetryExecutor(ThreadPoolExecutor(), policy)
@@ -135,6 +135,16 @@ def test_cancel_delegate():
 
 
 def test_order(executor):
+    # Using a policy with a bigger sleep just for this test,
+    # as higher sleep time is needed for non-flaky results.
+    policy = ExceptionRetryPolicy(
+        max_attempts=10,
+        exponent=2.0,
+        sleep=0.040,
+        max_sleep=0.400,
+        exception_base=Exception,
+    )
+
     f1_attempt = [0]
     f2_attempt = [0]
     calls = []
@@ -158,14 +168,14 @@ def test_order(executor):
         calls.append('f1 %s' % attempt)
 
         if attempt == 3:
-            futures.append(executor.submit(f2))
+            futures.append(executor.submit_retry(policy, f2))
 
         if attempt < 6:
             raise ValueError("Simulated error %s" % attempt)
 
         return 'f1 success'
 
-    futures.append(executor.submit(f1))
+    futures.append(executor.submit_retry(policy, f1))
 
     # Both should eventually succeed
     assert_that(futures[0].result(), equal_to('f1 success'))

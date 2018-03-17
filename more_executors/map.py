@@ -1,20 +1,20 @@
 """Transform the output value of a future."""
 
-from threading import RLock
-from concurrent.futures import Executor, Future
+from concurrent.futures import Executor
+
+from more_executors._common import _Future
 
 __pdoc__ = {}
 __pdoc__['MapExecutor.shutdown'] = None
 __pdoc__['MapExecutor.map'] = None
 
 
-class _MapFuture(Future):
+class _MapFuture(_Future):
     def __init__(self, delegate, map_fn):
         super(_MapFuture, self).__init__()
         self._delegate = delegate
         self._map_fn = map_fn
         self._delegate.add_done_callback(self._delegate_resolved)
-        self._me_lock = RLock()
 
     def _delegate_resolved(self, delegate):
         assert delegate is self._delegate, \
@@ -37,11 +37,21 @@ class _MapFuture(Future):
         else:
             self.set_result(result)
 
-    def running(self):
-        return self._delegate.running()
+    def set_result(self, result):
+        with self._me_lock:
+            super(_MapFuture, self).set_result(result)
+        self._me_invoke_callbacks()
 
-    def done(self):
-        return self._delegate.done()
+    def set_exception(self, exception):
+        with self._me_lock:
+            super(_MapFuture, self).set_exception(exception)
+        self._me_invoke_callbacks()
+
+    def running(self):
+        with self._me_lock:
+            if self.done():
+                return False
+            return self._delegate.running() or self._delegate.done()
 
     def cancel(self):
         with self._me_lock:
@@ -52,6 +62,8 @@ class _MapFuture(Future):
             out = super(_MapFuture, self).cancel()
             if out:
                 self.set_running_or_notify_cancel()
+        if out:
+            self._me_invoke_callbacks()
         return out
 
 
