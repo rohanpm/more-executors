@@ -69,6 +69,15 @@ def cancel_retry_map_poll_executor():
         with_cancel_on_shutdown()
 
 
+@fixture
+def retry_map_poll_executor():
+    return Executors.\
+        thread_pool().\
+        with_poll(lambda ds: [d.yield_result(d.result) for d in ds]).\
+        with_map(lambda x: x).\
+        with_retry(RetryPolicy())
+
+
 def random_cancel(_value):
     """cancel function for use with poll executor which randomly decides whether
     cancel should succeed. This targets the stress test.  The point here is that
@@ -90,7 +99,7 @@ def poll_executor():
                   random_cancel)
 
 
-@fixture(params=['threadpool', 'retry', 'map', 'retry_map', 'map_retry', 'poll',
+@fixture(params=['threadpool', 'retry', 'map', 'retry_map', 'map_retry', 'poll', 'retry_map_poll',
                  'cancel_poll_map_retry', 'cancel_retry_map_poll'])
 def any_executor(request):
     ex = request.getfixturevalue(request.param + '_executor')
