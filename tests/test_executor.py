@@ -8,7 +8,6 @@ from random import randint
 from threading import RLock
 
 from more_executors.retry import RetryPolicy
-from more_executors.poll import PollExecutor
 # This class is meant to be imported from the top-level module, but it's
 # confusing the coverage report, so import it directly here.
 from more_executors._executors import Executors
@@ -36,6 +35,11 @@ def map_executor():
 
 
 @fixture
+def cancel_on_shutdown_executor():
+    return Executors.thread_pool().with_cancel_on_shutdown()
+
+
+@fixture
 def map_retry_executor():
     return Executors.thread_pool().with_retry(RetryPolicy()).with_map(lambda x: x)
 
@@ -43,6 +47,35 @@ def map_retry_executor():
 @fixture
 def retry_map_executor():
     return Executors.thread_pool().with_map(lambda x: x).with_retry(RetryPolicy())
+
+
+@fixture
+def cancel_poll_map_retry_executor():
+    return Executors.\
+        thread_pool().\
+        with_retry(RetryPolicy()).\
+        with_map(lambda x: x).\
+        with_poll(lambda ds: [d.yield_result(d.result) for d in ds]).\
+        with_cancel_on_shutdown()
+
+
+@fixture
+def cancel_retry_map_poll_executor():
+    return Executors.\
+        thread_pool().\
+        with_poll(lambda ds: [d.yield_result(d.result) for d in ds]).\
+        with_map(lambda x: x).\
+        with_retry(RetryPolicy()).\
+        with_cancel_on_shutdown()
+
+
+@fixture
+def retry_map_poll_executor():
+    return Executors.\
+        thread_pool().\
+        with_poll(lambda ds: [d.yield_result(d.result) for d in ds]).\
+        with_map(lambda x: x).\
+        with_retry(RetryPolicy())
 
 
 def random_cancel(_value):
@@ -66,7 +99,8 @@ def poll_executor():
                   random_cancel)
 
 
-@fixture(params=['threadpool', 'retry', 'map', 'retry_map', 'map_retry', 'poll'])
+@fixture(params=['threadpool', 'retry', 'map', 'retry_map', 'map_retry', 'poll', 'retry_map_poll',
+                 'cancel_poll_map_retry', 'cancel_retry_map_poll'])
 def any_executor(request):
     ex = request.getfixturevalue(request.param + '_executor')
     yield ex
@@ -74,8 +108,8 @@ def any_executor(request):
 
 
 def test_submit_results(any_executor):
-    values = [1, 2, 3]
-    expected_results = [2, 4, 6]
+    values = range(0, 1000)
+    expected_results = [v*2 for v in values]
 
     def fn(x):
         return x*2
@@ -87,6 +121,37 @@ def test_submit_results(any_executor):
 
     results = [f.result() for f in futures]
     assert_that(results, equal_to(expected_results))
+
+
+def test_broken_callback(any_executor):
+    values = range(0, 1000)
+    expected_results = [v*2 for v in values]
+    callback_calls = []
+
+    def fn(x):
+        return x*2
+
+    def broken_callback(f):
+        callback_calls.append(f)
+        raise RuntimeError('simulated broken callback')
+
+    futures = [any_executor.submit(fn, x) for x in values]
+    for f in futures:
+        try:
+            f.add_done_callback(broken_callback)
+        except RuntimeError:
+            # This is allowed - if future is done already,
+            # the callback was invoked directly without exception handler.
+            pass
+
+    for f in futures:
+        assert_that(not f.cancelled())
+
+    results = [f.result(20.0) for f in futures]
+    assert_that(results, equal_to(expected_results))
+
+    for f in futures:
+        assert_that(f in callback_calls)
 
 
 def test_submit_delayed_results(any_executor):
@@ -121,7 +186,9 @@ def test_submit_delayed_results(any_executor):
     assert_that(results, equal_to(expected_results))
 
 
-def test_cancel(any_executor):
+def test_cancel(any_executor, request):
+    using_poll_executor = 'poll' in request.node.name
+
     for _ in range(0, 100):
         values = [1, 2, 3]
         expected_results = set([2, 4, 6])
@@ -153,7 +220,7 @@ def test_cancel(any_executor):
                 # but by now it might have transitioned to poll mode, meaning
                 # that the future is no longer 'running' and could be cancelled
                 # now.
-                if not isinstance(any_executor, PollExecutor):
+                if not using_poll_executor:
                     assert_that(f.running() or f.done(), str(f))
 
         for f in futures:
@@ -267,7 +334,7 @@ def test_submit_staggered(any_executor):
         [q1.put(None) for _ in (1, 2, 3)]
         [q2.put(None) for _ in (1, 2, 3, 4)]
 
-        results = [f.result() for f in futures]
+        results = [f.result(20.0) for f in futures]
         assert_that(results, equal_to(expected_results))
 
 

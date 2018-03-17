@@ -5,12 +5,14 @@ failure. Subclassing `more_executors.retry.RetryPolicy` allows customization of 
 """
 
 from collections import namedtuple
-from concurrent.futures import Executor, Future
+from concurrent.futures import Executor
 from threading import RLock, Thread, Event
 from datetime import datetime
 from datetime import timedelta
 
 import logging
+
+from more_executors._common import _Future
 
 _LOG = logging.getLogger('RetryExecutor')
 
@@ -98,7 +100,7 @@ _RetryJob = namedtuple('_RetryJob',
                         'attempt', 'when', 'fn', 'args', 'kwargs'])
 
 
-class _RetryFuture(Future):
+class _RetryFuture(_Future):
 
     def __init__(self, executor):
         super(_RetryFuture, self).__init__()
@@ -106,24 +108,46 @@ class _RetryFuture(Future):
         self._executor = executor
 
     def running(self):
-        if self.delegate_future:
-            return self.delegate_future.running()
+        with self._me_lock:
+            if self.done():
+                return False
+            # Note that if we are not "done", but the delegate future is "done",
+            # we consider ourselves as running - this should mean the delegate
+            # future completed but callbacks haven't finished yet (and in fact,
+            # we might decide to retry)
+            if self.delegate_future:
+                return self.delegate_future.running() or self.delegate_future.done()
         return False
 
-    def done(self):
-        if self.delegate_future:
-            return self.delegate_future.done()
-        return super(_RetryFuture, self).done()
+    def _clear_delegate(self):
+        with self._me_lock:
+            self.delegate_future = None
+
+    def set_result(self, result):
+        with self._me_lock:
+            self._clear_delegate()
+            super(_RetryFuture, self).set_result(result)
+        self._me_invoke_callbacks()
+
+    def set_exception(self, exception):
+        with self._me_lock:
+            self._clear_delegate()
+            super(_RetryFuture, self).set_exception(exception)
+        self._me_invoke_callbacks()
 
     def cancel(self):
-        with self._executor._lock:
+        with self._me_lock:
             if self.cancelled():
                 return True
+            if self.done():
+                return False
             if not self._executor._cancel(self):
                 return False
             out = super(_RetryFuture, self).cancel()
             if out:
                 self.set_running_or_notify_cancel()
+        if out:
+            self._me_invoke_callbacks()
         return out
 
 
@@ -162,10 +186,6 @@ class RetryExecutor(Executor):
         self._submit_thread.daemon = True
         self._submit_event = Event()
         self._shutdown = False
-
-        # This lock should be held when:
-        # - mutating _jobs
-        # - cancelling a future
         self._lock = RLock()
 
         self._submit_thread.start()
@@ -268,29 +288,32 @@ class RetryExecutor(Executor):
         # Pop job since we'll replace it.
         # We need to hold the lock for the entire duration so that other
         # threads won't see _jobs between our removal and re-add of the job
-        with self._lock:
-            self._pop_job(job)
+        with job.future._me_lock:
+            with self._lock:
+                self._pop_job(job)
 
-            if job.future.cancelled():
-                _LOG.debug(
-                    "future cancelled %s - not submitting to delegate",
-                    job.future)
-                return
+                # We need the future's lock now too, because someone could
+                # call cancel after this check and before we submit.
+                if job.future.done():
+                    _LOG.debug(
+                        "future done %s - not submitting to delegate",
+                        job.future)
+                    return
 
-            delegate_future = self._delegate.submit(
-                job.fn, *job.args, **job.kwargs)
-            job.future.delegate_future = delegate_future
-            _LOG.debug("Submitted: %s", job)
+                delegate_future = self._delegate.submit(
+                    job.fn, *job.args, **job.kwargs)
+                job.future.delegate_future = delegate_future
 
-            new_job = _RetryJob(
-                job.policy,
-                delegate_future,
-                job.future,
-                job.attempt + 1,
-                None,
-                job.fn, job.args, job.kwargs
-            )
-            self._append_job(new_job)
+                new_job = _RetryJob(
+                    job.policy,
+                    delegate_future,
+                    job.future,
+                    job.attempt + 1,
+                    None,
+                    job.fn, job.args, job.kwargs
+                )
+                self._append_job(new_job)
+                _LOG.debug("Submitted: %s", new_job)
 
         delegate_future.add_done_callback(self._delegate_callback)
         self._wake_thread()
@@ -305,60 +328,60 @@ class RetryExecutor(Executor):
         with self._lock:
             self._jobs.append(job)
 
-    def _job_for_delegate(self, delegate_future):
-        with self._lock:
-            for idx, job in enumerate(self._jobs):
-                if job.delegate_future == delegate_future:
-                    return self._jobs.pop(idx)
-
     def _retry(self, job, sleep_time):
         _LOG.debug("Will retry: %s", job)
 
-        new_job = _RetryJob(
-            job.policy,
-            None,
-            job.future,
-            job.attempt,
-            datetime.utcnow() + timedelta(seconds=sleep_time),
-            job.fn,
-            job.args,
-            job.kwargs
-        )
-        self._append_job(new_job)
+        with self._lock:
+            self._pop_job(job)
+            new_job = _RetryJob(
+                job.policy,
+                None,
+                job.future,
+                job.attempt,
+                datetime.utcnow() + timedelta(seconds=sleep_time),
+                job.fn,
+                job.args,
+                job.kwargs
+            )
+            self._append_job(new_job)
 
         self._wake_thread()
 
     def _cancel(self, future):
+        found_job = None
+
         with self._lock:
-            if future.done():
-                return False
             for idx, job in enumerate(self._jobs):
                 if job.future is future:
                     _LOG.debug("Try cancel: %s", job)
-                    delegate_future = job.delegate_future
 
-                    if not delegate_future:
+                    if not job.delegate_future:
                         _LOG.debug("Successful cancel - no delegate: %s", job)
                         self._jobs.pop(idx)
                         return True
 
-                    _LOG.debug("Try cancel delegate: %s", job)
+                    found_job = job
+                    break
 
-                    if delegate_future.cancel():
-                        _LOG.debug("Successful cancel: %s", job)
-                        future.delegate_future = None
-                        # Don't remove from _jobs here,
-                        # the callback attached to delegate_future is expected
-                        # to take care of that
-                        return True
+        # This shouldn't be possible.
+        # - Future holds a lock on itself, and has checked that it's not already done
+        # - The only other path for removing a job is in delegate_callback, but the
+        #   job is only removed *after* set_result/set_exception which would wait
+        #   for the future's lock.
+        assert found_job, "Cancel called on orphan %s" % future
 
-                    _LOG.debug("Could not cancel: %s", job)
-                    return False
+        _LOG.debug("Try cancel delegate: %s", found_job)
 
-        # Should not be able to get here.
-        # - If the future was already done, then we bailed out earlier.
-        # - If the future was not done, it MUST have been in _jobs - it's a bug otherwise.
-        assert False, ("BUG: cancel called on orphan future %s" % future)  # pragma: no cover
+        if found_job.delegate_future.cancel():
+            _LOG.debug("Successful cancel: %s", found_job)
+            future._clear_delegate()
+            # Don't remove from _jobs here,
+            # the callback attached to delegate_future was expected
+            # to take care of that
+            return True
+
+        _LOG.debug("Could not cancel: %s", job)
+        return False
 
     def _delegate_callback(self, delegate_future):
         assert delegate_future.done(), \
@@ -366,12 +389,16 @@ class RetryExecutor(Executor):
 
         _LOG.debug("Callback activated for %s", delegate_future)
 
-        job = self._job_for_delegate(delegate_future)
+        found_job = None
+        for job in self._jobs[:]:
+            if job.delegate_future == delegate_future:
+                found_job = job
+                break
 
         # Callbacks are only installed after a job is added, and this is
         # the only place a job with a delegate associated will be removed,
         # thus it should not be possible for a job to be missing.
-        assert job, ("BUG: no job associated with delegate %s" % delegate_future)
+        assert found_job, ("BUG: no job associated with delegate %s" % delegate_future)
 
         if delegate_future.cancelled():
             # nothing to do, retrying on cancel is not allowed
@@ -393,10 +420,11 @@ class RetryExecutor(Executor):
         _LOG.debug("Finalizing %s", job)
 
         # OK, it won't be retried.  Resolve the future.
-
         if exception:
             job.future.set_exception(exception)
         else:
             job.future.set_result(result)
+
+        self._pop_job(job)
 
         _LOG.debug("Finalized %s", job)
