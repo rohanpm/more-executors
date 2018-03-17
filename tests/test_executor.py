@@ -8,7 +8,6 @@ from random import randint
 from threading import RLock
 
 from more_executors.retry import RetryPolicy
-from more_executors.poll import PollExecutor
 # This class is meant to be imported from the top-level module, but it's
 # confusing the coverage report, so import it directly here.
 from more_executors._executors import Executors
@@ -36,6 +35,11 @@ def map_executor():
 
 
 @fixture
+def cancel_on_shutdown_executor():
+    return Executors.thread_pool().with_cancel_on_shutdown()
+
+
+@fixture
 def map_retry_executor():
     return Executors.thread_pool().with_retry(RetryPolicy()).with_map(lambda x: x)
 
@@ -43,6 +47,26 @@ def map_retry_executor():
 @fixture
 def retry_map_executor():
     return Executors.thread_pool().with_map(lambda x: x).with_retry(RetryPolicy())
+
+
+@fixture
+def cancel_poll_map_retry_executor():
+    return Executors.\
+        thread_pool().\
+        with_retry(RetryPolicy()).\
+        with_map(lambda x: x).\
+        with_poll(lambda ds: [d.yield_result(d.result) for d in ds]).\
+        with_cancel_on_shutdown()
+
+
+@fixture
+def cancel_retry_map_poll_executor():
+    return Executors.\
+        thread_pool().\
+        with_poll(lambda ds: [d.yield_result(d.result) for d in ds]).\
+        with_map(lambda x: x).\
+        with_retry(RetryPolicy()).\
+        with_cancel_on_shutdown()
 
 
 def random_cancel(_value):
@@ -66,7 +90,8 @@ def poll_executor():
                   random_cancel)
 
 
-@fixture(params=['threadpool', 'retry', 'map', 'retry_map', 'map_retry', 'poll'])
+@fixture(params=['threadpool', 'retry', 'map', 'retry_map', 'map_retry', 'poll',
+                 'cancel_poll_map_retry', 'cancel_retry_map_poll'])
 def any_executor(request):
     ex = request.getfixturevalue(request.param + '_executor')
     yield ex
@@ -121,7 +146,9 @@ def test_submit_delayed_results(any_executor):
     assert_that(results, equal_to(expected_results))
 
 
-def test_cancel(any_executor):
+def test_cancel(any_executor, request):
+    using_poll_executor = 'poll' in request.node.name
+
     for _ in range(0, 100):
         values = [1, 2, 3]
         expected_results = set([2, 4, 6])
@@ -153,7 +180,7 @@ def test_cancel(any_executor):
                 # but by now it might have transitioned to poll mode, meaning
                 # that the future is no longer 'running' and could be cancelled
                 # now.
-                if not isinstance(any_executor, PollExecutor):
+                if not using_poll_executor:
                     assert_that(f.running() or f.done(), str(f))
 
         for f in futures:

@@ -22,7 +22,9 @@ class _PollFuture(Future):
         assert delegate is self._delegate, \
             "BUG: called with %s, expected %s" % (delegate, self._delegate)
 
-        if delegate.exception():
+        if delegate.cancelled():
+            self.cancel()
+        elif delegate.exception():
             self.set_exception(delegate.exception())
         else:
             self._executor._register_poll(self, self._delegate)
@@ -59,8 +61,14 @@ class _PollFuture(Future):
             if not self._executor._run_cancel_fn(self):
                 return False
             self._executor._deregister_poll(self)
+
+            # Check cancelled again.
+            # The reason is that we would be called recursively if
+            # delegate.cancel() succeeded, and we must avoid
+            # calling notify twice.
+            was_cancelled = self.cancelled()
             out = super(_PollFuture, self).cancel()
-            if out:
+            if out and not was_cancelled:
                 self.set_running_or_notify_cancel()
         return out
 
