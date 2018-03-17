@@ -3,10 +3,8 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 
-    <title>more_executors API documentation</title>
-    <meta name="description" content="A library of composable Python executors.
-
-- [Documentation](https://rohanpm.github.io/more-executor..." />
+    <title>more_executors.cancel_on_shutdown API documentation</title>
+    <meta name="description" content="Cancel futures when executor is shut down." />
 
   <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300' rel='stylesheet' type='text/css'>
   
@@ -976,31 +974,18 @@ table {
     <li class="set"><h3><a href="#header-classes">Classes</a></h3>
       <ul>
         <li class="mono">
-        <span class="class_name"><a href="#more_executors.Executors">Executors</a></span>
+        <span class="class_name"><a href="#more_executors.cancel_on_shutdown.CancelOnShutdownExecutor">CancelOnShutdownExecutor</a></span>
         
           
   <ul>
-    <li class="mono"><a href="#more_executors.Executors.process_pool">process_pool</a></li>
-    <li class="mono"><a href="#more_executors.Executors.thread_pool">thread_pool</a></li>
-    <li class="mono"><a href="#more_executors.Executors.with_cancel_on_shutdown">with_cancel_on_shutdown</a></li>
-    <li class="mono"><a href="#more_executors.Executors.with_map">with_map</a></li>
-    <li class="mono"><a href="#more_executors.Executors.with_poll">with_poll</a></li>
-    <li class="mono"><a href="#more_executors.Executors.with_retry">with_retry</a></li>
-    <li class="mono"><a href="#more_executors.Executors.wrap">wrap</a></li>
+    <li class="mono"><a href="#more_executors.cancel_on_shutdown.CancelOnShutdownExecutor.__init__">__init__</a></li>
+    <li class="mono"><a href="#more_executors.cancel_on_shutdown.CancelOnShutdownExecutor.shutdown">shutdown</a></li>
   </ul>
 
         </li>
       </ul>
     </li>
 
-    <li class="set"><h3><a href="#header-submodules">Sub-modules</a></h3>
-      <ul>
-        <li class="mono"><a href="cancel_on_shutdown.m.html">more_executors.cancel_on_shutdown</a></li>
-        <li class="mono"><a href="map.m.html">more_executors.map</a></li>
-        <li class="mono"><a href="poll.m.html">more_executors.poll</a></li>
-        <li class="mono"><a href="retry.m.html">more_executors.retry</a></li>
-      </ul>
-    </li>
     </ul>
   </div>
 
@@ -1012,19 +997,8 @@ table {
 
 
   <header id="section-intro">
-  <h1 class="title"><span class="name">more_executors</span> module</h1>
-  <p>A library of composable Python executors.</p>
-<ul>
-<li><a href="https://rohanpm.github.io/more-executors/">Documentation</a></li>
-<li><a href="https://github.com/rohanpm/more-executors">Source</a></li>
-<li><a href="https://pypi.python.org/pypi/more-executors">PyPI</a></li>
-</ul>
-<p>This library is intended for use with the
-<a href="https://docs.python.org/3/library/concurrent.futures.html"><code>concurrent.futures</code></a>
-module.  It includes a collection of <code>Executor</code> implementations in order to
-extend the behavior of <code>Future</code> objects.</p>
-<p>Compatible with Python 2.6, 2.7 and 3.x.</p>
-<p>This documentation was built from more-executors 1.4.0.dev0, revision 39c1670.</p>
+  <h1 class="title"><span class="name">more_executors.cancel_on_shutdown</span> module</h1>
+  <p>Cancel futures when executor is shut down.</p>
   
 
   </header>
@@ -1035,15 +1009,13 @@ extend the behavior of <code>Future</code> objects.</p>
     <h2 class="section-title" id="header-classes">Classes</h2>
       
       <div class="item">
-      <p id="more_executors.Executors" class="name">class <span class="ident">Executors</span></p>
+      <p id="more_executors.cancel_on_shutdown.CancelOnShutdownExecutor" class="name">class <span class="ident">CancelOnShutdownExecutor</span></p>
       
   
-    <div class="desc"><p>Convenience methods for creating executors.</p>
-<p>This class produces wrapped executors which may be customized
-by use of the <code>with_*</code> methods, as in the following example:</p>
-<p><code>Executors.thread_pool(max_workers=4).with_retry().with_map(lambda x: x*2)</code></p>
-<p>Produces a thread pool executor which will retry on failure
-and multiply all output values by 2.</p></div>
+    <div class="desc"><p>An <code>Executor</code> which delegates to another <code>Executor</code> and cancels all
+futures when the executor is shut down.</p>
+<p>This class is useful in conjunction with executors having custom cancel
+behavior, such as <code>more_executors.poll.PollExecutor</code>.</p></div>
   <div class="source_cont">
 </div>
 
@@ -1051,70 +1023,23 @@ and multiply all output values by 2.</p></div>
       <div class="class">
           <h3>Ancestors (in MRO)</h3>
           <ul class="class_list">
-          <li><a href="#more_executors.Executors">Executors</a></li>
+          <li><a href="#more_executors.cancel_on_shutdown.CancelOnShutdownExecutor">CancelOnShutdownExecutor</a></li>
+          <li>concurrent.futures._base.Executor</li>
           <li>builtins.object</li>
           </ul>
-          <h3>Methods</h3>
+          <h3>Static methods</h3>
             
   <div class="item">
-    <div class="name def" id="more_executors.Executors.process_pool">
-    <p>def <span class="ident">process_pool</span>(</p><p>cls, *args, **kwargs)</p>
+    <div class="name def" id="more_executors.cancel_on_shutdown.CancelOnShutdownExecutor.__init__">
+    <p>def <span class="ident">__init__</span>(</p><p>self, delegate)</p>
     </div>
     
 
     
   
-    <div class="desc"><p>Creates a new <code>concurrent.futures.ProcessPoolExecutor</code> with the given arguments.</p></div>
-  <div class="source_cont">
-</div>
-
-  </div>
-  
-            
-  <div class="item">
-    <div class="name def" id="more_executors.Executors.thread_pool">
-    <p>def <span class="ident">thread_pool</span>(</p><p>cls, *args, **kwargs)</p>
-    </div>
-    
-
-    
-  
-    <div class="desc"><p>Creates a new <code>concurrent.futures.ThreadPoolExecutor</code> with the given arguments.</p></div>
-  <div class="source_cont">
-</div>
-
-  </div>
-  
-            
-  <div class="item">
-    <div class="name def" id="more_executors.Executors.with_cancel_on_shutdown">
-    <p>def <span class="ident">with_cancel_on_shutdown</span>(</p><p>cls, executor)</p>
-    </div>
-    
-
-    
-  
-    <div class="desc"><p>Wrap an executor in a <a href="cancel_on_shutdown.m.html#more_executors.cancel_on_shutdown.CancelOnShutdownExecutor"><code>more_executors.cancel_on_shutdown.CancelOnShutdownExecutor</code></a>.</p>
-<p>Returned futures will have <code>cancel</code> invoked if the executor is shut down
-before the future has completed.</p></div>
-  <div class="source_cont">
-</div>
-
-  </div>
-  
-            
-  <div class="item">
-    <div class="name def" id="more_executors.Executors.with_map">
-    <p>def <span class="ident">with_map</span>(</p><p>cls, executor, fn)</p>
-    </div>
-    
-
-    
-  
-    <div class="desc"><p>Wrap an executor in a <a href="map.m.html#more_executors.map.MapExecutor"><code>more_executors.map.MapExecutor</code></a>.</p>
-<p>Submitted callables will have their output transformed by the given function.</p>
+    <div class="desc"><p>Create a new executor.</p>
 <ul>
-<li><code>fn</code>: a function used to transform each output value from the executor</li>
+<li><code>delegate</code>: <code>Executor</code> instance to which callables will be submitted</li>
 </ul></div>
   <div class="source_cont">
 </div>
@@ -1123,59 +1048,17 @@ before the future has completed.</p></div>
   
             
   <div class="item">
-    <div class="name def" id="more_executors.Executors.with_poll">
-    <p>def <span class="ident">with_poll</span>(</p><p>cls, executor, fn, cancel_fn=None, default_interval=5.0)</p>
+    <div class="name def" id="more_executors.cancel_on_shutdown.CancelOnShutdownExecutor.shutdown">
+    <p>def <span class="ident">shutdown</span>(</p><p>self, wait=True)</p>
     </div>
     
 
     
   
-    <div class="desc"><p>Wrap an executor in a <a href="poll.m.html#more_executors.poll.PollExecutor"><code>more_executors.poll.PollExecutor</code></a>.</p>
-<p>Submitted callables will have their output passed into the poll function.
-See the class documentation for more information on the poll and cancel
-functions.</p>
-<ul>
-<li><code>fn</code>: a function used for polling results.</li>
-<li><code>cancel_fn</code>: a function called when a future is cancelled.</li>
-<li><code>default_interval</code>: default interval between polls, in seconds.</li>
-</ul></div>
-  <div class="source_cont">
-</div>
-
-  </div>
-  
-            
-  <div class="item">
-    <div class="name def" id="more_executors.Executors.with_retry">
-    <p>def <span class="ident">with_retry</span>(</p><p>cls, executor, retry_policy=None)</p>
-    </div>
-    
-
-    
-  
-    <div class="desc"><p>Wrap an executor in a <a href="retry.m.html#more_executors.retry.RetryExecutor"><code>more_executors.retry.RetryExecutor</code></a>.</p>
-<p>Submitted functions will be retried on failure.</p>
-<ul>
-<li><code>retry_policy</code>: the <a href="retry.m.html#more_executors.retry.RetryPolicy"><code>more_executors.retry.RetryPolicy</code></a> to be used; if omitted,
-                  a reasonable default is applied which will retry for several minutes.</li>
-</ul></div>
-  <div class="source_cont">
-</div>
-
-  </div>
-  
-            
-  <div class="item">
-    <div class="name def" id="more_executors.Executors.wrap">
-    <p>def <span class="ident">wrap</span>(</p><p>cls, executor)</p>
-    </div>
-    
-
-    
-  
-    <div class="desc"><p>Wrap an executor for configuration.</p>
-<p>This adds all <code>with_*</code> methods from this class onto the executor.
-When invoked, the executor is implicitly passed as the first argument to the method.</p></div>
+    <div class="desc"><p>Shut down the executor.</p>
+<p>All futures created by this executor which have not yet been completed
+will have <code>cancel</code> invoked.  Note that there is no guarantee that the
+cancel will succeed.</p></div>
   <div class="source_cont">
 </div>
 
@@ -1184,37 +1067,6 @@ When invoked, the executor is implicitly passed as the first argument to the met
       </div>
       </div>
 
-    <h2 class="section-title" id="header-submodules">Sub-modules</h2>
-      <div class="item">
-      <p class="name"><a href="cancel_on_shutdown.m.html">more_executors.cancel_on_shutdown</a></p>
-      
-  
-    <div class="desc"><p>Cancel futures when executor is shut down.</p></div>
-
-      </div>
-      <div class="item">
-      <p class="name"><a href="map.m.html">more_executors.map</a></p>
-      
-  
-    <div class="desc"><p>Transform the output value of a future.</p></div>
-
-      </div>
-      <div class="item">
-      <p class="name"><a href="poll.m.html">more_executors.poll</a></p>
-      
-  
-    <div class="desc"><p>Create futures resolved by polling with a provided function.</p></div>
-
-      </div>
-      <div class="item">
-      <p class="name"><a href="retry.m.html">more_executors.retry</a></p>
-      
-  
-    <div class="desc"><p>Create futures which will retry implicitly.</p>
-<p>The <a href="retry.m.html#more_executors.retry.RetryExecutor"><code>more_executors.retry.RetryExecutor</code></a> class produces <code>Future</code> objects which will retry on
-failure. Subclassing <a href="retry.m.html#more_executors.retry.RetryPolicy"><code>more_executors.retry.RetryPolicy</code></a> allows customization of the retry behavior.</p></div>
-
-      </div>
   </section>
 
     </article>
