@@ -1,6 +1,8 @@
 """Create futures resolved by polling with a provided function."""
 from concurrent.futures import Executor
+from collections import namedtuple
 from threading import RLock, Thread, Event
+import sys
 import logging
 
 from more_executors._common import _Future
@@ -77,27 +79,25 @@ class _PollFuture(_Future):
         return out
 
 
-class PollDescriptor(object):
-    """A `PollDescriptor` represents an unresolved `Future`.
+PollDescriptor = namedtuple('PollDescriptor', ['result', 'yield_result', 'yield_exception'])
 
-    The poll function used by `more_executors.poll.PollExecutor` will be
-    invoked with a list of `PollDescriptor` objects.
-    """
+if sys.version_info[0] > 2:
+    PollDescriptor.__doc__ = \
+        """A `PollDescriptor` represents an unresolved `Future`.
 
-    def __init__(self, result, yield_result, yield_exception):
-        """Do not construct instances of `PollDescriptor` directly."""
+        The poll function used by `more_executors.poll.PollExecutor` will be
+        invoked with a list of `PollDescriptor` objects.
+        """
 
-        self.result = result
-        """The result from the delegate executor's future, which should
-        be used to drive the poll."""
+    PollDescriptor.result.__doc__ = \
+        """The result from the delegate executor's future, which should be used to
+        drive the poll."""
 
-        self.yield_result = yield_result
-        """The poll function can call this function to make the future
-        yield the given result."""
+    PollDescriptor.yield_result.__doc__ = \
+        """The poll function can call this function to make the future yield the given result."""
 
-        self.yield_exception = yield_exception
-        """The poll function can call this function to make the future
-        raise the given exception."""
+    PollDescriptor.yield_exception.__doc__ = \
+        """The poll function can call this function to make the future raise the given exception."""
 
 
 class PollExecutor(Executor):
