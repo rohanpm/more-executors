@@ -14,6 +14,6 @@ Compatible with Python 2.6, 2.7 and 3.x.
 This documentation was built from an unknown revision.
 """
 
-__all__ = ['map', 'retry', 'poll', 'cancel_on_shutdown', 'Executors']
+__all__ = ['map', 'retry', 'poll', 'sync', 'cancel_on_shutdown', 'Executors']
 
 from more_executors._executors import Executors

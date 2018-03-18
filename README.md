@@ -20,6 +20,7 @@ extend the behavior of `Future` objects.
 - Futures with implicit cancel on executor shutdown
 - Futures with transformed output values
 - Futures resolved by a caller-provided polling function
+- Synchronous executor
 - Convenience API for creating executors
 
 See the [API documentation](https://rohanpm.github.io/more-executors/) for detailed information on usage.
