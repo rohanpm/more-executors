@@ -43,7 +43,6 @@ def bors_comment(name):
         number=1)
 
     for pr in pull_requests:
-        print(pr.as_dict()['html_url'])
         comment = pr.create_comment('bors r+')
         print(comment.html_url)
         break
