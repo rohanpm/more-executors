@@ -321,7 +321,7 @@ class PollExecutor(Executor):
             _LOG.debug("Polling...")
 
             next_sleep = self._run_poll_fn()
-            if not (isinstance(next_sleep, int) or isinstance(next_sleep, float)):
+            if not isinstance(next_sleep, int, float):
                 next_sleep = self._default_interval
 
             _LOG.debug("Sleeping...")
