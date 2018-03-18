@@ -180,6 +180,10 @@ def test_broken_callback(any_executor):
     results = [f.result(20.0) for f in futures]
     assert_that(results, equal_to(expected_results))
 
+    # assert_soon as there's no guarantee that callbacks
+    # are invoked before result() returns.
+    assert_soon(lambda: assert_that(callback_calls, has_length(len(futures))))
+
     for f in futures:
         assert_that(f in callback_calls)
 
