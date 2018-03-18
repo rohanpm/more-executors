@@ -976,11 +976,6 @@ table {
         <li class="mono">
         <span class="class_name"><a href="#more_executors.poll.PollDescriptor">PollDescriptor</a></span>
         
-          
-  <ul>
-    <li class="mono"><a href="#more_executors.poll.PollDescriptor.__init__">__init__</a></li>
-  </ul>
-
         </li>
         <li class="mono">
         <span class="class_name"><a href="#more_executors.poll.PollExecutor">PollExecutor</a></span>
@@ -1032,24 +1027,9 @@ invoked with a list of <code>PollDescriptor</code> objects.</p></div>
           <h3>Ancestors (in MRO)</h3>
           <ul class="class_list">
           <li><a href="#more_executors.poll.PollDescriptor">PollDescriptor</a></li>
+          <li>builtins.tuple</li>
           <li>builtins.object</li>
           </ul>
-          <h3>Static methods</h3>
-            
-  <div class="item">
-    <div class="name def" id="more_executors.poll.PollDescriptor.__init__">
-    <p>def <span class="ident">__init__</span>(</p><p>self, result, yield_result, yield_exception)</p>
-    </div>
-    
-
-    
-  
-    <div class="desc"><p>Do not construct instances of <code>PollDescriptor</code> directly.</p></div>
-  <div class="source_cont">
-</div>
-
-  </div>
-  
           <h3>Instance variables</h3>
             <div class="item">
             <p id="more_executors.poll.PollDescriptor.result" class="name">var <span class="ident">result</span></p>
@@ -1057,8 +1037,8 @@ invoked with a list of <code>PollDescriptor</code> objects.</p></div>
 
             
   
-    <div class="desc"><p>The result from the delegate executor's future, which should
-be used to drive the poll.</p></div>
+    <div class="desc"><p>The result from the delegate executor's future, which should be used to
+drive the poll.</p></div>
   <div class="source_cont">
 </div>
 
@@ -1069,8 +1049,7 @@ be used to drive the poll.</p></div>
 
             
   
-    <div class="desc"><p>The poll function can call this function to make the future
-raise the given exception.</p></div>
+    <div class="desc"><p>The poll function can call this function to make the future raise the given exception.</p></div>
   <div class="source_cont">
 </div>
 
@@ -1081,8 +1060,7 @@ raise the given exception.</p></div>
 
             
   
-    <div class="desc"><p>The poll function can call this function to make the future
-yield the given result.</p></div>
+    <div class="desc"><p>The poll function can call this function to make the future yield the given result.</p></div>
   <div class="source_cont">
 </div>
 
