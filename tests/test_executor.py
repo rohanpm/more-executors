@@ -1,8 +1,8 @@
 """These basic tests may be applied to most types of executors."""
 
-from concurrent.futures import ThreadPoolExecutor, CancelledError, wait, FIRST_COMPLETED
+from concurrent.futures import CancelledError, wait, FIRST_COMPLETED
 from hamcrest import assert_that, equal_to, calling, raises, instance_of, has_length, is_
-from pytest import fixture
+from pytest import fixture, skip
 from six.moves.queue import Queue
 from random import randint
 from threading import RLock
@@ -38,33 +38,37 @@ def retry_executor():
 
 @fixture
 def threadpool_executor():
-    return ThreadPoolExecutor()
+    return Executors.thread_pool()
 
 
 @fixture
-def map_executor():
-    return Executors.thread_pool().with_map(map_noop)
+def sync_executor():
+    return Executors.sync()
 
 
 @fixture
-def cancel_on_shutdown_executor():
-    return Executors.thread_pool().with_cancel_on_shutdown()
+def map_executor(threadpool_executor):
+    return threadpool_executor.with_map(map_noop)
 
 
 @fixture
-def map_retry_executor():
-    return Executors.thread_pool().with_retry(RetryPolicy()).with_map(map_noop)
+def cancel_on_shutdown_executor(threadpool_executor):
+    return threadpool_executor.with_cancel_on_shutdown()
 
 
 @fixture
-def retry_map_executor():
-    return Executors.thread_pool().with_map(map_noop).with_retry(RetryPolicy())
+def map_retry_executor(threadpool_executor):
+    return threadpool_executor.with_retry(RetryPolicy()).with_map(map_noop)
 
 
 @fixture
-def cancel_poll_map_retry_executor():
-    return Executors.\
-        thread_pool().\
+def retry_map_executor(threadpool_executor):
+    return threadpool_executor.with_map(map_noop).with_retry(RetryPolicy())
+
+
+@fixture
+def cancel_poll_map_retry_executor(threadpool_executor):
+    return threadpool_executor.\
         with_retry(RetryPolicy()).\
         with_map(map_noop).\
         with_poll(poll_noop).\
@@ -72,9 +76,8 @@ def cancel_poll_map_retry_executor():
 
 
 @fixture
-def cancel_retry_map_poll_executor():
-    return Executors.\
-        thread_pool().\
+def cancel_retry_map_poll_executor(threadpool_executor):
+    return threadpool_executor.\
         with_poll(poll_noop).\
         with_map(map_noop).\
         with_retry(RetryPolicy()).\
@@ -82,9 +85,8 @@ def cancel_retry_map_poll_executor():
 
 
 @fixture
-def retry_map_poll_executor():
-    return Executors.\
-        thread_pool().\
+def retry_map_poll_executor(threadpool_executor):
+    return threadpool_executor.\
         with_poll(poll_noop).\
         with_map(map_noop).\
         with_retry(RetryPolicy())
@@ -104,18 +106,15 @@ def random_cancel(_value):
 
 
 @fixture
-def poll_executor():
-    return Executors.\
-        thread_pool().\
+def poll_executor(threadpool_executor):
+    return threadpool_executor.\
         with_poll(poll_noop,
                   random_cancel)
 
 
-@fixture
-def everything_executor():
+def everything_executor(base_executor):
     # Get ready to go *nuts*
-    return Executors.\
-        thread_pool().\
+    return base_executor.\
         with_poll(poll_noop).\
         with_map(map_noop).\
         with_retry(RetryPolicy()).\
@@ -130,9 +129,19 @@ def everything_executor():
         with_retry(RetryPolicy())
 
 
+@fixture
+def everything_sync_executor(sync_executor):
+    return everything_executor(sync_executor)
+
+
+@fixture
+def everything_threadpool_executor(threadpool_executor):
+    return everything_executor(threadpool_executor)
+
+
 @fixture(params=['threadpool', 'retry', 'map', 'retry_map', 'map_retry', 'poll', 'retry_map_poll',
-                 'cancel_poll_map_retry', 'cancel_retry_map_poll',
-                 'everything'])
+                 'sync', 'cancel_poll_map_retry', 'cancel_retry_map_poll',
+                 'everything_sync', 'everything_threadpool'])
 def any_executor(request):
     ex = request.getfixturevalue(request.param + '_executor')
     yield ex
@@ -190,7 +199,10 @@ def test_broken_callback(any_executor):
         assert_that(f in callback_calls)
 
 
-def test_submit_delayed_results(any_executor):
+def test_submit_delayed_results(any_executor, request):
+    if 'sync' in request.node.name:
+        skip('test not applicable with sync executor')
+
     values = [1, 2, 3]
     expected_results = [2, 4, 6]
 
@@ -268,7 +280,10 @@ def test_cancel(any_executor, request):
                 expected_results.remove(result)
 
 
-def test_blocked_cancel(any_executor):
+def test_blocked_cancel(any_executor, request):
+    if 'sync' in request.node.name:
+        skip('test not applicable with sync executor')
+
     to_fn = Queue(1)
     from_fn = Queue(1)
 
@@ -320,7 +335,10 @@ def test_submit_mixed(any_executor):
                 raises(SimulatedError, "Simulated error on 4"))
 
 
-def test_submit_staggered(any_executor):
+def test_submit_staggered(any_executor, request):
+    if 'sync' in request.node.name:
+        skip('test not applicable with sync executor')
+
     for _ in range(0, 100):
         values = [1, 2, 3]
         expected_results = [2, 4, 6, 2, 4, 6]
@@ -376,7 +394,11 @@ def test_submit_staggered(any_executor):
         assert_that(results, equal_to(expected_results))
 
 
-def test_stress(any_executor):
+def test_stress(any_executor, request):
+    if 'sync' in request.node.name:
+        # The test as written currently will blow the stack on sync executor
+        skip('test not applicable with sync executor')
+
     FUTURES_LIMIT = 1000
 
     cancelled = object()

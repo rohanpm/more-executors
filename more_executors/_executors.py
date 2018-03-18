@@ -5,6 +5,7 @@ from more_executors.map import MapExecutor
 from more_executors.retry import RetryExecutor, ExceptionRetryPolicy
 from more_executors.poll import PollExecutor
 from more_executors.cancel_on_shutdown import CancelOnShutdownExecutor
+from more_executors.sync import SyncExecutor
 
 
 class Executors(object):
@@ -48,6 +49,13 @@ class Executors(object):
     def process_pool(cls, *args, **kwargs):
         """Creates a new `concurrent.futures.ProcessPoolExecutor` with the given arguments."""
         return cls.wrap(ProcessPoolExecutor(*args, **kwargs))
+
+    @classmethod
+    def sync(cls, *args, **kwargs):
+        """Creates a new `more_executors.sync.SyncExecutor`.
+
+        Submitted functions will be immediately invoked on the calling thread."""
+        return cls.wrap(SyncExecutor(*args, **kwargs))
 
     @classmethod
     def with_retry(cls, executor, retry_policy=None):
