@@ -84,14 +84,14 @@ class ExceptionRetryPolicy(RetryPolicy):
         - retries on any `Exception`"""
         return cls(10, 2.0, 1.0, 120, Exception)
 
-    def should_retry(self, attempt, return_value, exception):
+    def should_retry(self, attempt, result, exception):
         if not exception:
             return False
         if attempt >= self._max_attempts:
             return False
         return isinstance(exception, self._exception_base)
 
-    def sleep_time(self, attempt, return_value, exception):
+    def sleep_time(self, attempt, result, exception):
         return min(self._sleep * (self._exponent ** attempt), self._max_sleep)
 
 
