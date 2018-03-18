@@ -56,9 +56,8 @@ def upload():
 
 def push(release_version):
     check_call(['git', 'push', '--tags'])
-    check_call(['git', 'push', 'origin', '+HEAD:refs/heads/release'])
-    check_call(['hub', 'pull-request', '-f', '-m', 'Release %s' %
-                release_version, '-h', 'release'])
+    check_call(['scripts/make-pr', '--skip-rebase', '-m',
+                'Release %s' % release_version])
 
 
 def run():

@@ -2,6 +2,7 @@
 """Make a pull request from HEAD and immediately request it to be merged by
 posting 'bors r+' comment."""
 from __future__ import print_function
+from argparse import ArgumentParser
 from subprocess import check_call, check_output, Popen, PIPE
 import sys
 import re
@@ -48,17 +49,29 @@ def bors_comment(name):
         break
 
 
-def run(name):
-    check_call(['git', 'checkout', '-b', name])
-    check_call(['git', 'fetch', 'origin'])
-    check_call(['git', 'rebase', '-i', 'origin/master'])
-    check_call(['git', 'push', '-f', '--set-upstream', 'origin', name])
+def run(raw_args):
+    parser = ArgumentParser()
+    parser.add_argument('name', help='name for branch')
+    parser.add_argument('--skip-rebase', action='store_true',
+                        help='do not rebase on master before push')
+    parser.add_argument('-m', help='pull-request message')
+    args = parser.parse_args(raw_args)
 
-    check_call(['hub', 'pull-request'])
-    bors_comment(name)
+    check_call(['git', 'checkout', '-b', args.name])
+
+    if not args.skip_rebase:
+        check_call(['git', 'fetch', 'origin'])
+        check_call(['git', 'rebase', '-i', 'origin/master'])
+
+    check_call(['git', 'push', '-f', '--set-upstream', 'origin', args.name])
+
+    pr_cmd = ['hub', 'pull-request']
+    if args.m:
+        pr_cmd.extend(['-m', args.m])
+
+    check_call(pr_cmd)
+    bors_comment(args.name)
 
 
 if __name__ == '__main__':
-    if len(sys.argv) != 2:
-        raise ValueError("Usage: make-pr <branch-name>")
-    run(sys.argv[1])
+    run(sys.argv[1:])
