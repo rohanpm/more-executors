@@ -43,7 +43,4 @@ setup(
         'futures;python_version<"3"',
         'six',
     ],
-    tests_require=[
-        'hamcrest',
-    ]
 )
