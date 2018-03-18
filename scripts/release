@@ -57,7 +57,8 @@ def upload():
 def push(release_version):
     check_call(['git', 'push', '--tags'])
     check_call(['scripts/make-pr', '--skip-rebase', '-m',
-                'Release %s' % release_version])
+                'Release %s' % release_version,
+                'release'])
 
 
 def run():
