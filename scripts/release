@@ -8,83 +8,84 @@ import sys
 
 
 def get_version():
-  """Returns the current version according to setup.py"""
-  cmd = [sys.executable or 'python', './setup.py', '--version']
-  return check_output(cmd, universal_newlines=True).rstrip()
+    """Returns the current version according to setup.py"""
+    cmd = [sys.executable or 'python', './setup.py', '--version']
+    return check_output(cmd, universal_newlines=True).rstrip()
 
 
 def get_bumped_version(version):
-  parts = version.split('.')
-  parts[1] = str(int(parts[1]) + 1)
-  return '.'.join(parts)
+    parts = version.split('.')
+    parts[1] = str(int(parts[1]) + 1)
+    return '.'.join(parts)
 
 
 def replace_in_file(filename, from_str, to_str):
-  tempfile = NamedTemporaryFile(dir=getcwd(), delete=False, mode='w+t')
-  with open(filename, mode='rt') as f:
-    while True:
-      line = f.readline()
-      if not line:
-        break
-      line = line.replace(from_str, to_str)
-      tempfile.write(line)
-  tempfile.close()
-  rename(tempfile.name, filename)
+    tempfile = NamedTemporaryFile(dir=getcwd(), delete=False, mode='w+t')
+    with open(filename, mode='rt') as f:
+        while True:
+            line = f.readline()
+            if not line:
+                break
+            line = line.replace(from_str, to_str)
+            tempfile.write(line)
+    tempfile.close()
+    rename(tempfile.name, filename)
 
 
 def replace_version(from_version, to_version):
-  return replace_in_file(
-    "setup.py",
-    "'%s'" % from_version,
-    "'%s'" % to_version,
-  )
+    return replace_in_file(
+        "setup.py",
+        "'%s'" % from_version,
+        "'%s'" % to_version,
+    )
 
 
 def commit(message):
-  check_call(['git', 'add', 'setup.py'])
-  check_call(['git', 'commit', '-m', message])
+    check_call(['git', 'add', 'setup.py'])
+    check_call(['git', 'commit', '-m', message])
 
 
 def tag(version):
-  check_call(['git', 'tag', 'v%s' % version])
+    check_call(['git', 'tag', 'v%s' % version])
 
 
 def upload():
-  check_call([sys.executable or 'python', 'setup.py', 'sdist', 'bdist_wheel', 'upload', '--sign'])
+    check_call([sys.executable or 'python', 'setup.py',
+                'sdist', 'bdist_wheel', 'upload', '--sign'])
 
 
 def push(release_version):
-  check_call(['git', 'push', '--tags'])
-  check_call(['git', 'push', 'origin', '+HEAD:refs/heads/release'])
-  check_call(['hub', 'pull-request', '-f', '-m', 'Release %s' % release_version, '-h', 'release'])
+    check_call(['git', 'push', '--tags'])
+    check_call(['scripts/make-pr', '--skip-rebase', '-m',
+                'Release %s' % release_version])
 
 
 def run():
-  old_version = get_version()
-  if not old_version.endswith('.dev0'):
-    print("Assuming resumption of interrupted release")
-    release_version = old_version
-  else:
-    release_version = old_version[:-5]
+    old_version = get_version()
+    if not old_version.endswith('.dev0'):
+        print("Assuming resumption of interrupted release")
+        release_version = old_version
+    else:
+        release_version = old_version[:-5]
 
-  next_git_version = get_bumped_version(release_version) + '.dev0'
+    next_git_version = get_bumped_version(release_version) + '.dev0'
 
-  print("Old version:     %s" % old_version)
-  print("Release version: %s" % release_version)
-  print("Next version:    %s" % next_git_version)
+    print("Old version:     %s" % old_version)
+    print("Release version: %s" % release_version)
+    print("Next version:    %s" % next_git_version)
 
-  if old_version != release_version:
-    replace_version(old_version, release_version)
-    commit("Release: %s" % release_version)
-    tag(release_version)
+    if old_version != release_version:
+        replace_version(old_version, release_version)
+        commit("Release: %s" % release_version)
+        tag(release_version)
 
-  upload()
+    upload()
 
-  replace_version(release_version, next_git_version)
-  commit("Bump to next development version")
+    replace_version(release_version, next_git_version)
+    commit("Bump to next development version")
 
-  push(release_version)
+    push(release_version)
 
 
 if __name__ == '__main__':
-  run()
+    run()

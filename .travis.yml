@@ -23,4 +23,4 @@ matrix:
     env: TOX_ENV=docs
 script: tox -e $TOX_ENV
 after_success:
-- test $TOX_ENV = docs && ./push-docs
+- test $TOX_ENV = docs && scripts/push-docs
