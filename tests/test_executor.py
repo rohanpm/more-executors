@@ -14,6 +14,8 @@ from more_executors._executors import Executors
 
 from .util import assert_soon
 
+TIMEOUT = 10.0
+
 
 class SimulatedError(RuntimeError):
     pass
@@ -149,7 +151,7 @@ def test_submit_results(any_executor):
     for f in futures:
         assert_that(not f.cancelled())
 
-    results = [f.result() for f in futures]
+    results = [f.result(TIMEOUT) for f in futures]
     assert_that(results, equal_to(expected_results))
 
 
@@ -177,7 +179,7 @@ def test_broken_callback(any_executor):
     for f in futures:
         assert_that(not f.cancelled())
 
-    results = [f.result(20.0) for f in futures]
+    results = [f.result(TIMEOUT) for f in futures]
     assert_that(results, equal_to(expected_results))
 
     # assert_soon as there's no guarantee that callbacks
@@ -216,7 +218,7 @@ def test_submit_delayed_results(any_executor):
     queue.put(None)
     queue.put(None)
 
-    results = [f.result(20.0) for f in futures]
+    results = [f.result(TIMEOUT) for f in futures]
     assert_that(results, equal_to(expected_results))
 
 
@@ -259,9 +261,9 @@ def test_cancel(any_executor, request):
 
         for f in futures:
             if f in cancelled:
-                assert_that(calling(f.result), raises(CancelledError), str(f))
+                assert_that(calling(f.result).with_args(TIMEOUT), raises(CancelledError), str(f))
             else:
-                result = f.result()
+                result = f.result(TIMEOUT)
                 assert_that(result in expected_results)
                 expected_results.remove(result)
 
@@ -288,7 +290,7 @@ def test_blocked_cancel(any_executor):
     assert_that(future.running(), str(future))
 
     to_fn.put(None)
-    assert_that(future.result(), equal_to(123))
+    assert_that(future.result(TIMEOUT), equal_to(123))
 
 
 def test_submit_mixed(any_executor):
@@ -305,16 +307,17 @@ def test_submit_mixed(any_executor):
         assert_that(not f.cancelled())
 
     # Success
-    assert_that(futures[0].result(), equal_to(2))
+    assert_that(futures[0].result(TIMEOUT), equal_to(2))
 
     # Crash, via exception
-    assert_that(futures[1].exception(), instance_of(SimulatedError))
+    assert_that(futures[1].exception(TIMEOUT), instance_of(SimulatedError))
 
     # Success
-    assert_that(futures[2].result(), equal_to(6))
+    assert_that(futures[2].result(TIMEOUT), equal_to(6))
 
     # Crash, via result
-    assert_that(calling(futures[3].result), raises(SimulatedError, "Simulated error on 4"))
+    assert_that(calling(futures[3].result).with_args(TIMEOUT),
+                raises(SimulatedError, "Simulated error on 4"))
 
 
 def test_submit_staggered(any_executor):
@@ -353,11 +356,12 @@ def test_submit_staggered(any_executor):
         q2.put(True)
         q2.put(True)
 
-        (done, not_done) = wait(futures, return_when=FIRST_COMPLETED, timeout=20.0)
+        (done, not_done) = wait(futures, return_when=FIRST_COMPLETED, timeout=TIMEOUT)
 
         # Might have received 1, or 2
         if len(done) == 1:
-            (more_done, _more_not_done) = wait(not_done, return_when=FIRST_COMPLETED, timeout=20.0)
+            (more_done, _more_not_done) = wait(not_done, return_when=FIRST_COMPLETED,
+                                               timeout=TIMEOUT)
             done = done | more_done
 
         assert_that(done, has_length(2))
@@ -368,7 +372,7 @@ def test_submit_staggered(any_executor):
         [q1.put(None) for _ in (1, 2, 3)]
         [q2.put(None) for _ in (1, 2, 3, 4)]
 
-        results = [f.result(20.0) for f in futures]
+        results = [f.result(TIMEOUT) for f in futures]
         assert_that(results, equal_to(expected_results))
 
 
@@ -471,6 +475,6 @@ def test_stress(any_executor):
         if expected_result is cancelled:
             assert_that(f.cancelled())
         elif isinstance(expected_result, Exception):
-            assert_that(f.exception(), is_(expected_result))
+            assert_that(f.exception(TIMEOUT), is_(expected_result))
         else:
-            assert_that(f.result(), equal_to(expected_result))
+            assert_that(f.result(TIMEOUT), equal_to(expected_result))
