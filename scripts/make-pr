@@ -53,7 +53,7 @@ def run(name):
     check_call(['git', 'checkout', '-b', name])
     check_call(['git', 'fetch', 'origin'])
     check_call(['git', 'rebase', '-i', 'origin/master'])
-    check_call(['git', 'push', '--set-upstream', 'origin', name])
+    check_call(['git', 'push', '-f', '--set-upstream', 'origin', name])
 
     check_call(['hub', 'pull-request'])
     bors_comment(name)
