@@ -84,14 +84,14 @@ class ExceptionRetryPolicy(RetryPolicy):
         - retries on any `Exception`"""
         return cls(10, 2.0, 1.0, 120, Exception)
 
-    def should_retry(self, attempt, return_value, exception):
+    def should_retry(self, attempt, result, exception):
         if not exception:
             return False
         if attempt >= self._max_attempts:
             return False
         return isinstance(exception, self._exception_base)
 
-    def sleep_time(self, attempt, return_value, exception):
+    def sleep_time(self, attempt, result, exception):
         return min(self._sleep * (self._exponent ** attempt), self._max_sleep)
 
 
@@ -380,7 +380,7 @@ class RetryExecutor(Executor):
             # to take care of that
             return True
 
-        _LOG.debug("Could not cancel: %s", job)
+        _LOG.debug("Could not cancel: %s", found_job)
         return False
 
     def _delegate_callback(self, delegate_future):
@@ -411,20 +411,20 @@ class RetryExecutor(Executor):
         else:
             result = delegate_future.result()
 
-        should_retry = job.policy.should_retry(job.attempt, result, exception)
+        should_retry = found_job.policy.should_retry(found_job.attempt, result, exception)
         if should_retry:
-            sleep_time = job.policy.sleep_time(job.attempt, result, exception)
-            self._retry(job, sleep_time)
+            sleep_time = found_job.policy.sleep_time(found_job.attempt, result, exception)
+            self._retry(found_job, sleep_time)
             return
 
-        _LOG.debug("Finalizing %s", job)
+        _LOG.debug("Finalizing %s", found_job)
 
         # OK, it won't be retried.  Resolve the future.
         if exception:
-            job.future.set_exception(exception)
+            found_job.future.set_exception(exception)
         else:
-            job.future.set_result(result)
+            found_job.future.set_result(result)
 
-        self._pop_job(job)
+        self._pop_job(found_job)
 
-        _LOG.debug("Finalized %s", job)
+        _LOG.debug("Finalized %s", found_job)
