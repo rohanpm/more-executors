@@ -19,6 +19,16 @@ class SimulatedError(RuntimeError):
     pass
 
 
+def map_noop(value):
+    # Make MapExecutor pass everything through unchanged
+    return value
+
+
+def poll_noop(ds):
+    # Make PollExecutor pass everything through unchanged
+    [d.yield_result(d.result) for d in ds]
+
+
 @fixture
 def retry_executor():
     return Executors.thread_pool().with_retry(RetryPolicy())
@@ -31,7 +41,7 @@ def threadpool_executor():
 
 @fixture
 def map_executor():
-    return Executors.thread_pool().with_map(lambda x: x)
+    return Executors.thread_pool().with_map(map_noop)
 
 
 @fixture
@@ -41,12 +51,12 @@ def cancel_on_shutdown_executor():
 
 @fixture
 def map_retry_executor():
-    return Executors.thread_pool().with_retry(RetryPolicy()).with_map(lambda x: x)
+    return Executors.thread_pool().with_retry(RetryPolicy()).with_map(map_noop)
 
 
 @fixture
 def retry_map_executor():
-    return Executors.thread_pool().with_map(lambda x: x).with_retry(RetryPolicy())
+    return Executors.thread_pool().with_map(map_noop).with_retry(RetryPolicy())
 
 
 @fixture
@@ -54,8 +64,8 @@ def cancel_poll_map_retry_executor():
     return Executors.\
         thread_pool().\
         with_retry(RetryPolicy()).\
-        with_map(lambda x: x).\
-        with_poll(lambda ds: [d.yield_result(d.result) for d in ds]).\
+        with_map(map_noop).\
+        with_poll(poll_noop).\
         with_cancel_on_shutdown()
 
 
@@ -63,8 +73,8 @@ def cancel_poll_map_retry_executor():
 def cancel_retry_map_poll_executor():
     return Executors.\
         thread_pool().\
-        with_poll(lambda ds: [d.yield_result(d.result) for d in ds]).\
-        with_map(lambda x: x).\
+        with_poll(poll_noop).\
+        with_map(map_noop).\
         with_retry(RetryPolicy()).\
         with_cancel_on_shutdown()
 
@@ -73,8 +83,8 @@ def cancel_retry_map_poll_executor():
 def retry_map_poll_executor():
     return Executors.\
         thread_pool().\
-        with_poll(lambda ds: [d.yield_result(d.result) for d in ds]).\
-        with_map(lambda x: x).\
+        with_poll(poll_noop).\
+        with_map(map_noop).\
         with_retry(RetryPolicy())
 
 
@@ -95,12 +105,32 @@ def random_cancel(_value):
 def poll_executor():
     return Executors.\
         thread_pool().\
-        with_poll(lambda ds: [d.yield_result(d.result) for d in ds],
+        with_poll(poll_noop,
                   random_cancel)
 
 
+@fixture
+def everything_executor():
+    # Get ready to go *nuts*
+    return Executors.\
+        thread_pool().\
+        with_poll(poll_noop).\
+        with_map(map_noop).\
+        with_retry(RetryPolicy()).\
+        with_cancel_on_shutdown().\
+        with_retry(RetryPolicy()).\
+        with_retry(RetryPolicy()).\
+        with_poll(poll_noop).\
+        with_poll(poll_noop).\
+        with_cancel_on_shutdown().\
+        with_map(map_noop).\
+        with_map(map_noop).\
+        with_retry(RetryPolicy())
+
+
 @fixture(params=['threadpool', 'retry', 'map', 'retry_map', 'map_retry', 'poll', 'retry_map_poll',
-                 'cancel_poll_map_retry', 'cancel_retry_map_poll'])
+                 'cancel_poll_map_retry', 'cancel_retry_map_poll',
+                 'everything'])
 def any_executor(request):
     ex = request.getfixturevalue(request.param + '_executor')
     yield ex
@@ -182,12 +212,12 @@ def test_submit_delayed_results(any_executor):
     queue.put(None)
     queue.put(None)
 
-    results = [f.result() for f in futures]
+    results = [f.result(20.0) for f in futures]
     assert_that(results, equal_to(expected_results))
 
 
 def test_cancel(any_executor, request):
-    using_poll_executor = 'poll' in request.node.name
+    using_poll_executor = 'poll' in request.node.name or 'everything' in request.node.name
 
     for _ in range(0, 100):
         values = [1, 2, 3]
@@ -319,11 +349,11 @@ def test_submit_staggered(any_executor):
         q2.put(True)
         q2.put(True)
 
-        (done, not_done) = wait(futures, return_when=FIRST_COMPLETED)
+        (done, not_done) = wait(futures, return_when=FIRST_COMPLETED, timeout=20.0)
 
         # Might have received 1, or 2
         if len(done) == 1:
-            (more_done, _more_not_done) = wait(not_done, return_when=FIRST_COMPLETED)
+            (more_done, _more_not_done) = wait(not_done, return_when=FIRST_COMPLETED, timeout=20.0)
             done = done | more_done
 
         assert_that(done, has_length(2))
