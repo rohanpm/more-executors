@@ -1,0 +1,65 @@
+#!/usr/bin/env python
+"""Make a pull request from HEAD and immediately request it to be merged by
+posting 'bors r+' comment."""
+from __future__ import print_function
+from subprocess import check_call, check_output, Popen, PIPE
+import sys
+import re
+import os
+import yaml
+
+import github3
+
+CONFIG_PATH = '~/.config/hub'
+OWNER = 'rohanpm'
+REPO = 'more-executors'
+
+
+def github_session():
+    with open(os.path.expanduser(CONFIG_PATH)) as f:
+        hub_config = yaml.load(f)
+
+    creds = hub_config.get('github.com', [])
+    if not creds:
+        raise RuntimeError("Login with 'hub' command first")
+    if len(creds) != 1:
+        raise RuntimeError("Unexpected content in %s" % CONFIG_PATH)
+
+    token = creds[0].get('oauth_token')
+    if not token:
+        raise RuntimeError("Missing token in %s" % CONFIG_PATH)
+
+    return github3.login(token=token)
+
+
+def bors_comment(name):
+    gh = github_session()
+    repo = gh.repository(OWNER, REPO)
+    pull_requests = repo.pull_requests(
+        state='open',
+        head=':'.join([OWNER, name]),
+        sort='created',
+        direction='desc',
+        number=1)
+
+    for pr in pull_requests:
+        print(pr.as_dict()['html_url'])
+        comment = pr.create_comment('bors r+')
+        print(comment.html_url)
+        break
+
+
+def run(name):
+    check_call(['git', 'checkout', '-b', name])
+    check_call(['git', 'fetch', 'origin'])
+    check_call(['git', 'rebase', '-i', 'origin/master'])
+    check_call(['git', 'push', '--set-upstream', 'origin', name])
+
+    check_call(['hub', 'pull-request'])
+    bors_comment(name)
+
+
+if __name__ == '__main__':
+    if len(sys.argv) != 2:
+        raise ValueError("Usage: make-pr <branch-name>")
+    run(sys.argv[1])
