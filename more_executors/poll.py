@@ -67,10 +67,6 @@ class _PollFuture(_Future):
                 return False
             self._executor._deregister_poll(self)
 
-            # Check cancelled again.
-            # The reason is that we would be called recursively if
-            # delegate.cancel() succeeded, and we must avoid
-            # calling notify twice.
             out = super(_PollFuture, self).cancel()
             if out:
                 self.set_running_or_notify_cancel()
