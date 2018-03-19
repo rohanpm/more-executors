@@ -7,8 +7,7 @@ failure. Subclassing `more_executors.retry.RetryPolicy` allows customization of 
 from collections import namedtuple
 from concurrent.futures import Executor
 from threading import RLock, Thread, Event
-from datetime import datetime
-from datetime import timedelta
+from monotonic import monotonic
 
 import logging
 
@@ -22,11 +21,6 @@ __pdoc__['ExceptionRetryPolicy.should_retry'] = None
 __pdoc__['ExceptionRetryPolicy.sleep_time'] = None
 __pdoc__['RetryExecutor.map'] = None
 __pdoc__['RetryExecutor.shutdown'] = None
-
-
-def _total_seconds(td):
-    # Python 2.6 compat - equivalent of timedelta.total_seconds
-    return (td.microseconds + (td.seconds + td.days * 24 * 3600) * 10**6) / 10**6
 
 
 class RetryPolicy(object):
@@ -224,7 +218,7 @@ class RetryExecutor(Executor):
         future = _RetryFuture(self)
 
         job = _RetryJob(retry_policy, None, future, 0,
-                        datetime.utcnow(), fn, args, kwargs)
+                        monotonic(), fn, args, kwargs)
         self._append_job(job)
 
         # Let the submit thread know it should wake up to check for new jobs
@@ -241,7 +235,7 @@ class RetryExecutor(Executor):
         # This means a job with when < now, or if there's none,
         # then the job with the minimum value of when.
         min_job = None
-        now = datetime.utcnow()
+        now = monotonic()
         for job in self._jobs:
             if job.delegate_future:
                 # It's already running, skip
@@ -270,7 +264,7 @@ class RetryExecutor(Executor):
                 self._submit_wait()
                 continue
 
-            now = datetime.utcnow()
+            now = monotonic()
             if job.when < now:
                 # Can submit immediately and check for next job
                 self._submit_now(job)
@@ -280,7 +274,7 @@ class RetryExecutor(Executor):
             # Sleep until either:
             # - reaching the time of the nearest job, or...
             # - woken up by condvar
-            delta = _total_seconds(job.when - now)
+            delta = job.when - now
             _LOG.debug("No ready job.  Waiting: %s", delta)
             self._submit_wait(delta)
 
@@ -338,7 +332,7 @@ class RetryExecutor(Executor):
                 None,
                 job.future,
                 job.attempt,
-                datetime.utcnow() + timedelta(seconds=sleep_time),
+                monotonic() + sleep_time,
                 job.fn,
                 job.args,
                 job.kwargs

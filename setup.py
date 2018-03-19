@@ -42,5 +42,6 @@ setup(
     install_requires=[
         'futures;python_version<"3"',
         'six',
+        'monotonic',
     ],
 )
