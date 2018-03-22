@@ -311,7 +311,7 @@ class PollExecutor(Executor):
         try:
             return self._poll_fn(descriptors)
         except Exception as e:
-            _LOG.debug("Poll function failed: %s", e)
+            _LOG.debug("Poll function failed", exc_info=True)
             # If poll function fails, then every future
             # depending on the poll also immediately fails.
             [d.yield_exception(e) for d in descriptors]
