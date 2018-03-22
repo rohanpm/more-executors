@@ -64,6 +64,14 @@ def fetch_urls(urls):
         do_something(url, data)
 ```
 
+## Changelog
+
+v1.6.0
+- Introduce TimeoutExecutor
+- Use monotonic clock in RetryExecutor
+- Avoid some uninterruptible sleeps on Python 2.x
+- Minor improvements to logging
+
 ## License
 
 GPLv3
