@@ -19,6 +19,7 @@ extend the behavior of `Future` objects.
 - Futures with implicit retry
 - Futures with implicit cancel on executor shutdown
 - Futures with transformed output values
+- Futures with a default timeout
 - Futures resolved by a caller-provided polling function
 - Synchronous executor
 - Convenience API for creating executors
