@@ -1,0 +1,29 @@
+#!/bin/sh
+set -e
+
+check_branch(){
+    branch="$1"
+    shift
+    test "$branch" = "staging" && return
+    test "$branch" = "gh-pages" && return
+    test "$branch" = "HEAD" && return
+    test "$branch" = "master" && return
+    echo -n " :refs/heads/$branch"
+}
+
+run(){
+    git fetch origin
+    refspec=$(
+        git for-each-ref --merged origin/master refs/remotes/origin | while read rev commit ref; do
+            check_branch "${ref#refs/remotes/origin/}"
+        done
+    )
+    if test -z "$refspec"; then
+      echo No branches to clean
+      return
+    fi
+    set -x
+    git push "$@" origin ${refspec}
+}
+
+run "$@"
