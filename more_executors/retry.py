@@ -11,7 +11,7 @@ from monotonic import monotonic
 
 import logging
 
-from more_executors._common import _Future
+from more_executors._common import _Future, _MAX_TIMEOUT
 
 _LOG = logging.getLogger('RetryExecutor')
 
@@ -191,7 +191,7 @@ class RetryExecutor(Executor):
         self._delegate.shutdown(wait)
         if wait:
             _LOG.info("Waiting for thread")
-            self._submit_thread.join()
+            self._submit_thread.join(_MAX_TIMEOUT)
         _LOG.debug("Shutdown complete")
 
     @classmethod

@@ -5,7 +5,7 @@ from threading import RLock, Thread, Event
 import sys
 import logging
 
-from more_executors._common import _Future
+from more_executors._common import _Future, _MAX_TIMEOUT
 
 _LOG = logging.getLogger('PollExecutor')
 
@@ -333,5 +333,5 @@ class PollExecutor(Executor):
         self._delegate.shutdown(wait)
         if wait:
             _LOG.debug("Join poll thread...")
-            self._poll_thread.join()
+            self._poll_thread.join(_MAX_TIMEOUT)
             _LOG.debug("Joined poll thread.")
