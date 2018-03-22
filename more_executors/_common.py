@@ -4,6 +4,20 @@ import logging
 
 _LOG = logging.getLogger('more_executors._Future')
 
+# This value should be used for any blocking waits likely to be invoked
+# from the main thread, where blocking forever is technically appropriate.
+#
+# The reason for this is that, in Python 2.x, a blocking wait with no
+# timeout (such as a thread join) is entirely uninterruptible, always
+# retrying on EINTR, which can easily lead to a process not responding
+# to anything but SIGKILL.
+#
+# Providing a timeout value - no matter what it is - causes the wait to
+# become interruptible, which is desirable.
+#
+# This value is an arbitrary choice.  100 years ought to be enough for anyone :)
+_MAX_TIMEOUT = 60*60*24*365*100
+
 
 class _Future(Future):
     # Need to reimplement some of the Future class.
