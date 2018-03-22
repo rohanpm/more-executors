@@ -3,7 +3,7 @@
 posting 'bors r+' comment."""
 from __future__ import print_function
 from argparse import ArgumentParser
-from subprocess import check_call, check_output, Popen, PIPE
+from subprocess import check_call, check_output, Popen, PIPE, CalledProcessError
 import sys
 import re
 import os
@@ -52,10 +52,18 @@ def bors_comment(name):
 def run(raw_args):
     parser = ArgumentParser()
     parser.add_argument('name', help='name for branch')
+    parser.add_argument('--remove-branch', action='store_true',
+                        help='remove branch if it already exists')
     parser.add_argument('--skip-rebase', action='store_true',
                         help='do not rebase on master before push')
     parser.add_argument('-m', help='pull-request message')
     args = parser.parse_args(raw_args)
+
+    if args.remove_branch:
+        try:
+            check_call(['git', 'branch', '-D', args.name])
+        except CalledProcessError:
+            pass
 
     check_call(['git', 'checkout', '-b', args.name])
 
