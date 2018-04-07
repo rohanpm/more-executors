@@ -1,12 +1,13 @@
 from concurrent.futures import ThreadPoolExecutor
-from pytest import fixture
-from hamcrest import assert_that, equal_to, calling, raises, has_length, has_item, contains, \
-                     matches_regexp
 from functools import partial
-from six.moves.queue import Queue
 from threading import Event
 import sys
 import logging
+from six.moves.queue import Queue
+
+from pytest import fixture
+from hamcrest import assert_that, equal_to, calling, raises, has_length, has_item, contains, \
+                     matches_regexp
 
 from more_executors.poll import PollExecutor
 
@@ -140,8 +141,8 @@ def test_cancel_fn(executor, caplog):
     if caplog:
         assert_that(caplog.record_tuples, has_item(
             contains('PollExecutor',
-                    logging.ERROR,
-                    matches_regexp(r'Exception during cancel .*/cancel-error'))))
+                     logging.ERROR,
+                     matches_regexp(r'Exception during cancel .*/cancel-error'))))
 
 
 def test_cancel_during_poll(executor):

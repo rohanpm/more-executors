@@ -348,58 +348,62 @@ def test_submit_staggered(any_executor, request):
         skip('test not applicable with sync executor')
 
     for _ in range(0, 100):
-        values = [1, 2, 3]
-        expected_results = [2, 4, 6, 2, 4, 6]
+        do_test_submit_staggered(any_executor)
 
-        q1 = Queue()
-        q2 = Queue()
 
-        def fn(value):
-            q1.get(True)
-            q2.get(True)
-            return value*2
+def do_test_submit_staggered(executor):
+    values = [1, 2, 3]
+    expected_results = [2, 4, 6, 2, 4, 6]
 
-        futures = [any_executor.submit(fn, x) for x in values]
+    q1 = Queue()
+    q2 = Queue()
 
-        for f in futures:
-            assert_that(not f.cancelled())
+    def fn(value):
+        q1.get(True)
+        q2.get(True)
+        return value*2
 
-        # They're not guaranteed to be "running" yet, but should
-        # become so soon
-        assert_soon(lambda: assert_that(all([f.running() for f in futures])))
+    futures = [executor.submit(fn, x) for x in values]
 
-        # OK, they're not done yet though.
-        for f in futures:
-            assert_that(not f.done())
+    for f in futures:
+        assert_that(not f.cancelled())
 
-        # Let them proceed to first checkpoint
-        [q1.put(None) for f in futures]
+    # They're not guaranteed to be "running" yet, but should
+    # become so soon
+    assert_soon(lambda: assert_that(all([f.running() for f in futures])))
 
-        # Submit some more
-        futures.extend([any_executor.submit(fn, x) for x in values])
+    # OK, they're not done yet though.
+    for f in futures:
+        assert_that(not f.done())
 
-        # Let a couple of futures complete
-        q2.put(True)
-        q2.put(True)
+    # Let them proceed to first checkpoint
+    [q1.put(None) for f in futures]
 
-        (done, not_done) = wait(futures, return_when=FIRST_COMPLETED, timeout=TIMEOUT)
+    # Submit some more
+    futures.extend([executor.submit(fn, x) for x in values])
 
-        # Might have received 1, or 2
-        if len(done) == 1:
-            (more_done, _more_not_done) = wait(not_done, return_when=FIRST_COMPLETED,
-                                               timeout=TIMEOUT)
-            done = done | more_done
+    # Let a couple of futures complete
+    q2.put(True)
+    q2.put(True)
 
-        assert_that(done, has_length(2))
-        for f in done:
-            assert_that(f.done(), str(f))
+    (done, not_done) = wait(futures, return_when=FIRST_COMPLETED, timeout=TIMEOUT)
 
-        # OK, let them all finish up now
-        [q1.put(None) for _ in (1, 2, 3)]
-        [q2.put(None) for _ in (1, 2, 3, 4)]
+    # Might have received 1, or 2
+    if len(done) == 1:
+        (more_done, _more_not_done) = wait(not_done, return_when=FIRST_COMPLETED,
+                                           timeout=TIMEOUT)
+        done = done | more_done
 
-        results = [f.result(TIMEOUT) for f in futures]
-        assert_that(results, equal_to(expected_results))
+    assert_that(done, has_length(2))
+    for f in done:
+        assert_that(f.done(), str(f))
+
+    # OK, let them all finish up now
+    [q1.put(None) for _ in (1, 2, 3)]
+    [q2.put(None) for _ in (1, 2, 3, 4)]
+
+    results = [f.result(TIMEOUT) for f in futures]
+    assert_that(results, equal_to(expected_results))
 
 
 class StressTester(object):
