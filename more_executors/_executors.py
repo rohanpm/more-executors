@@ -121,7 +121,7 @@ class Executors(object):
         """Wrap an executor in a `more_executors.asyncio.AsyncioExecutor`.
 
         Returned futures will be
-        [`asyncio futures`](https://docs.python.org/3/library/asyncio-task.html)
+        [`asyncio` futures](https://docs.python.org/3/library/asyncio-task.html)
         rather than `concurrent.futures` futures, i.e. may be used with the `await`
         keyword and coroutines.
 
