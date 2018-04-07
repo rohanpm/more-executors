@@ -67,6 +67,10 @@ def fetch_urls(urls):
 
 ## Changelog
 
+### v1.8.0
+
+- Fixed missing long_description in package
+
 ### v1.7.0
 
 - Revised TimeoutExecutor concept to "cancel after timeout"
