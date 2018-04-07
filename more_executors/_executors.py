@@ -97,12 +97,12 @@ class Executors(object):
     def with_timeout(cls, executor, timeout):
         """Wrap an executor in a `more_executors.timeout.TimeoutExecutor`.
 
-        Returned futures will have a default timeout applied on calls to
-        `future.result()` and `future.exception()`.
+        Returned futures will be cancelled if they've not completed within the
+        given timeout.
 
-        - `timeout`: default timeout, in seconds (float)
+        - `timeout`: timeout value, in seconds (float)
 
-        *Since version 1.6.0*
+        *Since version 1.7.0*
         """
         return cls.wrap(TimeoutExecutor(executor, timeout))
 
