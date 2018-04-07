@@ -64,7 +64,7 @@ def push(release_version):
 
 
 def run():
-    environ['USE_PANDOC'] = 1
+    environ['USE_PANDOC'] = '1'
     old_version = get_version()
     if not old_version.endswith('.dev0'):
         print("Assuming resumption of interrupted release")
