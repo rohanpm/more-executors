@@ -401,109 +401,121 @@ def test_submit_staggered(any_executor, request):
         assert_that(results, equal_to(expected_results))
 
 
-def test_stress(any_executor, request):
-    if 'sync' in request.node.name:
-        # The test as written currently will blow the stack on sync executor
-        skip('test not applicable with sync executor')
-
+class StressTester(object):
     FUTURES_LIMIT = 1000
+    CANCELLED = object()
 
-    cancelled = object()
-    lock = RLock()
-    futures = []
-    future_idents = {}
-    expected_results = {}
-    idents = [0]
+    def __init__(self, executor):
+        self.executor = executor
+        self.lock = RLock()
+        self.futures = []
+        self.future_idents = {}
+        self.expected_results = {}
+        self.idents = 0
 
-    def next_ident(msg):
-        with lock:
-            idents[0] = idents[0] + 1
-            return '%s %d' % (msg, idents[0])
+    def next_ident(self, msg):
+        with self.lock:
+            self.idents = self.idents + 1
+            return '%s %d' % (msg, self.idents)
 
-    def cancel_something():
+    def cancel_something(self):
         # Try to pick and cancel some future
-        for f in futures:
+        for f in self.futures:
             if f.cancel():
-                with lock:
-                    ident = future_idents[f]
-                    expected_results[ident] = cancelled
+                with self.lock:
+                    ident = self.future_idents[f]
+                    self.expected_results[ident] = self.CANCELLED
                 return
 
-    def stress_fn(ident, behavior):
+    def stress_fn(self, ident, behavior):
         sub_future = None
 
-        if len(futures) < FUTURES_LIMIT:
-            sub_ident = next_ident('submit from [%s]' % ident)
-            sub_future = any_executor.submit(stress_fn, sub_ident, randint(0, 3))
-            with lock:
-                if len(futures) < FUTURES_LIMIT:
-                    futures.append(sub_future)
-                    future_idents[sub_future] = sub_ident
-                else:
-                    sub_future.cancel()
+        if len(self.futures) < self.FUTURES_LIMIT:
+            sub_ident = self.next_ident('submit from [%s]' % ident)
+            sub_future = self.executor.submit(self.stress_fn, sub_ident, randint(0, 3))
+            self.add_future(sub_future, sub_ident)
 
         # Return a value
         if behavior == 0:
-            with lock:
-                assert ident not in expected_results
-                expected_results[ident] = ident
+            with self.lock:
+                assert ident not in self.expected_results
+                self.expected_results[ident] = ident
             return ident
 
         # Raise an exception
         if behavior == 1:
             error = RuntimeError("error %s" % ident)
-            with lock:
-                assert ident not in expected_results
-                expected_results[ident] = error
+            with self.lock:
+                assert ident not in self.expected_results
+                self.expected_results[ident] = error
             raise error
 
         # Submit again from callback
         if behavior == 2 and sub_future:
             sub_future.add_done_callback(
-                lambda f: stress_fn(next_ident('case2 from [%s]' % sub_ident), 2))
-            with lock:
-                assert ident not in expected_results
-                expected_results[ident] = ident*3
+                lambda f: self.stress_fn(self.next_ident('case2 from [%s]' % sub_ident), 2))
+            with self.lock:
+                assert ident not in self.expected_results
+                self.expected_results[ident] = ident*3
             return ident*3
 
         if behavior == 3:
-            cancel_something()
-            with lock:
-                expected_results[ident] = ident*4
+            self.cancel_something()
+            with self.lock:
+                self.expected_results[ident] = ident*4
             return ident*4
 
-        expected_results[ident] = ident*5
+        self.expected_results[ident] = ident*5
         return ident*5
 
-    for _ in range(0, 200):
-        value = randint(0, 3)
-        ident = next_ident('init')
-        future = any_executor.submit(stress_fn, ident, value)
-        with lock:
-            if len(futures) < FUTURES_LIMIT:
-                futures.append(future)
-                future_idents[future] = ident
-            else:
-                future.cancel()
+    def add_future(self, future, ident):
+        with self.lock:
+            if len(self.futures) < self.FUTURES_LIMIT:
+                self.futures.append(future)
+                self.future_idents[future] = ident
+                return True
+        future.cancel()
+        return False
+
+    def start(self):
+        for _ in range(0, 200):
+            value = randint(0, 3)
+            ident = self.next_ident('init')
+            future = self.executor.submit(self.stress_fn, ident, value)
+            if not self.add_future(future, ident):
                 break
 
-    # Wait until all the expected futures have been created
-    assert_soon(lambda: assert_that(len(futures), equal_to(FUTURES_LIMIT)))
+    def verify(self):
+        # Wait until all the expected futures have been created
+        assert_soon(lambda: assert_that(len(self.futures), equal_to(self.FUTURES_LIMIT)))
 
-    # The timeout here is so that the test fails rather than hangs forever,
-    # if something goes wrong.
-    (done, _not_done) = wait(futures, 60.0)
-    assert_that(len(done), equal_to(len(futures)))
+        # The timeout here is so that the test fails rather than hangs forever,
+        # if something goes wrong.
+        (done, _not_done) = wait(self.futures, 60.0)
+        assert_that(len(done), equal_to(len(self.futures)))
 
-    for f in futures:
+        for f in self.futures:
+            self.verify_future(f)
+
+    def verify_future(self, f):
         assert f.done(), str(f)
-        ident = future_idents[f]
-        assert ident in expected_results, "missing entry %s for future %s" % (ident, f)
-        expected_result = expected_results[ident]
+        ident = self.future_idents[f]
+        assert ident in self.expected_results, "missing entry %s for future %s" % (ident, f)
+        expected_result = self.expected_results[ident]
 
-        if expected_result is cancelled:
+        if expected_result is self.CANCELLED:
             assert_that(f.cancelled())
         elif isinstance(expected_result, Exception):
             assert_that(f.exception(TIMEOUT), is_(expected_result))
         else:
             assert_that(f.result(TIMEOUT), equal_to(expected_result))
+
+
+def test_stress(any_executor, request):
+    if 'sync' in request.node.name:
+        # The test as written currently will blow the stack on sync executor
+        skip('test not applicable with sync executor')
+
+    tester = StressTester(any_executor)
+    tester.start()
+    tester.verify()
