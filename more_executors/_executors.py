@@ -7,6 +7,7 @@ from more_executors.poll import PollExecutor
 from more_executors.timeout import TimeoutExecutor
 from more_executors.cancel_on_shutdown import CancelOnShutdownExecutor
 from more_executors.sync import SyncExecutor
+from more_executors.asyncio import AsyncioExecutor
 
 
 class Executors(object):
@@ -28,6 +29,7 @@ class Executors(object):
         'with_poll',
         'with_timeout',
         'with_cancel_on_shutdown',
+        'with_asyncio',
     ]
 
     @classmethod
@@ -113,3 +115,27 @@ class Executors(object):
         Returned futures will have `cancel` invoked if the executor is shut down
         before the future has completed."""
         return cls.wrap(CancelOnShutdownExecutor(executor))
+
+    @classmethod
+    def with_asyncio(cls, executor, loop=None):
+        """Wrap an executor in a `more_executors.asyncio.AsyncioExecutor`.
+
+        Returned futures will be
+        [`asyncio futures`](https://docs.python.org/3/library/asyncio-task.html)
+        rather than `concurrent.futures` futures, i.e. may be used with the `await`
+        keyword and coroutines.
+
+        - `executor`: a delegate executor, which must produce `concurrent.futures`
+          future objects
+        - `loop`: default `asyncio` event loop for use with the returned `asyncio`
+          futures
+
+        Note that since the other executors from the `Executors` class are designed
+        for use with `concurrent.futures`, if an executor is being configured using
+        chained `with_*` methods, this must be the last method called.
+
+        Only usable for Python >= 3.5.
+
+        *Since version 1.7.0*
+        """
+        return AsyncioExecutor(executor, loop)

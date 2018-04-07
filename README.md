@@ -22,6 +22,7 @@ extend the behavior of `Future` objects.
 - Futures with transformed output values
 - Futures resolved by a caller-provided polling function
 - Synchronous executor
+- Bridge `concurrent.futures` with `asyncio`
 - Convenience API for creating executors
 
 See the [API documentation](https://rohanpm.github.io/more-executors/) for detailed information on usage.
@@ -68,6 +69,7 @@ def fetch_urls(urls):
 
 v1.7.0
 - Revised TimeoutExecutor concept to "cancel after timeout"
+- Introduced AsyncioExecutor
 
 v1.6.0
 - Introduce TimeoutExecutor
