@@ -7,9 +7,9 @@ failure. Subclassing `more_executors.retry.RetryPolicy` allows customization of 
 from collections import namedtuple
 from concurrent.futures import Executor
 from threading import RLock, Thread, Event
-from monotonic import monotonic
-
 import logging
+
+from monotonic import monotonic
 
 from more_executors._common import _Future, _MAX_TIMEOUT
 
