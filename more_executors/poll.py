@@ -57,22 +57,13 @@ class _PollFuture(_Future):
         # If delegate is removed, we're now polling or done.
         return False
 
-    def cancel(self):
-        with self._me_lock:
-            if self.cancelled():
-                return True
-            if self._delegate and not self._delegate.cancel():
-                return False
-            if not self._executor._run_cancel_fn(self):
-                return False
-            self._executor._deregister_poll(self)
-
-            out = super(_PollFuture, self).cancel()
-            if out:
-                self.set_running_or_notify_cancel()
-        if out:
-            self._me_invoke_callbacks()
-        return out
+    def _me_cancel(self):
+        if self._delegate and not self._delegate.cancel():
+            return False
+        if not self._executor._run_cancel_fn(self):
+            return False
+        self._executor._deregister_poll(self)
+        return True
 
 
 PollDescriptor = namedtuple('PollDescriptor', ['result', 'yield_result', 'yield_exception'])

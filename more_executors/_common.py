@@ -46,3 +46,21 @@ class _Future(Future):
                 return
         # Already done -> call it directly
         fn(self)
+
+    def cancel(self):
+        with self._me_lock:
+            if self.cancelled():
+                return True
+            if self.done():
+                return False
+            if not self._me_cancel():
+                return False
+            out = super(_Future, self).cancel()
+            if out:
+                self.set_running_or_notify_cancel()
+        if out:
+            self._me_invoke_callbacks()
+        return out
+
+    def _me_cancel(self):
+        assert False, 'BUG: override this method in subclasses!'  # pragma: no cover

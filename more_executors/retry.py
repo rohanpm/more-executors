@@ -129,20 +129,8 @@ class _RetryFuture(_Future):
             super(_RetryFuture, self).set_exception(exception)
         self._me_invoke_callbacks()
 
-    def cancel(self):
-        with self._me_lock:
-            if self.cancelled():
-                return True
-            if self.done():
-                return False
-            if not self._executor._cancel(self):
-                return False
-            out = super(_RetryFuture, self).cancel()
-            if out:
-                self.set_running_or_notify_cancel()
-        if out:
-            self._me_invoke_callbacks()
-        return out
+    def _me_cancel(self):
+        return self._executor._cancel(self)
 
 
 class RetryExecutor(Executor):

@@ -53,18 +53,8 @@ class _MapFuture(_Future):
                 return False
             return self._delegate.running() or self._delegate.done()
 
-    def cancel(self):
-        with self._me_lock:
-            if self.cancelled():
-                return True
-            if not self._delegate.cancel():
-                return False
-            out = super(_MapFuture, self).cancel()
-            if out:
-                self.set_running_or_notify_cancel()
-        if out:
-            self._me_invoke_callbacks()
-        return out
+    def _me_cancel(self):
+        return self._delegate.cancel()
 
 
 class MapExecutor(Executor):
