@@ -18,8 +18,8 @@ extend the behavior of `Future` objects.
 
 - Futures with implicit retry
 - Futures with implicit cancel on executor shutdown
+- Futures with implicit cancel after timeout
 - Futures with transformed output values
-- Futures with a default timeout
 - Futures resolved by a caller-provided polling function
 - Synchronous executor
 - Convenience API for creating executors
@@ -65,6 +65,9 @@ def fetch_urls(urls):
 ```
 
 ## Changelog
+
+v1.7.0
+- Revised TimeoutExecutor concept to "cancel after timeout"
 
 v1.6.0
 - Introduce TimeoutExecutor
