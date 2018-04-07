@@ -1,11 +1,12 @@
 """These basic tests may be applied to most types of executors."""
 
-from concurrent.futures import CancelledError, wait, FIRST_COMPLETED
-from hamcrest import assert_that, equal_to, calling, raises, instance_of, has_length, is_
-from pytest import fixture, skip
-from six.moves.queue import Queue
 from random import randint
 from threading import RLock
+from concurrent.futures import CancelledError, wait, FIRST_COMPLETED
+
+from six.moves.queue import Queue
+from hamcrest import assert_that, equal_to, calling, raises, instance_of, has_length, is_
+from pytest import fixture, skip
 
 from more_executors.retry import RetryPolicy
 # This class is meant to be imported from the top-level module, but it's
