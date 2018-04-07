@@ -27,4 +27,4 @@ docs: .PHONY
 release: .PHONY
 	tox -e py35
 	.tox/py35/bin/pip install pypandoc
-	env USE_PANDOC=1 .tox/py35/bin/python scripts/release
+	.tox/py35/bin/python scripts/release
