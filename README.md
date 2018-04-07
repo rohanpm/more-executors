@@ -67,11 +67,13 @@ def fetch_urls(urls):
 
 ## Changelog
 
-v1.7.0
+### v1.7.0
+
 - Revised TimeoutExecutor concept to "cancel after timeout"
 - Introduced AsyncioExecutor
 
-v1.6.0
+### v1.6.0
+
 - Introduce TimeoutExecutor
 - Use monotonic clock in RetryExecutor
 - Avoid some uninterruptible sleeps on Python 2.x
