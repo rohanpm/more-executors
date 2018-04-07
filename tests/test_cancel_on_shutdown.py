@@ -1,6 +1,7 @@
+from threading import Event
+
 from hamcrest import assert_that, equal_to, is_in, calling, raises, \
                      less_than_or_equal_to, greater_than_or_equal_to
-from threading import Event
 
 from more_executors._executors import Executors
 
@@ -16,7 +17,7 @@ def test_cancels():
     futures = []
 
     executor = Executors.thread_pool(max_workers=2).with_cancel_on_shutdown()
-    futures = [executor.submit(lambda: proceed.wait())
+    futures = [executor.submit(proceed.wait)
                for _ in range(0, count)]
 
     # I'm using wait=False here since otherwise it could block on the 2 threads
@@ -61,7 +62,7 @@ def test_submit_during_shutdown():
     submit_more_done = [False]
 
     executor = Executors.thread_pool(max_workers=2).with_cancel_on_shutdown()
-    futures = [executor.submit(lambda: proceed.wait())
+    futures = [executor.submit(proceed.wait)
                for _ in (1, 2, 3)]
 
     def submit_more(f):

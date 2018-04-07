@@ -1,7 +1,7 @@
 import time
-import pytest
 import sys
 
+import pytest
 from hamcrest import assert_that, equal_to, calling, raises
 
 from more_executors._executors import Executors
