@@ -4,7 +4,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 
     <title>more_executors.timeout API documentation</title>
-    <meta name="description" content="Create futures with a default timeout." />
+    <meta name="description" content="Create futures which must complete within a timeout or be cancelled." />
 
   <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300' rel='stylesheet' type='text/css'>
   
@@ -997,7 +997,7 @@ table {
 
   <header id="section-intro">
   <h1 class="title"><span class="name">more_executors.timeout</span> module</h1>
-  <p>Create futures with a default timeout.</p>
+  <p>Create futures which must complete within a timeout or be cancelled.</p>
   
 
   </header>
@@ -1011,12 +1011,14 @@ table {
       <p id="more_executors.timeout.TimeoutExecutor" class="name">class <span class="ident">TimeoutExecutor</span></p>
       
   
-    <div class="desc"><p>An <code>Executor</code> which delegates to another <code>Executor</code> while adding
-default timeouts to each returned future.</p>
-<p>Note that the default timeouts only apply to the <code>future.result()</code> and
-<code>future.exception()</code> methods.  Other methods of waiting on futures,
-such as <code>concurrent.futures.wait()</code>, will not be affected.</p>
-<p><em>Since version 1.6.0</em></p></div>
+    <div class="desc"><p>An <code>Executor</code> which delegates to another <code>Executor</code> while applying
+a timeout to each returned future.</p>
+<p>For any futures returned by this executor, if the future hasn't
+completed approximately within <code>timeout</code> seconds of its creation,
+an attempt will be made to cancel the future.</p>
+<p>Note that only a single attempt is made to cancel any future, and there
+is no guarantee that this will succeed.</p>
+<p><em>Since version 1.7.0</em></p></div>
   <div class="source_cont">
 </div>
 
@@ -1041,8 +1043,8 @@ such as <code>concurrent.futures.wait()</code>, will not be affected.</p>
     <div class="desc"><p>Create a new executor.</p>
 <ul>
 <li><code>delegate</code>: the delegate executor to which callables are submitted.</li>
-<li><code>timeout</code>: the default timeout applied to any calls to <code>future.result()</code>
-             or <code>future.exception()</code>, where a timeout has not been provided.</li>
+<li><code>timeout</code>: timeout (in seconds) after which <code>future.cancel()</code> will be
+             invoked on any generated future which has not completed.</li>
 </ul></div>
   <div class="source_cont">
 </div>

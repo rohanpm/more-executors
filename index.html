@@ -1028,7 +1028,7 @@ table {
 module.  It includes a collection of <code>Executor</code> implementations in order to
 extend the behavior of <code>Future</code> objects.</p>
 <p>Compatible with Python 2.6, 2.7 and 3.x.</p>
-<p>This documentation was built from more-executors 1.7.0.dev0, revision 5d4695b.</p>
+<p>This documentation was built from more-executors 1.7.0.dev0, revision a552159.</p>
   
 
   </header>
@@ -1194,12 +1194,12 @@ functions.</p>
     
   
     <div class="desc"><p>Wrap an executor in a <a href="timeout.m.html#more_executors.timeout.TimeoutExecutor"><code>more_executors.timeout.TimeoutExecutor</code></a>.</p>
-<p>Returned futures will have a default timeout applied on calls to
-<code>future.result()</code> and <code>future.exception()</code>.</p>
+<p>Returned futures will be cancelled if they've not completed within the
+given timeout.</p>
 <ul>
-<li><code>timeout</code>: default timeout, in seconds (float)</li>
+<li><code>timeout</code>: timeout value, in seconds (float)</li>
 </ul>
-<p><em>Since version 1.6.0</em></p></div>
+<p><em>Since version 1.7.0</em></p></div>
   <div class="source_cont">
 </div>
 
@@ -1267,7 +1267,7 @@ failure. Subclassing <a href="retry.m.html#more_executors.retry.RetryPolicy"><co
       <p class="name"><a href="timeout.m.html">more_executors.timeout</a></p>
       
   
-    <div class="desc"><p>Create futures with a default timeout.</p></div>
+    <div class="desc"><p>Create futures which must complete within a timeout or be cancelled.</p></div>
 
       </div>
   </section>
