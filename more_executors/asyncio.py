@@ -10,7 +10,7 @@ __pdoc__['AsyncioExecutor.map'] = None
 class AsyncioExecutor(Executor):
     """An `Executor` which delegates to another `Executor` while converting
     returned futures into
-    [`asyncio futures`](https://docs.python.org/3/library/asyncio-task.html).
+    [`asyncio` futures](https://docs.python.org/3/library/asyncio-task.html).
 
     Note that since this class produces `asyncio` rather than `concurrent.futures`
     future objects, `AsyncioExecutor` instances themselves cannot be used
