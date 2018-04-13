@@ -21,6 +21,7 @@ extend the behavior of `Future` objects.
 - Futures with implicit cancel after timeout
 - Futures with transformed output values
 - Futures resolved by a caller-provided polling function
+- Throttle the number of futures running at once
 - Synchronous executor
 - Bridge `concurrent.futures` with `asyncio`
 - Convenience API for creating executors

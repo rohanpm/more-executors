@@ -5,6 +5,7 @@ from more_executors.map import MapExecutor
 from more_executors.retry import RetryExecutor, ExceptionRetryPolicy
 from more_executors.poll import PollExecutor
 from more_executors.timeout import TimeoutExecutor
+from more_executors.throttle import ThrottleExecutor
 from more_executors.cancel_on_shutdown import CancelOnShutdownExecutor
 from more_executors.sync import SyncExecutor
 from more_executors.asyncio import AsyncioExecutor
@@ -28,6 +29,7 @@ class Executors(object):
         'with_map',
         'with_poll',
         'with_timeout',
+        'with_throttle',
         'with_cancel_on_shutdown',
         'with_asyncio',
     ]
@@ -107,6 +109,17 @@ class Executors(object):
         *Since version 1.7.0*
         """
         return cls.wrap(TimeoutExecutor(executor, timeout))
+
+    @classmethod
+    def with_throttle(cls, executor, count):
+        """Wrap an executor in a `more_executors.throttle.ThrottleExecutor`.
+
+        - `count`: the returned executor will ensure that no more than this
+                   many futures are running concurrently
+
+        *Since version 1.9.0*
+        """
+        return cls.wrap(ThrottleExecutor(executor, count))
 
     @classmethod
     def with_cancel_on_shutdown(cls, executor):

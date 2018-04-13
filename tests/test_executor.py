@@ -39,7 +39,7 @@ def retry_executor():
 
 @fixture
 def threadpool_executor():
-    return Executors.thread_pool()
+    return Executors.thread_pool(max_workers=20)
 
 
 @fixture
@@ -50,6 +50,11 @@ def sync_executor():
 @fixture
 def map_executor(threadpool_executor):
     return threadpool_executor.with_map(map_noop)
+
+
+@fixture
+def throttle_executor(threadpool_executor):
+    return threadpool_executor.with_throttle(10)
 
 
 @fixture
@@ -127,10 +132,12 @@ def everything_executor(base_executor):
         with_cancel_on_shutdown().\
         with_retry(RetryPolicy()).\
         with_retry(RetryPolicy()).\
+        with_throttle(10).\
         with_timeout(120.0).\
         with_poll(poll_noop).\
         with_poll(poll_noop).\
         with_cancel_on_shutdown().\
+        with_throttle(16).\
         with_map(map_noop).\
         with_timeout(180.0).\
         with_map(map_noop).\
@@ -148,7 +155,7 @@ def everything_threadpool_executor(threadpool_executor):
 
 
 @fixture(params=['threadpool', 'retry', 'map', 'retry_map', 'map_retry', 'poll', 'retry_map_poll',
-                 'sync', 'timeout', 'cancel_poll_map_retry', 'cancel_retry_map_poll',
+                 'sync', 'timeout', 'throttle', 'cancel_poll_map_retry', 'cancel_retry_map_poll',
                  'everything_sync', 'everything_threadpool'])
 def any_executor(request):
     ex = request.getfixturevalue(request.param + '_executor')
