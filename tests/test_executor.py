@@ -242,9 +242,7 @@ def test_submit_delayed_results(any_executor, request):
     assert_that(results, equal_to(expected_results))
 
 
-def test_cancel(any_executor, request):
-    using_poll_executor = 'poll' in request.node.name or 'everything' in request.node.name
-
+def test_cancel(any_executor):
     for _ in range(0, 100):
         values = [1, 2, 3]
         expected_results = set([2, 4, 6])
@@ -268,16 +266,6 @@ def test_cancel(any_executor, request):
                 assert_that(f.cancel())
             else:
                 assert_that(not f.cancelled(), str(f))
-                # If we couldn't cancel it, that ought to mean it's either
-                # running or done.
-                #
-                # PollExecutor is allowed to bend the rules a little:
-                # we might have tried to cancel while the delegate was running,
-                # but by now it might have transitioned to poll mode, meaning
-                # that the future is no longer 'running' and could be cancelled
-                # now.
-                if not using_poll_executor:
-                    assert_that(f.running() or f.done(), str(f))
 
         for f in futures:
             if f in cancelled:
