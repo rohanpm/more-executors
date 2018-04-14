@@ -15,4 +15,5 @@ This documentation was built from an unknown revision.
 """
 from more_executors._executors import Executors
 
-__all__ = ['asyncio', 'map', 'retry', 'poll', 'sync', 'timeout', 'cancel_on_shutdown', 'Executors']
+__all__ = ['asyncio', 'map', 'retry', 'poll', 'sync', 'timeout',
+           'throttle', 'cancel_on_shutdown', 'Executors']

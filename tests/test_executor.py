@@ -39,7 +39,7 @@ def retry_executor():
 
 @fixture
 def threadpool_executor():
-    return Executors.thread_pool()
+    return Executors.thread_pool(max_workers=20)
 
 
 @fixture
@@ -50,6 +50,11 @@ def sync_executor():
 @fixture
 def map_executor(threadpool_executor):
     return threadpool_executor.with_map(map_noop)
+
+
+@fixture
+def throttle_executor(threadpool_executor):
+    return threadpool_executor.with_throttle(10)
 
 
 @fixture
@@ -127,10 +132,12 @@ def everything_executor(base_executor):
         with_cancel_on_shutdown().\
         with_retry(RetryPolicy()).\
         with_retry(RetryPolicy()).\
+        with_throttle(10).\
         with_timeout(120.0).\
         with_poll(poll_noop).\
         with_poll(poll_noop).\
         with_cancel_on_shutdown().\
+        with_throttle(16).\
         with_map(map_noop).\
         with_timeout(180.0).\
         with_map(map_noop).\
@@ -148,7 +155,7 @@ def everything_threadpool_executor(threadpool_executor):
 
 
 @fixture(params=['threadpool', 'retry', 'map', 'retry_map', 'map_retry', 'poll', 'retry_map_poll',
-                 'sync', 'timeout', 'cancel_poll_map_retry', 'cancel_retry_map_poll',
+                 'sync', 'timeout', 'throttle', 'cancel_poll_map_retry', 'cancel_retry_map_poll',
                  'everything_sync', 'everything_threadpool'])
 def any_executor(request):
     ex = request.getfixturevalue(request.param + '_executor')
@@ -242,9 +249,7 @@ def test_submit_delayed_results(any_executor, request):
     assert_that(results, equal_to(expected_results))
 
 
-def test_cancel(any_executor, request):
-    using_poll_executor = 'poll' in request.node.name or 'everything' in request.node.name
-
+def test_cancel(any_executor):
     for _ in range(0, 100):
         values = [1, 2, 3]
         expected_results = set([2, 4, 6])
@@ -268,16 +273,6 @@ def test_cancel(any_executor, request):
                 assert_that(f.cancel())
             else:
                 assert_that(not f.cancelled(), str(f))
-                # If we couldn't cancel it, that ought to mean it's either
-                # running or done.
-                #
-                # PollExecutor is allowed to bend the rules a little:
-                # we might have tried to cancel while the delegate was running,
-                # but by now it might have transitioned to poll mode, meaning
-                # that the future is no longer 'running' and could be cancelled
-                # now.
-                if not using_poll_executor:
-                    assert_that(f.running() or f.done(), str(f))
 
         for f in futures:
             if f in cancelled:

@@ -12,9 +12,15 @@ __pdoc__['MapExecutor.map'] = None
 class _MapFuture(_Future):
     def __init__(self, delegate, map_fn):
         super(_MapFuture, self).__init__()
-        self._delegate = delegate
         self._map_fn = map_fn
-        self._delegate.add_done_callback(self._delegate_resolved)
+        self._set_delegate(delegate)
+
+    def _set_delegate(self, delegate):
+        with self._me_lock:
+            self._delegate = delegate
+
+        if delegate:
+            self._delegate.add_done_callback(self._delegate_resolved)
 
     def _delegate_resolved(self, delegate):
         assert delegate is self._delegate, \
@@ -51,7 +57,7 @@ class _MapFuture(_Future):
         with self._me_lock:
             if self.done():
                 return False
-            return self._delegate.running() or self._delegate.done()
+            return self._delegate and (self._delegate.running() or self._delegate.done())
 
     def _me_cancel(self):
         return self._delegate.cancel()
