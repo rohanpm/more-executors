@@ -68,6 +68,10 @@ def fetch_urls(urls):
 
 ## Changelog
 
+### v1.9.0
+
+- Introduced ThrottleExecutor
+
 ### v1.8.0
 
 - Fixed missing long_description in package
