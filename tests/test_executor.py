@@ -305,8 +305,16 @@ def test_blocked_cancel(any_executor, request):
     # Since the function is in progress,
     # it should NOT be possible to cancel it
     assert_that(not future.cancel(), str(future))
-    assert_that(future.running(), str(future))
 
+    # assert_soon since, by blocking on from_fn.get(), we only guarantee
+    # that the future is running from the innermost executor/future's point
+    # of view, but this may not have propagated to the outermost future yet
+    assert_soon(lambda: assert_that(future.running(), str(future)))
+
+    # Re-check cancel after running() is true
+    assert_that(not future.cancel(), str(future))
+
+    # Let fn proceed and the future should be able to complete
     to_fn.put(None)
     assert_that(future.result(TIMEOUT), equal_to(123))
 
