@@ -14,15 +14,15 @@ class LoggingRetryPolicy(RetryPolicy):
         # Inherit the behavior from the default policy
         self.policy = ExceptionRetryPolicy.new_default()
 
-    def should_retry(self, attempt, result, exception):
-        retry = self.policy.should_retry(attempt, result, exception)
+    def should_retry(self, attempt, future):
+        retry = self.policy.should_retry(attempt, future)
         if retry:
-            delay = self.sleep_time(attempt, result, exception)
-            print("Error - retry in %ss: %s" % (delay, exception))
+            delay = self.sleep_time(attempt, future)
+            print("Error - retry in %ss: %s" % (delay, future.exception()))
         return retry
 
-    def sleep_time(self, attempt, result, exception):
-        return self.policy.sleep_time(attempt, result, exception)
+    def sleep_time(self, attempt, future):
+        return self.policy.sleep_time(attempt, future)
 
 
 def get_content(response):

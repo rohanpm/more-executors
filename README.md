@@ -68,6 +68,10 @@ def fetch_urls(urls):
 
 ## Changelog
 
+### v1.10.0
+
+- Improved RetryPolicy API
+
 ### v1.9.0
 
 - Introduced ThrottleExecutor

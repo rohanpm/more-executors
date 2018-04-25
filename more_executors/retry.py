@@ -30,17 +30,16 @@ class RetryPolicy(object):
     This base class will never retry.  See `more_executors.retry.ExceptionRetryPolicy` for
     a general-purpose implementation."""
 
-    def should_retry(self, attempt, result, exception):
+    def should_retry(self, attempt, future):
         """Returns `True` if a `Future` should be retried.
 
         This method will be called after a `Future` completes or raises an exception.
 
         - `attempt`: number of times the future has been attempted; starts counting at 1
-        - `result`: result of the future, or `None` on exception
-        - `exception`: exception of the future, or `None` if no exception"""
+        - `future`: a completed future"""
         return False
 
-    def sleep_time(self, attempt, result, exception):
+    def sleep_time(self, attempt, future):
         """Returns the amount of time (in seconds) to delay before the next
         attempt at running a `Future`.
 
@@ -78,14 +77,15 @@ class ExceptionRetryPolicy(RetryPolicy):
         - retries on any `Exception`"""
         return cls(10, 2.0, 1.0, 120, Exception)
 
-    def should_retry(self, attempt, result, exception):
+    def should_retry(self, attempt, future):
+        exception = future.exception()
         if not exception:
             return False
         if attempt >= self._max_attempts:
             return False
         return isinstance(exception, self._exception_base)
 
-    def sleep_time(self, attempt, result, exception):
+    def sleep_time(self, attempt, future):
         return min(self._sleep * (self._exponent ** attempt), self._max_sleep)
 
 
@@ -387,19 +387,19 @@ class RetryExecutor(Executor):
             _LOG.debug("Delegate was cancelled: %s", delegate_future)
             return
 
+        should_retry = found_job.policy.should_retry(found_job.attempt, delegate_future)
+        if should_retry:
+            sleep_time = found_job.policy.sleep_time(found_job.attempt, delegate_future)
+            self._retry(found_job, sleep_time)
+            return
+
+        _LOG.debug("Finalizing %s", found_job)
+
         exception = delegate_future.exception()
         if exception:
             result = None
         else:
             result = delegate_future.result()
-
-        should_retry = found_job.policy.should_retry(found_job.attempt, result, exception)
-        if should_retry:
-            sleep_time = found_job.policy.sleep_time(found_job.attempt, result, exception)
-            self._retry(found_job, sleep_time)
-            return
-
-        _LOG.debug("Finalizing %s", found_job)
 
         # OK, it won't be retried.  Resolve the future.
         if exception:

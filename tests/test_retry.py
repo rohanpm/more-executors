@@ -207,8 +207,8 @@ def test_order(executor):
 def test_override_policy(executor):
     """Should be able to provide a custom policy by subclassing RetryPolicy."""
     class SubRetryPolicy(RetryPolicy):
-        def should_retry(self, attempt, result, exception):
-            return result < 3
+        def should_retry(self, attempt, future):
+            return future.result() < 3
 
     fn = MagicMock()
     fn.side_effect = [1, 2, 3, AssertionError("unexpected call")]
