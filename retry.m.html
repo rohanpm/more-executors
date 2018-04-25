@@ -1241,7 +1241,7 @@ a general-purpose implementation.</p></div>
             
   <div class="item">
     <div class="name def" id="more_executors.retry.RetryPolicy.should_retry">
-    <p>def <span class="ident">should_retry</span>(</p><p>self, attempt, result, exception)</p>
+    <p>def <span class="ident">should_retry</span>(</p><p>self, attempt, future)</p>
     </div>
     
 
@@ -1251,8 +1251,7 @@ a general-purpose implementation.</p></div>
 <p>This method will be called after a <code>Future</code> completes or raises an exception.</p>
 <ul>
 <li><code>attempt</code>: number of times the future has been attempted; starts counting at 1</li>
-<li><code>result</code>: result of the future, or <code>None</code> on exception</li>
-<li><code>exception</code>: exception of the future, or <code>None</code> if no exception</li>
+<li><code>future</code>: a completed future</li>
 </ul></div>
   <div class="source_cont">
 </div>
@@ -1262,7 +1261,7 @@ a general-purpose implementation.</p></div>
             
   <div class="item">
     <div class="name def" id="more_executors.retry.RetryPolicy.sleep_time">
-    <p>def <span class="ident">sleep_time</span>(</p><p>self, attempt, result, exception)</p>
+    <p>def <span class="ident">sleep_time</span>(</p><p>self, attempt, future)</p>
     </div>
     
 
