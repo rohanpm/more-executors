@@ -35,6 +35,6 @@ matrix:
     env: TOX_ENV=static
   - python: "3.5"
     env: TOX_ENV=docs
-script: tox -e $TOX_ENV
+script: tox -e $TOX_ENV -- -s -o log_cli=true -o log_cli_level=DEBUG
 after_success:
 - test $TOX_ENV = docs && scripts/push-docs
