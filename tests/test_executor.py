@@ -1,8 +1,11 @@
 """These basic tests may be applied to most types of executors."""
 
+from __future__ import print_function
+
 from random import randint
 from threading import RLock
 from concurrent.futures import CancelledError, wait, FIRST_COMPLETED
+import pprint
 
 from six.moves.queue import Queue
 from hamcrest import assert_that, equal_to, calling, raises, instance_of, has_length, is_
@@ -30,6 +33,25 @@ def map_noop(value):
 def poll_noop(ds):
     # Make PollExecutor pass everything through unchanged
     [d.yield_result(d.result) for d in ds]
+
+
+def dump_executor(ex):
+    print("Executor %s:" % ex)
+
+    all_vars = vars(ex)
+    # Don't worry about the with_* stuff from Executors
+    dump_vars = {}
+    for key, val in all_vars.items():
+        if key.startswith('with_'):
+            continue
+        dump_vars[key] = val
+
+    pprint.pprint(dump_vars, indent=2, width=100)
+
+    delegate = getattr(ex, '_delegate', None)
+    if delegate:
+        print("")
+        dump_executor(delegate)
 
 
 @fixture
@@ -159,8 +181,23 @@ def everything_threadpool_executor(threadpool_executor):
                  'everything_sync', 'everything_threadpool'])
 def any_executor(request):
     ex = request.getfixturevalue(request.param + '_executor')
+
+    # Want to know if the test failed; is there a better way
+    # than counting the failure counts here??
+    failed_before = request.session.testsfailed
     yield ex
-    ex.shutdown(True)
+    failed_diff = request.session.testsfailed - failed_before
+
+    if not failed_diff:
+        ex.shutdown(True)
+        return
+
+    # Current test failed:
+    # - dump state of executor for improved debugging
+    # - use non-blocking shutdown, as blocking has a high chance
+    #   of hanging
+    dump_executor(ex)
+    ex.shutdown(False)
 
 
 def test_submit_results(any_executor):
