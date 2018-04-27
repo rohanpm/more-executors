@@ -16,7 +16,7 @@ from more_executors.retry import RetryPolicy
 # confusing the coverage report, so import it directly here.
 from more_executors._executors import Executors
 
-from .util import assert_soon
+from .util import assert_soon, run_or_timeout
 from .logging_util import dump_executor, add_debug_logging
 
 TIMEOUT = 20.0
@@ -178,8 +178,13 @@ def any_executor(request):
     failed_diff = request.session.testsfailed - failed_before
 
     if not failed_diff:
-        ex.shutdown(True)
-        return
+        try:
+            run_or_timeout(ex.shutdown, True)
+            return
+        except Exception:
+            print("Shutdown failed")
+            dump_executor(ex)
+            raise
 
     # Current test failed:
     # - dump state of executor for improved debugging
