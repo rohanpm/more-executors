@@ -18,7 +18,7 @@ from more_executors._executors import Executors
 
 from .util import assert_soon
 
-TIMEOUT = 10.0
+TIMEOUT = 20.0
 
 
 class SimulatedError(RuntimeError):
