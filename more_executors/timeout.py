@@ -14,8 +14,6 @@ __pdoc__['TimeoutExecutor.map'] = None
 __pdoc__['TimeoutExecutor.shutdown'] = None
 __pdoc__['TimeoutExecutor.submit'] = None
 
-_LOG = logging.getLogger('TimeoutExecutor')
-
 _Job = namedtuple('_Job', ['future', 'delegate_future', 'deadline'])
 
 
@@ -37,13 +35,15 @@ class TimeoutExecutor(Executor):
 
     *Since version 1.7.0*
     """
-    def __init__(self, delegate, timeout):
+    def __init__(self, delegate, timeout, logger=None):
         """Create a new executor.
 
         - `delegate`: the delegate executor to which callables are submitted.
         - `timeout`: timeout (in seconds) after which `future.cancel()` will be
                      invoked on any generated future which has not completed.
+        - `logger`: a `Logger` used for messages from this executor
         """
+        self._log = logger if logger else logging.getLogger('TimeoutExecutor')
         self._delegate = delegate
         self._timeout = timeout
         self._shutdown = False
@@ -66,7 +66,7 @@ class TimeoutExecutor(Executor):
         return future
 
     def shutdown(self, wait=True):
-        _LOG.debug("shutdown")
+        self._log.debug("shutdown")
         self._shutdown = True
         self._jobs_write.set()
         self._delegate.shutdown(wait)
@@ -79,7 +79,7 @@ class TimeoutExecutor(Executor):
         now = monotonic()
         for job in self._jobs:
             if job.future.done():
-                _LOG.debug("Discarding job for completed future: %s", job)
+                self._log.debug("Discarding job for completed future: %s", job)
             elif job.deadline < now:
                 overdue.append(job)
             else:
@@ -87,24 +87,24 @@ class TimeoutExecutor(Executor):
         return (pending, overdue)
 
     def _on_future_done(self, future):
-        _LOG.debug("Waking thread for %s", future)
+        self._log.debug("Waking thread for %s", future)
         self._jobs_write.set()
 
     def _do_cancel(self, job):
-        _LOG.debug("Attempting cancel: %s", job)
+        self._log.debug("Attempting cancel: %s", job)
         cancel_result = job.future.cancel()
-        _LOG.debug("Cancel of %s resulted in %s", job, cancel_result)
+        self._log.debug("Cancel of %s resulted in %s", job, cancel_result)
 
     def _job_loop(self):
         while not self._shutdown:
-            _LOG.debug("job loop")
+            self._log.debug("job loop")
             self._jobs_write.clear()
 
             with self._jobs_lock:
                 (pending, overdue) = self._partition_jobs()
                 self._jobs = pending
 
-            _LOG.debug("jobs: %s overdue, %s pending", len(overdue), len(pending))
+            self._log.debug("jobs: %s overdue, %s pending", len(overdue), len(pending))
 
             for job in overdue:
                 self._do_cancel(job)
@@ -114,5 +114,5 @@ class TimeoutExecutor(Executor):
                 earliest = min([job.deadline for job in pending])
                 wait_time = max(earliest - monotonic(), 0)
 
-            _LOG.debug("Wait until %s", wait_time)
+            self._log.debug("Wait until %s", wait_time)
             self._jobs_write.wait(wait_time)

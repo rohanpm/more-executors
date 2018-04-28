@@ -18,12 +18,14 @@ class AsyncioExecutor(Executor):
 
     *Since version 1.7.0*
     """
-    def __init__(self, delegate, loop=None):
+    def __init__(self, delegate, loop=None, logger=None):
         """Create a new executor.
 
         - `delegate`: `Executor` instance to which callables will be submitted
         - `loop`: `asyncio` event loop used to wrap futures; if omitted, the default
-                  event loop is used."""
+                  event loop is used.
+        - `logger`: a `Logger` used for messages from this executor
+        """
         self._delegate = delegate
         self._loop = loop
 

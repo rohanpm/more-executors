@@ -2,7 +2,7 @@ from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 from functools import partial
 
 from more_executors.map import MapExecutor
-from more_executors.retry import RetryExecutor, ExceptionRetryPolicy
+from more_executors.retry import RetryExecutor
 from more_executors.poll import PollExecutor
 from more_executors.timeout import TimeoutExecutor
 from more_executors.throttle import ThrottleExecutor
@@ -64,84 +64,65 @@ class Executors(object):
         return cls.wrap(SyncExecutor(*args, **kwargs))
 
     @classmethod
-    def with_retry(cls, executor, retry_policy=None):
+    def with_retry(cls, executor, *args, **kwargs):
         """Wrap an executor in a `more_executors.retry.RetryExecutor`.
 
         Submitted functions will be retried on failure.
-
-        - `retry_policy`: the `more_executors.retry.RetryPolicy` to be used; if omitted,
-                          a reasonable default is applied which will retry for several minutes."""
-        if not retry_policy:
-            retry_policy = ExceptionRetryPolicy.new_default()
-        return cls.wrap(RetryExecutor(executor, retry_policy))
+        """
+        return cls.wrap(RetryExecutor(executor, *args, **kwargs))
 
     @classmethod
-    def with_map(cls, executor, fn):
+    def with_map(cls, executor, *args, **kwargs):
         """Wrap an executor in a `more_executors.map.MapExecutor`.
 
         Submitted callables will have their output transformed by the given function.
-
-        - `fn`: a function used to transform each output value from the executor"""
-        return cls.wrap(MapExecutor(executor, fn))
+        """
+        return cls.wrap(MapExecutor(executor, *args, **kwargs))
 
     @classmethod
-    def with_poll(cls, executor, fn, cancel_fn=None, default_interval=5.0):
+    def with_poll(cls, executor, *args, **kwargs):
         """Wrap an executor in a `more_executors.poll.PollExecutor`.
 
         Submitted callables will have their output passed into the poll function.
-        See the class documentation for more information on the poll and cancel
-        functions.
-
-        - `fn`: a function used for polling results.
-        - `cancel_fn`: a function called when a future is cancelled.
-        - `default_interval`: default interval between polls, in seconds."""
-        return cls.wrap(PollExecutor(executor, fn, cancel_fn, default_interval))
+        See the class documentation for more information.
+        """
+        return cls.wrap(PollExecutor(executor, *args, **kwargs))
 
     @classmethod
-    def with_timeout(cls, executor, timeout):
+    def with_timeout(cls, executor, *args, **kwargs):
         """Wrap an executor in a `more_executors.timeout.TimeoutExecutor`.
 
         Returned futures will be cancelled if they've not completed within the
         given timeout.
 
-        - `timeout`: timeout value, in seconds (float)
-
         *Since version 1.7.0*
         """
-        return cls.wrap(TimeoutExecutor(executor, timeout))
+        return cls.wrap(TimeoutExecutor(executor, *args, **kwargs))
 
     @classmethod
-    def with_throttle(cls, executor, count):
+    def with_throttle(cls, executor, *args, **kwargs):
         """Wrap an executor in a `more_executors.throttle.ThrottleExecutor`.
-
-        - `count`: the returned executor will ensure that no more than this
-                   many futures are running concurrently
 
         *Since version 1.9.0*
         """
-        return cls.wrap(ThrottleExecutor(executor, count))
+        return cls.wrap(ThrottleExecutor(executor, *args, **kwargs))
 
     @classmethod
-    def with_cancel_on_shutdown(cls, executor):
+    def with_cancel_on_shutdown(cls, executor, *args, **kwargs):
         """Wrap an executor in a `more_executors.cancel_on_shutdown.CancelOnShutdownExecutor`.
 
         Returned futures will have `cancel` invoked if the executor is shut down
         before the future has completed."""
-        return cls.wrap(CancelOnShutdownExecutor(executor))
+        return cls.wrap(CancelOnShutdownExecutor(executor, *args, **kwargs))
 
     @classmethod
-    def with_asyncio(cls, executor, loop=None):
+    def with_asyncio(cls, executor, *args, **kwargs):
         """Wrap an executor in a `more_executors.asyncio.AsyncioExecutor`.
 
         Returned futures will be
         [`asyncio` futures](https://docs.python.org/3/library/asyncio-task.html)
         rather than `concurrent.futures` futures, i.e. may be used with the `await`
         keyword and coroutines.
-
-        - `executor`: a delegate executor, which must produce `concurrent.futures`
-          future objects
-        - `loop`: default `asyncio` event loop for use with the returned `asyncio`
-          futures
 
         Note that since the other executors from the `Executors` class are designed
         for use with `concurrent.futures`, if an executor is being configured using
@@ -151,4 +132,4 @@ class Executors(object):
 
         *Since version 1.7.0*
         """
-        return AsyncioExecutor(executor, loop)
+        return AsyncioExecutor(executor, *args, **kwargs)

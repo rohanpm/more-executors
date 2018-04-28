@@ -20,6 +20,13 @@ class SyncExecutor(Executor):
     With this executor, that's guaranteed to always be the case.  Thus it can
     be used to test code paths which are otherwise rarely triggered.
     """
+    def __init__(self, logger=None):
+        """Create a new executor.
+
+        - `logger`: a `Logger` used for messages from this executor
+        """
+        super(SyncExecutor, self).__init__()
+
     def submit(self, fn, *args, **kwargs):
         """Immediately invokes `fn(*args, **kwargs)` and returns a future
         with the result."""

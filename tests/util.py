@@ -1,4 +1,6 @@
 import time
+from threading import Thread
+from functools import partial
 
 
 def assert_soon(fn):
@@ -10,3 +12,32 @@ def assert_soon(fn):
             time.sleep(0.01)
     else:
         fn()
+
+
+def _run_or_record_exception(exception_list, retval_list, fn, *args, **kwargs):
+    try:
+        retval_list.append(fn(*args, **kwargs))
+    except Exception as e:
+        exception_list.append(e)
+
+
+def run_or_timeout(fn, *args, **kwargs):
+    timeout = kwargs.pop('timeout', 20.0)
+    exception = []
+    retval = []
+    safe_fn = partial(_run_or_record_exception, exception, retval, fn)
+
+    thread = Thread(target=safe_fn, args=args, kwargs=kwargs, name='run_or_timeout')
+    thread.daemon = True
+    thread.start()
+
+    thread.join(timeout)
+    if thread.isAlive():
+        # Failed - did not complete within timeout
+        raise AssertionError("Function %s did not complete within %s seconds" % (fn, timeout))
+    elif exception:
+        # Failed - function raised
+        raise exception[0]
+    else:
+        # OK!
+        return retval[0]
