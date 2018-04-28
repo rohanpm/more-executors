@@ -98,7 +98,6 @@ class TimeoutExecutor(Executor):
     def _job_loop(self):
         while not self._shutdown:
             self._log.debug("job loop")
-            self._jobs_write.clear()
 
             with self._jobs_lock:
                 (pending, overdue) = self._partition_jobs()
@@ -116,3 +115,4 @@ class TimeoutExecutor(Executor):
 
             self._log.debug("Wait until %s", wait_time)
             self._jobs_write.wait(wait_time)
+            self._jobs_write.clear()
