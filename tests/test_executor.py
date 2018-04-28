@@ -8,6 +8,7 @@ from concurrent.futures import CancelledError, wait, FIRST_COMPLETED
 import pprint
 
 from six.moves.queue import Queue
+from monotonic import monotonic
 from hamcrest import assert_that, equal_to, calling, raises, instance_of, has_length, is_
 from pytest import fixture, skip
 
@@ -196,6 +197,7 @@ def any_executor(request):
     # - dump state of executor for improved debugging
     # - use non-blocking shutdown, as blocking has a high chance
     #   of hanging
+    print("Test failed at time %s" % monotonic())
     dump_executor(ex)
     ex.shutdown(False)
 
