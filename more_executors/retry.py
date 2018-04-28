@@ -13,8 +13,6 @@ from monotonic import monotonic
 
 from more_executors._common import _Future, _MAX_TIMEOUT
 
-_LOG = logging.getLogger('RetryExecutor')
-
 # Hide some docs which would otherwise be repeated
 __pdoc__ = {}
 __pdoc__['ExceptionRetryPolicy.should_retry'] = None
@@ -160,6 +158,7 @@ class RetryExecutor(Executor):
         - `delegate`: `Executor` instance to which callables will be submitted
         - `retry_policy`: `more_executors.retry.RetryPolicy` instance used to determine
                           when futures shall be retried"""
+        self._log = logging.getLogger('RetryExecutor')
         self._delegate = delegate
         self._default_retry_policy = retry_policy
         self._jobs = []
@@ -173,14 +172,14 @@ class RetryExecutor(Executor):
         self._submit_thread.start()
 
     def shutdown(self, wait=True):
-        _LOG.info("Shutting down.")
+        self._log.info("Shutting down.")
         self._shutdown = True
         self._wake_thread()
         self._delegate.shutdown(wait)
         if wait:
-            _LOG.info("Waiting for thread")
+            self._log.info("Waiting for thread")
             self._submit_thread.join(_MAX_TIMEOUT)
-        _LOG.debug("Shutdown complete")
+        self._log.debug("Shutdown complete")
 
     @classmethod
     def new_default(cls, delegate):
@@ -212,7 +211,7 @@ class RetryExecutor(Executor):
         # Let the submit thread know it should wake up to check for new jobs
         self._wake_thread()
 
-        _LOG.debug("Returning future %s", future)
+        self._log.debug("Returning future %s", future)
         return future
 
     def _wake_thread(self):
@@ -245,10 +244,10 @@ class RetryExecutor(Executor):
         # Runs in a separate thread continuously submitting to the delegate
         # executor until no jobs are ready, or waiting until next job is ready
         while not self._shutdown:
-            _LOG.debug("_submit_loop iter")
+            self._log.debug("_submit_loop iter")
             job = self._get_next_job()
             if not job:
-                _LOG.debug("No jobs at all. Waiting...")
+                self._log.debug("No jobs at all. Waiting...")
                 self._submit_wait()
                 continue
 
@@ -263,7 +262,7 @@ class RetryExecutor(Executor):
             # - reaching the time of the nearest job, or...
             # - woken up by condvar
             delta = job.when - now
-            _LOG.debug("No ready job.  Waiting: %s", delta)
+            self._log.debug("No ready job.  Waiting: %s", delta)
             self._submit_wait(delta)
 
     def _submit_now(self, job):
@@ -277,7 +276,7 @@ class RetryExecutor(Executor):
                 # We need the future's lock now too, because someone could
                 # call cancel after this check and before we submit.
                 if job.future.done():
-                    _LOG.debug(
+                    self._log.debug(
                         "future done %s - not submitting to delegate",
                         job.future)
                     return
@@ -295,7 +294,7 @@ class RetryExecutor(Executor):
                     job.fn, job.args, job.kwargs
                 )
                 self._append_job(new_job)
-                _LOG.debug("Submitted: %s", new_job)
+                self._log.debug("Submitted: %s", new_job)
 
         delegate_future.add_done_callback(self._delegate_callback)
         self._wake_thread()
@@ -311,7 +310,7 @@ class RetryExecutor(Executor):
             self._jobs.append(job)
 
     def _retry(self, job, sleep_time):
-        _LOG.debug("Will retry: %s", job)
+        self._log.debug("Will retry: %s", job)
 
         with self._lock:
             self._pop_job(job)
@@ -335,10 +334,10 @@ class RetryExecutor(Executor):
         with self._lock:
             for idx, job in enumerate(self._jobs):
                 if job.future is future:
-                    _LOG.debug("Try cancel: %s", job)
+                    self._log.debug("Try cancel: %s", job)
 
                     if not job.delegate_future:
-                        _LOG.debug("Successful cancel - no delegate: %s", job)
+                        self._log.debug("Successful cancel - no delegate: %s", job)
                         self._jobs.pop(idx)
                         return True
 
@@ -352,24 +351,24 @@ class RetryExecutor(Executor):
         #   for the future's lock.
         assert found_job, "Cancel called on orphan %s" % future
 
-        _LOG.debug("Try cancel delegate: %s", found_job)
+        self._log.debug("Try cancel delegate: %s", found_job)
 
         if found_job.delegate_future.cancel():
-            _LOG.debug("Successful cancel: %s", found_job)
+            self._log.debug("Successful cancel: %s", found_job)
             future._clear_delegate()
             # Don't remove from _jobs here,
             # the callback attached to delegate_future was expected
             # to take care of that
             return True
 
-        _LOG.debug("Could not cancel: %s", found_job)
+        self._log.debug("Could not cancel: %s", found_job)
         return False
 
     def _delegate_callback(self, delegate_future):
         assert delegate_future.done(), \
             "BUG: callback invoked while future not done!"
 
-        _LOG.debug("Callback activated for %s", delegate_future)
+        self._log.debug("Callback activated for %s", delegate_future)
 
         found_job = None
         for job in self._jobs[:]:
@@ -384,7 +383,7 @@ class RetryExecutor(Executor):
 
         if delegate_future.cancelled():
             # nothing to do, retrying on cancel is not allowed
-            _LOG.debug("Delegate was cancelled: %s", delegate_future)
+            self._log.debug("Delegate was cancelled: %s", delegate_future)
             return
 
         should_retry = found_job.policy.should_retry(found_job.attempt, delegate_future)
@@ -393,7 +392,7 @@ class RetryExecutor(Executor):
             self._retry(found_job, sleep_time)
             return
 
-        _LOG.debug("Finalizing %s", found_job)
+        self._log.debug("Finalizing %s", found_job)
 
         exception = delegate_future.exception()
         if exception:
@@ -409,4 +408,4 @@ class RetryExecutor(Executor):
 
         self._pop_job(found_job)
 
-        _LOG.debug("Finalized %s", found_job)
+        self._log.debug("Finalized %s", found_job)
