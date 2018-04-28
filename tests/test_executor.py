@@ -437,7 +437,7 @@ def do_test_submit_staggered(executor):
 
 
 class StressTester(object):
-    FUTURES_LIMIT = 1000
+    FUTURES_LIMIT = 500
     CANCELLED = object()
 
     def __init__(self, executor):
@@ -513,7 +513,7 @@ class StressTester(object):
         return False
 
     def start(self):
-        for _ in range(0, 200):
+        for _ in range(0, 100):
             value = randint(0, 3)
             ident = self.next_ident('init')
             future = self.executor.submit(self.stress_fn, ident, value)
