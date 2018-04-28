@@ -1031,7 +1031,7 @@ behavior, such as <code>more_executors.poll.PollExecutor</code>.</p></div>
             
   <div class="item">
     <div class="name def" id="more_executors.cancel_on_shutdown.CancelOnShutdownExecutor.__init__">
-    <p>def <span class="ident">__init__</span>(</p><p>self, delegate)</p>
+    <p>def <span class="ident">__init__</span>(</p><p>self, delegate, logger=None)</p>
     </div>
     
 
@@ -1040,6 +1040,7 @@ behavior, such as <code>more_executors.poll.PollExecutor</code>.</p></div>
     <div class="desc"><p>Create a new executor.</p>
 <ul>
 <li><code>delegate</code>: <code>Executor</code> instance to which callables will be submitted</li>
+<li><code>logger</code>: a <code>Logger</code> used for messages from this executor</li>
 </ul></div>
   <div class="source_cont">
 </div>

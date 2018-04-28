@@ -1042,7 +1042,7 @@ a limit on the number of futures running concurrently.</p>
             
   <div class="item">
     <div class="name def" id="more_executors.throttle.ThrottleExecutor.__init__">
-    <p>def <span class="ident">__init__</span>(</p><p>self, delegate, count)</p>
+    <p>def <span class="ident">__init__</span>(</p><p>self, delegate, count, logger=None)</p>
     </div>
     
 
@@ -1052,6 +1052,7 @@ a limit on the number of futures running concurrently.</p>
 <ul>
 <li><code>delegate</code>: <code>Executor</code> instance to which callables will be submitted</li>
 <li><code>count</code>: maximum number of concurrently running futures</li>
+<li><code>logger</code>: a <code>Logger</code> used for messages from this executor</li>
 </ul></div>
   <div class="source_cont">
 </div>

@@ -1029,7 +1029,7 @@ output values through a given function.</p></div>
             
   <div class="item">
     <div class="name def" id="more_executors.map.MapExecutor.__init__">
-    <p>def <span class="ident">__init__</span>(</p><p>self, delegate, fn)</p>
+    <p>def <span class="ident">__init__</span>(</p><p>self, delegate, fn, logger=None)</p>
     </div>
     
 
@@ -1039,6 +1039,7 @@ output values through a given function.</p></div>
 <ul>
 <li><code>delegate</code>: <code>Executor</code> instance to which callables will be submitted</li>
 <li><code>fn</code>: a callable applied to transform returned values</li>
+<li><code>logger</code>: a <code>Logger</code> used for messages from this executor</li>
 </ul></div>
   <div class="source_cont">
 </div>

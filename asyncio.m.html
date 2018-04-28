@@ -1035,7 +1035,7 @@ as a delegate executor of other executor instances within this library.</p>
             
   <div class="item">
     <div class="name def" id="more_executors.asyncio.AsyncioExecutor.__init__">
-    <p>def <span class="ident">__init__</span>(</p><p>self, delegate, loop=None)</p>
+    <p>def <span class="ident">__init__</span>(</p><p>self, delegate, loop=None, logger=None)</p>
     </div>
     
 
@@ -1046,6 +1046,7 @@ as a delegate executor of other executor instances within this library.</p>
 <li><code>delegate</code>: <code>Executor</code> instance to which callables will be submitted</li>
 <li><code>loop</code>: <code>asyncio</code> event loop used to wrap futures; if omitted, the default
           event loop is used.</li>
+<li><code>logger</code>: a <code>Logger</code> used for messages from this executor</li>
 </ul></div>
   <div class="source_cont">
 </div>

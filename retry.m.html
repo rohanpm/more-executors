@@ -1146,7 +1146,7 @@ implicit retry behavior.</p>
             
   <div class="item">
     <div class="name def" id="more_executors.retry.RetryExecutor.__init__">
-    <p>def <span class="ident">__init__</span>(</p><p>self, delegate, retry_policy)</p>
+    <p>def <span class="ident">__init__</span>(</p><p>self, delegate, retry_policy=None, logger=None)</p>
     </div>
     
 
@@ -1156,7 +1156,9 @@ implicit retry behavior.</p>
 <ul>
 <li><code>delegate</code>: <code>Executor</code> instance to which callables will be submitted</li>
 <li><code>retry_policy</code>: <a href="#more_executors.retry.RetryPolicy"><code>RetryPolicy</code></a> instance used to determine
-                  when futures shall be retried</li>
+                  when futures shall be retried; if omitted, a default
+                  <a href="#more_executors.retry.ExceptionRetryPolicy"><code>ExceptionRetryPolicy</code></a> is used</li>
+<li><code>logger</code>: a <code>Logger</code> used for messages from this executor</li>
 </ul></div>
   <div class="source_cont">
 </div>

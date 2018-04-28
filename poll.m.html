@@ -1231,7 +1231,7 @@ for completed in as_completed(futures):
             
   <div class="item">
     <div class="name def" id="more_executors.poll.PollExecutor.__init__">
-    <p>def <span class="ident">__init__</span>(</p><p>self, delegate, poll_fn, cancel_fn=None, default_interval=5.0)</p>
+    <p>def <span class="ident">__init__</span>(</p><p>self, delegate, poll_fn, cancel_fn=None, default_interval=5.0, logger=None)</p>
     </div>
     
 
@@ -1245,6 +1245,7 @@ for completed in as_completed(futures):
 <li><code>cancel_fn</code>: a cancel function invoked when future cancel is required; see the
                class documentation for more information</li>
 <li><code>default_interval</code>: default interval between polls (in seconds)</li>
+<li><code>logger</code>: a <code>Logger</code> used for messages from this executor</li>
 </ul></div>
   <div class="source_cont">
 </div>
