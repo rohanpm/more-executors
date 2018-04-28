@@ -253,7 +253,7 @@ class RetryExecutor(Executor):
                 continue
 
             now = monotonic()
-            if job.when < now:
+            if job.when <= now:
                 # Can submit immediately and check for next job
                 self._submit_now(job)
                 continue
