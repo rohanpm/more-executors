@@ -245,7 +245,10 @@ class RetryExecutor(Executor):
         # executor until no jobs are ready, or waiting until next job is ready
         while not self._shutdown:
             self._log.debug("_submit_loop iter")
-            job = self._get_next_job()
+
+            with self._lock:
+                job = self._get_next_job()
+
             if not job:
                 self._log.debug("No jobs at all. Waiting...")
                 self._submit_wait()
