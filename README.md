@@ -71,6 +71,7 @@ def fetch_urls(urls):
 ### v1.10.0
 
 - Improved RetryPolicy API
+- Fixed a race condition leading to RetryExecutor hangs
 
 ### v1.9.0
 
