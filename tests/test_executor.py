@@ -5,7 +5,6 @@ from __future__ import print_function
 from random import randint
 from threading import RLock
 from concurrent.futures import CancelledError, wait, FIRST_COMPLETED
-import pprint
 
 from six.moves.queue import Queue
 from monotonic import monotonic
@@ -18,6 +17,7 @@ from more_executors.retry import RetryPolicy
 from more_executors._executors import Executors
 
 from .util import assert_soon
+from .logging_util import dump_executor, add_debug_logging
 
 TIMEOUT = 20.0
 
@@ -35,24 +35,8 @@ def poll_noop(ds):
     # Make PollExecutor pass everything through unchanged
     [d.yield_result(d.result) for d in ds]
 
-
-def dump_executor(ex):
-    print("Executor %s:" % ex)
-
-    all_vars = vars(ex)
-    # Don't worry about the with_* stuff from Executors
-    dump_vars = {}
-    for key, val in all_vars.items():
-        if key.startswith('with_'):
-            continue
-        dump_vars[key] = val
-
-    pprint.pprint(dump_vars, indent=2, width=100)
-
-    delegate = getattr(ex, '_delegate', None)
-    if delegate:
-        print("")
-        dump_executor(delegate)
+    # Poll again soon
+    return 0.0001
 
 
 @fixture
@@ -182,6 +166,10 @@ def everything_threadpool_executor(threadpool_executor):
                  'everything_sync', 'everything_threadpool'])
 def any_executor(request):
     ex = request.getfixturevalue(request.param + '_executor')
+
+    # Capture log messages onto the executor itself,
+    # for use with dump_executor if test fails.
+    add_debug_logging(ex)
 
     # Want to know if the test failed; is there a better way
     # than counting the failure counts here??
@@ -449,7 +437,7 @@ def do_test_submit_staggered(executor):
 
 
 class StressTester(object):
-    FUTURES_LIMIT = 1000
+    FUTURES_LIMIT = 500
     CANCELLED = object()
 
     def __init__(self, executor):
@@ -525,7 +513,7 @@ class StressTester(object):
         return False
 
     def start(self):
-        for _ in range(0, 200):
+        for _ in range(0, 100):
             value = randint(0, 3)
             ident = self.next_ident('init')
             future = self.executor.submit(self.stress_fn, ident, value)
