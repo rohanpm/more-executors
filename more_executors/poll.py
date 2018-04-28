@@ -297,7 +297,6 @@ class PollExecutor(Executor):
     def _run_poll_fn(self):
         with self._lock:
             descriptors = [d for (_, d) in self._poll_descriptors]
-            self._poll_event.clear()
 
         try:
             return self._poll_fn(descriptors)
@@ -317,6 +316,7 @@ class PollExecutor(Executor):
 
             self._log.debug("Sleeping...")
             self._poll_event.wait(next_sleep)
+            self._poll_event.clear()
 
     def shutdown(self, wait=True):
         self._shutdown = True

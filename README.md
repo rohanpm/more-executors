@@ -68,6 +68,10 @@ def fetch_urls(urls):
 
 ## Changelog
 
+### v1.11.0
+
+- Fixed hangs on executor shutdown
+
 ### v1.10.0
 
 - Improved RetryPolicy API

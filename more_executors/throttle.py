@@ -80,8 +80,6 @@ class ThrottleExecutor(Executor):
 
     def _submit_loop(self):
         while not self._shutdown:
-            self._event.clear()
-
             to_submit = []
             with self._lock:
                 while self._to_submit:
@@ -99,6 +97,7 @@ class ThrottleExecutor(Executor):
                 self._do_submit(job)
 
             self._event.wait()
+            self._event.clear()
 
     def _do_submit(self, job):
         delegate_future = self._delegate.submit(job.fn, *job.args, **job.kwargs)
