@@ -35,6 +35,9 @@ def poll_noop(ds):
     # Make PollExecutor pass everything through unchanged
     [d.yield_result(d.result) for d in ds]
 
+    # Poll again soon
+    return 0.0001
+
 
 @fixture
 def retry_executor():
