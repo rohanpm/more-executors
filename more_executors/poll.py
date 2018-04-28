@@ -7,8 +7,6 @@ import logging
 
 from more_executors._common import _Future, _MAX_TIMEOUT
 
-_LOG = logging.getLogger('PollExecutor')
-
 __pdoc__ = {}
 __pdoc__['PollExecutor.shutdown'] = None
 __pdoc__['PollExecutor.map'] = None
@@ -222,7 +220,7 @@ class PollExecutor(Executor):
             # ...
     """
 
-    def __init__(self, delegate, poll_fn, cancel_fn=None, default_interval=5.0):
+    def __init__(self, delegate, poll_fn, cancel_fn=None, default_interval=5.0, logger=None):
         """Create a new executor.
 
         - `delegate`: `Executor` instance to which callables will be submitted
@@ -231,7 +229,9 @@ class PollExecutor(Executor):
         - `cancel_fn`: a cancel function invoked when future cancel is required; see the
                        class documentation for more information
         - `default_interval`: default interval between polls (in seconds)
+        - `logger`: a `Logger` used for messages from this executor
         """
+        self._log = logger if logger else logging.getLogger('PollExecutor')
         self._delegate = delegate
         self._default_interval = default_interval
         self._poll_fn = poll_fn
@@ -291,7 +291,7 @@ class PollExecutor(Executor):
         try:
             return self._cancel_fn(descriptor.result)
         except Exception:
-            _LOG.exception("Exception during cancel on %s/%s", future, descriptor.result)
+            self._log.exception("Exception during cancel on %s/%s", future, descriptor.result)
             return False
 
     def _run_poll_fn(self):
@@ -302,20 +302,20 @@ class PollExecutor(Executor):
         try:
             return self._poll_fn(descriptors)
         except Exception as e:
-            _LOG.debug("Poll function failed", exc_info=True)
+            self._log.debug("Poll function failed", exc_info=True)
             # If poll function fails, then every future
             # depending on the poll also immediately fails.
             [d.yield_exception(e) for d in descriptors]
 
     def _poll_loop(self):
         while not self._shutdown:
-            _LOG.debug("Polling...")
+            self._log.debug("Polling...")
 
             next_sleep = self._run_poll_fn()
             if not (isinstance(next_sleep, int) or isinstance(next_sleep, float)):
                 next_sleep = self._default_interval
 
-            _LOG.debug("Sleeping...")
+            self._log.debug("Sleeping...")
             self._poll_event.wait(next_sleep)
 
     def shutdown(self, wait=True):
@@ -323,6 +323,6 @@ class PollExecutor(Executor):
         self._poll_event.set()
         self._delegate.shutdown(wait)
         if wait:
-            _LOG.debug("Join poll thread...")
+            self._log.debug("Join poll thread...")
             self._poll_thread.join(_MAX_TIMEOUT)
-            _LOG.debug("Joined poll thread.")
+            self._log.debug("Joined poll thread.")

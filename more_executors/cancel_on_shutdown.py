@@ -7,8 +7,6 @@ __pdoc__ = {}
 __pdoc__['CancelOnShutdownExecutor.submit'] = None
 __pdoc__['CancelOnShutdownExecutor.map'] = None
 
-_LOG = logging.getLogger('CancelOnShutdownExecutor')
-
 
 class CancelOnShutdownExecutor(Executor):
     """An `Executor` which delegates to another `Executor` and cancels all
@@ -18,11 +16,13 @@ class CancelOnShutdownExecutor(Executor):
     behavior, such as `more_executors.poll.PollExecutor`.
     """
 
-    def __init__(self, delegate):
+    def __init__(self, delegate, logger=None):
         """Create a new executor.
 
         - `delegate`: `Executor` instance to which callables will be submitted
+        - `logger`: a `Logger` used for messages from this executor
         """
+        self._log = logger if logger else logging.getLogger('CancelOnShutdownExecutor')
         self._delegate = delegate
         self._futures = set()
         self._lock = RLock()
@@ -42,7 +42,7 @@ class CancelOnShutdownExecutor(Executor):
 
             for f in self._futures.copy():
                 cancel = f.cancel()
-                _LOG.debug("Cancel %s: %s", f, cancel)
+                self._log.debug("Cancel %s: %s", f, cancel)
 
             self._delegate.shutdown(wait)
 

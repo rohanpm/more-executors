@@ -7,8 +7,6 @@ import logging
 from more_executors._common import _MAX_TIMEOUT
 from more_executors.map import _MapFuture
 
-_LOG = logging.getLogger('ThrottleExecutor')
-
 __pdoc__ = {}
 __pdoc__['ThrottleExecutor.submit'] = None
 __pdoc__['ThrottleExecutor.map'] = None
@@ -44,12 +42,14 @@ class ThrottleExecutor(Executor):
 
     *Since version 1.9.0*
     """
-    def __init__(self, delegate, count):
+    def __init__(self, delegate, count, logger=None):
         """Create a new executor.
 
         - `delegate`: `Executor` instance to which callables will be submitted
         - `count`: maximum number of concurrently running futures
+        - `logger`: a `Logger` used for messages from this executor
         """
+        self._log = logger if logger else logging.getLogger('ThrottleExecutor')
         self._delegate = delegate
         self._to_submit = deque()
         self._lock = Lock()
@@ -66,12 +66,12 @@ class ThrottleExecutor(Executor):
         job = _ThrottleJob(out, fn, args, kwargs)
         with self._lock:
             self._to_submit.append(job)
-            _LOG.debug("Enqueued: %s", job)
+            self._log.debug("Enqueued: %s", job)
         self._event.set()
         return out
 
     def shutdown(self, wait=True):
-        _LOG.debug("Shutting down")
+        self._log.debug("Shutting down")
         self._shutdown = True
         self._delegate.shutdown(wait)
         self._event.set()
@@ -86,13 +86,14 @@ class ThrottleExecutor(Executor):
             with self._lock:
                 while self._to_submit:
                     if not self._sem.acquire(False):
-                        _LOG.debug("Throttled")
+                        self._log.debug("Throttled")
                         break
                     job = self._to_submit.popleft()
-                    _LOG.debug("Will submit: %s", job)
+                    self._log.debug("Will submit: %s", job)
                     to_submit.append(job)
 
-                _LOG.debug("Submitting %s, throttling %s", len(to_submit), len(self._to_submit))
+                self._log.debug("Submitting %s, throttling %s",
+                                len(to_submit), len(self._to_submit))
 
             for job in to_submit:
                 self._do_submit(job)
@@ -101,7 +102,7 @@ class ThrottleExecutor(Executor):
 
     def _do_submit(self, job):
         delegate_future = self._delegate.submit(job.fn, *job.args, **job.kwargs)
-        _LOG.debug("Submitted %s yielding %s", job, delegate_future)
+        self._log.debug("Submitted %s yielding %s", job, delegate_future)
 
         delegate_future.add_done_callback(self._delegate_future_done)
         job.future._set_delegate(delegate_future)
@@ -111,15 +112,15 @@ class ThrottleExecutor(Executor):
             for job in self._to_submit:
                 if job.future is future:
                     self._to_submit.remove(job)
-                    _LOG.debug("Cancelled %s", job)
+                    self._log.debug("Cancelled %s", job)
                     return True
-        _LOG.debug("Could not find for cancel: %s", future)
+        self._log.debug("Could not find for cancel: %s", future)
         return False
 
     def _delegate_future_done(self, future):
         # Whenever an inner future completes, one more execution slot becomes
         # available, and the thread should wake up in case there's something to
         # be submitted
-        _LOG.debug("Delegate future done: %s", future)
+        self._log.debug("Delegate future done: %s", future)
         self._sem.release()
         self._event.set()

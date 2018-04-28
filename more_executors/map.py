@@ -68,11 +68,12 @@ class MapExecutor(Executor):
     output values through a given function.
     """
 
-    def __init__(self, delegate, fn):
+    def __init__(self, delegate, fn, logger=None):
         """Create a new executor.
 
         - `delegate`: `Executor` instance to which callables will be submitted
         - `fn`: a callable applied to transform returned values
+        - `logger`: a `Logger` used for messages from this executor
         """
         self._delegate = delegate
         self._fn = fn

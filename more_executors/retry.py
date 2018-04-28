@@ -152,15 +152,18 @@ class RetryExecutor(Executor):
     - This executor is thread-safe.
     """
 
-    def __init__(self, delegate, retry_policy):
+    def __init__(self, delegate, retry_policy=None, logger=None):
         """Create a new executor.
 
         - `delegate`: `Executor` instance to which callables will be submitted
         - `retry_policy`: `more_executors.retry.RetryPolicy` instance used to determine
-                          when futures shall be retried"""
-        self._log = logging.getLogger('RetryExecutor')
+                          when futures shall be retried; if omitted, a default
+                          `more_executors.retry.ExceptionRetryPolicy` is used
+        - `logger`: a `Logger` used for messages from this executor
+        """
+        self._log = logger if logger else logging.getLogger('RetryExecutor')
         self._delegate = delegate
-        self._default_retry_policy = retry_policy
+        self._default_retry_policy = retry_policy or ExceptionRetryPolicy.new_default()
         self._jobs = []
         self._submit_thread = Thread(
             name='RetryExecutor', target=self._submit_loop)

@@ -72,6 +72,7 @@ def fetch_urls(urls):
 
 - Improved RetryPolicy API
 - Fixed a race condition leading to RetryExecutor hangs
+- Added `logger` argument to each executor
 
 ### v1.9.0
 
