@@ -19,7 +19,7 @@ extend the behavior of `Future` objects.
 - Futures with implicit retry
 - Futures with implicit cancel on executor shutdown
 - Futures with implicit cancel after timeout
-- Futures with transformed output values
+- Futures with transformed output values (sync & async)
 - Futures resolved by a caller-provided polling function
 - Throttle the number of futures running at once
 - Synchronous executor
@@ -67,6 +67,10 @@ def fetch_urls(urls):
 ```
 
 ## Changelog
+
+### v1.12.0
+
+- Introduced FlatMapExecutor
 
 ### v1.11.0
 
