@@ -2,6 +2,7 @@ from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 from functools import partial
 
 from more_executors.map import MapExecutor
+from more_executors.flat_map import FlatMapExecutor
 from more_executors.retry import RetryExecutor
 from more_executors.poll import PollExecutor
 from more_executors.timeout import TimeoutExecutor
@@ -27,6 +28,7 @@ class Executors(object):
     _WRAP_METHODS = [
         'with_retry',
         'with_map',
+        'with_flat_map',
         'with_poll',
         'with_timeout',
         'with_throttle',
@@ -78,6 +80,17 @@ class Executors(object):
         Submitted callables will have their output transformed by the given function.
         """
         return cls.wrap(MapExecutor(executor, *args, **kwargs))
+
+    @classmethod
+    def with_flat_map(cls, executor, *args, **kwargs):
+        """Wrap an executor in a `more_executors.flat_map.FlatMapExecutor`.
+
+        Submitted callables will have their output transformed by the given
+        `Future`-producing function.
+
+        *Since version 1.12.0*
+        """
+        return cls.wrap(FlatMapExecutor(executor, *args, **kwargs))
 
     @classmethod
     def with_poll(cls, executor, *args, **kwargs):

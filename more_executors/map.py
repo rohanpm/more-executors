@@ -1,4 +1,4 @@
-"""Transform the output value of a future."""
+"""Transform the output value of a future synchronously."""
 
 from concurrent.futures import Executor
 
@@ -41,7 +41,13 @@ class _MapFuture(_Future):
         if ex:
             self.set_exception(ex)
         else:
-            self.set_result(result)
+            try:
+                self._on_mapped(result)
+            except Exception as ex:
+                self.set_exception(ex)
+
+    def _on_mapped(self, result):
+        self.set_result(result)
 
     def set_result(self, result):
         with self._me_lock:
@@ -68,6 +74,8 @@ class MapExecutor(Executor):
     output values through a given function.
     """
 
+    _FUTURE_CLASS = _MapFuture
+
     def __init__(self, delegate, fn, logger=None):
         """Create a new executor.
 
@@ -88,4 +96,4 @@ class MapExecutor(Executor):
         map function passed to this executor.  If that map function raises
         an exception, the future will fail with that exception."""
         inner_f = self._delegate.submit(fn, *args, **kwargs)
-        return _MapFuture(inner_f, self._fn)
+        return self._FUTURE_CLASS(inner_f, self._fn)

@@ -2,6 +2,7 @@
 
 from __future__ import print_function
 
+from functools import partial
 from random import randint
 from threading import RLock
 from concurrent.futures import CancelledError, wait, FIRST_COMPLETED
@@ -31,6 +32,12 @@ def map_noop(value):
     return value
 
 
+def flat_map_noop(executor, value):
+    # Make FlatMapExecutor pass everything through unchanged,
+    # using the given executor to produce new futures
+    return executor.submit(map_noop, value)
+
+
 def poll_noop(ds):
     # Make PollExecutor pass everything through unchanged
     [d.yield_result(d.result) for d in ds]
@@ -57,6 +64,11 @@ def sync_executor():
 @fixture
 def map_executor(threadpool_executor):
     return threadpool_executor.with_map(map_noop)
+
+
+@fixture
+def flat_map_executor(threadpool_executor):
+    return threadpool_executor.with_flat_map(partial(flat_map_noop, threadpool_executor))
 
 
 @fixture
@@ -140,11 +152,13 @@ def everything_executor(base_executor):
         with_retry(RetryPolicy()).\
         with_retry(RetryPolicy()).\
         with_throttle(10).\
+        with_flat_map(partial(flat_map_noop, base_executor)).\
         with_timeout(120.0).\
         with_poll(poll_noop).\
         with_poll(poll_noop).\
         with_cancel_on_shutdown().\
         with_throttle(16).\
+        with_flat_map(partial(flat_map_noop, base_executor)).\
         with_map(map_noop).\
         with_timeout(180.0).\
         with_map(map_noop).\
@@ -163,6 +177,7 @@ def everything_threadpool_executor(threadpool_executor):
 
 @fixture(params=['threadpool', 'retry', 'map', 'retry_map', 'map_retry', 'poll', 'retry_map_poll',
                  'sync', 'timeout', 'throttle', 'cancel_poll_map_retry', 'cancel_retry_map_poll',
+                 'flat_map',
                  'everything_sync', 'everything_threadpool'])
 def any_executor(request):
     ex = request.getfixturevalue(request.param + '_executor')
