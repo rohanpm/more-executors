@@ -1,6 +1,7 @@
 from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 from functools import partial
 
+from more_executors._bind import BoundCallable
 from more_executors.map import MapExecutor
 from more_executors.flat_map import FlatMapExecutor
 from more_executors.retry import RetryExecutor
@@ -34,18 +35,90 @@ class Executors(object):
         'with_throttle',
         'with_cancel_on_shutdown',
         'with_asyncio',
+        'bind',
     ]
+
+    @classmethod
+    def bind(cls, executor, fn):
+        """Bind a callable to an executor.
+
+        - `executor` - an `Executor` instance
+        - `fn` - any function or callable
+
+        Returns a new callable which, when invoked, will submit `fn` to `executor` and return
+        the resulting future.
+
+        The returned callable provides the `Executors.with_*` methods, which may be chained to
+        further customize the behavior of the callable.
+
+        ### **Example**
+
+        Consider this code to fetch data from a list of URLs expected to provide JSON,
+        with up to 8 concurrent requests and retries on failure, without using `bind`:
+
+            executor = Executors.thread_pool(max_workers=8). \\
+                with_map(lambda response: response.json()). \\
+                with_retry()
+
+            futures = [executor.submit(requests.get, url)
+                       for url in urls]
+
+        The following code using `bind` is functionally equivalent:
+
+            async_get = Executors.thread_pool(max_workers=8). \\
+                bind(requests.get). \\
+                with_map(lambda response: response.json()). \\
+                with_retry()
+
+            futures = [async_get(url) for url in urls]
+
+        The latter example using `bind` is more readable because the order of the calls to set
+        up the pipeline more closely reflects the order in which the pipeline executes at
+        runtime.
+
+        In contrast, without using `bind`, the *first* step of the pipeline - `requests.get` -
+        appears at the *end* of the code, which is harder to follow.
+
+        *Since version 1.13.0*
+        """
+        return cls.wrap(BoundCallable(executor, fn))
+
+    @classmethod
+    def _invoke_unwrapped(cls, fn, *args, **kwargs):
+        args = list(args)
+        executor_or_bound = args.pop(0)
+
+        if isinstance(executor_or_bound, BoundCallable):
+            executor = executor_or_bound._BoundCallable__executor
+            bound_fn = executor_or_bound._BoundCallable__fn
+            new_executor = fn(executor, *args, **kwargs)
+            return cls.bind(new_executor, bound_fn)
+
+        return fn(executor_or_bound, *args, **kwargs)
 
     @classmethod
     def wrap(cls, executor):
         """Wrap an executor for configuration.
 
-        This adds all `with_*` methods from this class onto the executor.
-        When invoked, the executor is implicitly passed as the first argument to the method."""
-        for name in cls._WRAP_METHODS:
+        This adds all `Executors.*` methods onto the executor.
+        When invoked, the executor is implicitly passed as the first argument to the method.
+        """
+
+        # 'executor' can actually be an executor or a BoundCallable.
+        # This is an implementation detail and not mentioned in docs
+        # since BoundCallable is not public API.
+
+        to_wrap = cls._WRAP_METHODS
+
+        if isinstance(executor, BoundCallable):
+            # cannot further bind a BoundCallable.
+            to_wrap = [name for name in to_wrap if name != 'bind']
+
+        for name in to_wrap:
             unbound_fn = getattr(cls, name)
-            bound_fn = partial(unbound_fn, executor)
+            bound_fn = partial(cls._invoke_unwrapped, unbound_fn, executor)
             setattr(executor, name, bound_fn)
+
         return executor
 
     @classmethod
