@@ -980,6 +980,7 @@ table {
         
           
   <ul>
+    <li class="mono"><a href="#more_executors.Executors.bind">bind</a></li>
     <li class="mono"><a href="#more_executors.Executors.process_pool">process_pool</a></li>
     <li class="mono"><a href="#more_executors.Executors.sync">sync</a></li>
     <li class="mono"><a href="#more_executors.Executors.thread_pool">thread_pool</a></li>
@@ -1034,7 +1035,7 @@ table {
 module.  It includes a collection of <code>Executor</code> implementations in order to
 extend the behavior of <code>Future</code> objects.</p>
 <p>Compatible with Python 2.6, 2.7 and 3.x.</p>
-<p>This documentation was built from more-executors 1.13.0.dev0, revision c129481.</p>
+<p>This documentation was built from more-executors 1.13.0.dev0, revision 9fd8c64.</p>
   
 
   </header>
@@ -1065,6 +1066,53 @@ and multiply all output values by 2.</p></div>
           <li>builtins.object</li>
           </ul>
           <h3>Methods</h3>
+            
+  <div class="item">
+    <div class="name def" id="more_executors.Executors.bind">
+    <p>def <span class="ident">bind</span>(</p><p>cls, executor, fn)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Bind a callable to an executor.</p>
+<ul>
+<li><code>executor</code> - an <code>Executor</code> instance</li>
+<li><code>fn</code> - any function or callable</li>
+</ul>
+<p>Returns a new callable which, when invoked, will submit <code>fn</code> to <code>executor</code> and return
+the resulting future.</p>
+<p>The returned callable provides the <code>Executors.with_*</code> methods, which may be chained to
+further customize the behavior of the callable.</p>
+<h3><strong>Example</strong></h3>
+<p>Consider this code to fetch data from a list of URLs expected to provide JSON,
+with up to 8 concurrent requests and retries on failure, without using <code>bind</code>:</p>
+<pre><code>executor = Executors.thread_pool(max_workers=8). \
+    with_map(lambda response: response.json()). \
+    with_retry()
+
+futures = [executor.submit(requests.get, url)
+           for url in urls]
+</code></pre>
+<p>The following code using <code>bind</code> is functionally equivalent:</p>
+<pre><code>async_get = Executors.thread_pool(max_workers=8). \
+    bind(requests.get). \
+    with_map(lambda response: response.json()). \
+    with_retry()
+
+futures = [async_get(url) for url in urls]
+</code></pre>
+<p>The latter example using <code>bind</code> is more readable because the order of the calls to set
+up the pipeline more closely reflects the order in which the pipeline executes at
+runtime.</p>
+<p>In contrast, without using <code>bind</code>, the <em>first</em> step of the pipeline - <code>requests.get</code> -
+appears at the <em>end</em> of the code, which is harder to follow.</p>
+<p><em>Since version 1.13.0</em></p></div>
+  <div class="source_cont">
+</div>
+
+  </div>
+  
             
   <div class="item">
     <div class="name def" id="more_executors.Executors.process_pool">
@@ -1263,7 +1311,7 @@ given timeout.</p>
     
   
     <div class="desc"><p>Wrap an executor for configuration.</p>
-<p>This adds all <code>with_*</code> methods from this class onto the executor.
+<p>This adds all <code>Executors.*</code> methods onto the executor.
 When invoked, the executor is implicitly passed as the first argument to the method.</p></div>
   <div class="source_cont">
 </div>
