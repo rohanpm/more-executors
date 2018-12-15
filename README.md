@@ -68,6 +68,10 @@ def fetch_urls(urls):
 
 ## Changelog
 
+### v1.13.0
+
+- Introduced Executors.bind
+
 ### v1.12.0
 
 - Introduced FlatMapExecutor

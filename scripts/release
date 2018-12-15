@@ -51,7 +51,16 @@ def tag(version):
 
 def upload():
     check_call([sys.executable or 'python', 'setup.py',
-                'sdist', 'bdist_wheel', 'upload', '--sign'])
+                'sdist', 'bdist_wheel'])
+
+    twine_cmd = ' '.join([
+        sys.executable or 'python',
+        '-mtwine',
+        'upload',
+        '--sign',
+        'dist/*'
+    ])
+    check_call(twine_cmd, shell=True)
 
 
 def push(release_version):
