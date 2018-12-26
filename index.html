@@ -992,7 +992,6 @@ table {
     <li class="mono"><a href="#more_executors.Executors.with_retry">with_retry</a></li>
     <li class="mono"><a href="#more_executors.Executors.with_throttle">with_throttle</a></li>
     <li class="mono"><a href="#more_executors.Executors.with_timeout">with_timeout</a></li>
-    <li class="mono"><a href="#more_executors.Executors.wrap">wrap</a></li>
   </ul>
 
         </li>
@@ -1035,7 +1034,7 @@ table {
 module.  It includes a collection of <code>Executor</code> implementations in order to
 extend the behavior of <code>Future</code> objects.</p>
 <p>Compatible with Python 2.6, 2.7 and 3.x.</p>
-<p>This documentation was built from more-executors 1.14.0.dev0, revision a1b97eb.</p>
+<p>This documentation was built from more-executors 1.14.0.dev0, revision dcbbac7.</p>
   
 
   </header>
@@ -1296,23 +1295,6 @@ See the class documentation for more information.</p></div>
 <p>Returned futures will be cancelled if they've not completed within the
 given timeout.</p>
 <p><em>Since version 1.7.0</em></p></div>
-  <div class="source_cont">
-</div>
-
-  </div>
-  
-            
-  <div class="item">
-    <div class="name def" id="more_executors.Executors.wrap">
-    <p>def <span class="ident">wrap</span>(</p><p>cls, executor)</p>
-    </div>
-    
-
-    
-  
-    <div class="desc"><p>Wrap an executor for configuration.</p>
-<p>This adds all <code>Executors.*</code> methods onto the executor.
-When invoked, the executor is implicitly passed as the first argument to the method.</p></div>
   <div class="source_cont">
 </div>
 
