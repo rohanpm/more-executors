@@ -70,8 +70,11 @@ def fetch_urls(urls):
 
 ### v1.14.0
 
+- API break: removed `Executors.wrap` class method
 - Fixed thread leaks when `shutdown()` is never called
   ([#87](https://github.com/rohanpm/more-executors/issues/87))
+- Refactors to avoid pylint errors from client code
+  ([#86](https://github.com/rohanpm/more-executors/issues/86))
 
 ### v1.13.0
 

@@ -1,4 +1,3 @@
-from concurrent.futures import ThreadPoolExecutor
 from pytest import fixture
 from hamcrest import assert_that, equal_to, instance_of, calling, raises
 
@@ -8,7 +7,7 @@ from more_executors.flat_map import FlatMapExecutor
 
 @fixture
 def executor():
-    return ThreadPoolExecutor()
+    return Executors.thread_pool()
 
 
 def add1(x):
@@ -77,7 +76,7 @@ def test_flat_map_nofuture(executor):
 def test_chained_flat_map(executor):
     """Chaining multiple flatmaps pass through values as expected."""
 
-    flat_map_executor = Executors.wrap(executor).\
+    flat_map_executor = executor.\
         with_flat_map(lambda x: executor.submit(mult10, x)).\
         with_flat_map(lambda x: executor.submit(add1, x))
 
@@ -103,7 +102,7 @@ def test_chained_flat_map_exception(executor):
         fn2_called.append(0)
         raise AssertionError("Can't get here!")  # pragma: no cover
 
-    flat_map_executor = Executors.wrap(executor).\
+    flat_map_executor = executor.\
         with_flat_map(fn1).\
         with_flat_map(fn2)
 

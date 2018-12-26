@@ -8,6 +8,7 @@ from monotonic import monotonic
 
 from more_executors.map import _MapFuture
 from more_executors._common import _MAX_TIMEOUT
+from more_executors._wrap import CanCustomizeBind
 
 __pdoc__ = {}
 __pdoc__['TimeoutExecutor.map'] = None
@@ -22,7 +23,7 @@ class _TimeoutFuture(_MapFuture):
         super(_TimeoutFuture, self).__init__(delegate, lambda x: x)
 
 
-class TimeoutExecutor(Executor):
+class TimeoutExecutor(CanCustomizeBind, Executor):
     """An `Executor` which delegates to another `Executor` while applying
     a timeout to each returned future.
 

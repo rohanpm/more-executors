@@ -1,6 +1,6 @@
-from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
-from functools import partial
-
+from more_executors._wrapped import \
+    CustomizableThreadPoolExecutor, \
+    CustomizableProcessPoolExecutor
 from more_executors._bind import BoundCallable
 from more_executors.map import MapExecutor
 from more_executors.flat_map import FlatMapExecutor
@@ -81,62 +81,34 @@ class Executors(object):
 
         *Since version 1.13.0*
         """
-        return cls.wrap(BoundCallable(executor, fn))
-
-    @classmethod
-    def _invoke_unwrapped(cls, fn, *args, **kwargs):
-        args = list(args)
-        executor_or_bound = args.pop(0)
-
-        if isinstance(executor_or_bound, BoundCallable):
-            executor = executor_or_bound._BoundCallable__executor
-            bound_fn = executor_or_bound._BoundCallable__fn
-            new_executor = fn(executor, *args, **kwargs)
-            return cls.bind(new_executor, bound_fn)
-
-        return fn(executor_or_bound, *args, **kwargs)
-
-    @classmethod
-    def wrap(cls, executor):
-        """Wrap an executor for configuration.
-
-        This adds all `Executors.*` methods onto the executor.
-        When invoked, the executor is implicitly passed as the first argument to the method.
-        """
-
-        # 'executor' can actually be an executor or a BoundCallable.
-        # This is an implementation detail and not mentioned in docs
-        # since BoundCallable is not public API.
-
-        to_wrap = cls._WRAP_METHODS
-
-        if isinstance(executor, BoundCallable):
-            # cannot further bind a BoundCallable.
-            to_wrap = [name for name in to_wrap if name != 'bind']
-
-        for name in to_wrap:
-            unbound_fn = getattr(cls, name)
-            bound_fn = partial(cls._invoke_unwrapped, unbound_fn, executor)
-            setattr(executor, name, bound_fn)
-
-        return executor
+        return BoundCallable(executor, fn)
 
     @classmethod
     def thread_pool(cls, *args, **kwargs):
         """Creates a new `concurrent.futures.ThreadPoolExecutor` with the given arguments."""
-        return cls.wrap(ThreadPoolExecutor(*args, **kwargs))
+        return CustomizableThreadPoolExecutor(*args, **kwargs)
 
     @classmethod
     def process_pool(cls, *args, **kwargs):
         """Creates a new `concurrent.futures.ProcessPoolExecutor` with the given arguments."""
-        return cls.wrap(ProcessPoolExecutor(*args, **kwargs))
+        return CustomizableProcessPoolExecutor(*args, **kwargs)
 
     @classmethod
     def sync(cls, *args, **kwargs):
         """Creates a new `more_executors.sync.SyncExecutor`.
 
         Submitted functions will be immediately invoked on the calling thread."""
-        return cls.wrap(SyncExecutor(*args, **kwargs))
+        return SyncExecutor(*args, **kwargs)
+
+    @classmethod
+    def _customize(cls, delegate, executor_class, *args, **kwargs):
+        if isinstance(delegate, BoundCallable):
+            executor = delegate._BoundCallable__executor
+            bound_fn = delegate._BoundCallable__fn
+            new_executor = executor_class(executor, *args, **kwargs)
+            return cls.bind(new_executor, bound_fn)
+
+        return executor_class(delegate, *args, **kwargs)
 
     @classmethod
     def with_retry(cls, executor, *args, **kwargs):
@@ -144,7 +116,7 @@ class Executors(object):
 
         Submitted functions will be retried on failure.
         """
-        return cls.wrap(RetryExecutor(executor, *args, **kwargs))
+        return cls._customize(executor, RetryExecutor, *args, **kwargs)
 
     @classmethod
     def with_map(cls, executor, *args, **kwargs):
@@ -152,7 +124,7 @@ class Executors(object):
 
         Submitted callables will have their output transformed by the given function.
         """
-        return cls.wrap(MapExecutor(executor, *args, **kwargs))
+        return cls._customize(executor, MapExecutor, *args, **kwargs)
 
     @classmethod
     def with_flat_map(cls, executor, *args, **kwargs):
@@ -163,7 +135,7 @@ class Executors(object):
 
         *Since version 1.12.0*
         """
-        return cls.wrap(FlatMapExecutor(executor, *args, **kwargs))
+        return cls._customize(executor, FlatMapExecutor, *args, **kwargs)
 
     @classmethod
     def with_poll(cls, executor, *args, **kwargs):
@@ -172,7 +144,7 @@ class Executors(object):
         Submitted callables will have their output passed into the poll function.
         See the class documentation for more information.
         """
-        return cls.wrap(PollExecutor(executor, *args, **kwargs))
+        return cls._customize(executor, PollExecutor, *args, **kwargs)
 
     @classmethod
     def with_timeout(cls, executor, *args, **kwargs):
@@ -183,7 +155,7 @@ class Executors(object):
 
         *Since version 1.7.0*
         """
-        return cls.wrap(TimeoutExecutor(executor, *args, **kwargs))
+        return cls._customize(executor, TimeoutExecutor, *args, **kwargs)
 
     @classmethod
     def with_throttle(cls, executor, *args, **kwargs):
@@ -191,7 +163,7 @@ class Executors(object):
 
         *Since version 1.9.0*
         """
-        return cls.wrap(ThrottleExecutor(executor, *args, **kwargs))
+        return cls._customize(executor, ThrottleExecutor, *args, **kwargs)
 
     @classmethod
     def with_cancel_on_shutdown(cls, executor, *args, **kwargs):
@@ -199,7 +171,7 @@ class Executors(object):
 
         Returned futures will have `cancel` invoked if the executor is shut down
         before the future has completed."""
-        return cls.wrap(CancelOnShutdownExecutor(executor, *args, **kwargs))
+        return cls._customize(executor, CancelOnShutdownExecutor, *args, **kwargs)
 
     @classmethod
     def with_asyncio(cls, executor, *args, **kwargs):
@@ -218,4 +190,4 @@ class Executors(object):
 
         *Since version 1.7.0*
         """
-        return AsyncioExecutor(executor, *args, **kwargs)
+        return cls._customize(executor, AsyncioExecutor, *args, **kwargs)

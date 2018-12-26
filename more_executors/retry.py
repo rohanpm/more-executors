@@ -13,6 +13,7 @@ import weakref
 from monotonic import monotonic
 
 from more_executors._common import _Future, _MAX_TIMEOUT
+from more_executors._wrap import CanCustomizeBind
 
 # Hide some docs which would otherwise be repeated
 __pdoc__ = {}
@@ -133,7 +134,7 @@ class _RetryFuture(_Future):
         return executor and executor._cancel(self)
 
 
-class RetryExecutor(Executor):
+class RetryExecutor(CanCustomizeBind, Executor):
     """An `Executor` which delegates to another `Executor` while adding
     implicit retry behavior.
 

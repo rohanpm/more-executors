@@ -1,7 +1,9 @@
 from functools import update_wrapper
 
+from more_executors._wrap import CanCustomize
 
-class BoundCallable(object):
+
+class BoundCallable(CanCustomize, object):
     def __init__(self, executor, fn):
         self.__executor = executor
         self.__fn = fn
