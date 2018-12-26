@@ -1,22 +1,4 @@
-"""Transform the output value of a future asynchronously."""
-
 from more_executors.map import _MapFuture, MapExecutor
-
-__pdoc__ = {}
-__pdoc__['FlatMapExecutor.shutdown'] = None
-__pdoc__['FlatMapExecutor.map'] = None
-__pdoc__['FlatMapExecutor.submit'] = """Submit a callable.
-
-The returned `Future` will have its output value transformed by the
-map function passed to this executor.
-
-- If the map function returns a `Future`, the result/exception of
-  that future will be propagated to the future returned by this function.
-- If the map function returns anything other than a `Future`, the returned
-  future will fail with a `TypeError`.
-- If the map function raises an exception, the returned future will fail
-  with that exception.
-"""
 
 
 class _FlatMapFuture(_MapFuture):
@@ -43,16 +25,25 @@ class _FlatMapFuture(_MapFuture):
 
 
 class FlatMapExecutor(MapExecutor):
-    """An `Executor` which delegates to another `Executor` while mapping
-    output values through a given `Future`-producing function.
+    """An executor which delegates to another executor while mapping
+    output values through a given future-producing function.
 
-    This executor behaves like `MapExecutor`, except that the given mapping
-    function must return instances of `Future`, and the mapped future is
+    This executor behaves like :class:`~more_executors.map.MapExecutor`,
+    except that the given mapping function must return instances of
+    :class:`~concurrent.futures.Future`, and the mapped future is
     flattened into the future returned from this executor.
     This allows chaining multiple future-producing functions into a single
     future.
 
-    *Since version 1.12.0*
+    - If the map function returns a :class:`~concurrent.futures.Future`, the
+      result/exception of that future will be propagated to the future returned
+      by this executor.
+    - If the map function returns any other type, the returned future will fail
+      with a :class:`TypeError`.
+    - If the map function raises an exception, the returned future will fail
+      with that exception.
+
+    .. versionadded: 1.12.0
     """
 
     _FUTURE_CLASS = _FlatMapFuture

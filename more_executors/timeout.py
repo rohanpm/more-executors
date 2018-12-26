@@ -1,4 +1,3 @@
-"""Create futures which must complete within a timeout or be cancelled."""
 from concurrent.futures import Executor
 from threading import Event, Thread, Lock
 from collections import namedtuple
@@ -10,10 +9,6 @@ from more_executors.map import _MapFuture
 from more_executors._common import _MAX_TIMEOUT
 from more_executors._wrap import CanCustomizeBind
 
-__pdoc__ = {}
-__pdoc__['TimeoutExecutor.map'] = None
-__pdoc__['TimeoutExecutor.shutdown'] = None
-__pdoc__['TimeoutExecutor.submit'] = None
 
 _Job = namedtuple('_Job', ['future', 'delegate_future', 'deadline'])
 
@@ -24,7 +19,7 @@ class _TimeoutFuture(_MapFuture):
 
 
 class TimeoutExecutor(CanCustomizeBind, Executor):
-    """An `Executor` which delegates to another `Executor` while applying
+    """An executor which delegates to another executor while applying
     a timeout to each returned future.
 
     For any futures returned by this executor, if the future hasn't
@@ -34,15 +29,21 @@ class TimeoutExecutor(CanCustomizeBind, Executor):
     Note that only a single attempt is made to cancel any future, and there
     is no guarantee that this will succeed.
 
-    *Since version 1.7.0*
+    .. versionadded:: 1.7.0
     """
     def __init__(self, delegate, timeout, logger=None):
-        """Create a new executor.
+        """
+        Parameters:
 
-        - `delegate`: the delegate executor to which callables are submitted.
-        - `timeout`: timeout (in seconds) after which `future.cancel()` will be
-                     invoked on any generated future which has not completed.
-        - `logger`: a `Logger` used for messages from this executor
+            delegate (~concurrent.futures.Executor):
+                an executor to which callables are submitted
+
+            timeout (float):
+                timeout (in seconds) after which :meth:`concurrent.futures.Future.cancel()`
+                will be invoked on any generated future which has not completed
+
+            logger (~logging.Logger):
+                a logger used for messages from this executor
         """
         self._log = logger if logger else logging.getLogger('TimeoutExecutor')
         self._delegate = delegate

@@ -1,4 +1,3 @@
-"""An executor which limits the number of running futures."""
 from concurrent.futures import Executor
 from threading import Event, Thread, Lock, Semaphore
 from collections import namedtuple, deque
@@ -8,11 +7,6 @@ import weakref
 from more_executors._common import _MAX_TIMEOUT
 from more_executors._wrap import CanCustomizeBind
 from more_executors.map import _MapFuture
-
-__pdoc__ = {}
-__pdoc__['ThrottleExecutor.submit'] = None
-__pdoc__['ThrottleExecutor.map'] = None
-__pdoc__['ThrottleExecutor.shutdown'] = None
 
 
 class _ThrottleFuture(_MapFuture):
@@ -31,7 +25,7 @@ _ThrottleJob = namedtuple('_ThrottleJob', ['future', 'fn', 'args', 'kwargs'])
 
 
 class ThrottleExecutor(CanCustomizeBind, Executor):
-    """An `Executor` which delegates to another `Executor` while enforcing
+    """An executor which delegates to another executor while enforcing
     a limit on the number of futures running concurrently.
 
     - Callables are submitted to the delegate executor, from a different
@@ -39,18 +33,23 @@ class ThrottleExecutor(CanCustomizeBind, Executor):
 
     - Where `count` is used to initialize this executor, if there
       are already `count` futures submitted to the delegate executor and not
-      yet `done()`, additional callables will be queued and only submitted
-      to the delegate executor once there are less than `count` futures
-      in progress.
+      yet :meth:`~concurrent.futures.Future.done`, additional callables will
+      be queued and only submitted to the delegate executor once there are
+      less than `count` futures in progress.
 
-    *Since version 1.9.0*
+    .. versionadded:: 1.9.0
     """
     def __init__(self, delegate, count, logger=None):
-        """Create a new executor.
+        """
+        Parameters:
+            delegate (~concurrent.futures.Executor):
+                an executor to which callables will be submitted
 
-        - `delegate`: `Executor` instance to which callables will be submitted
-        - `count`: maximum number of concurrently running futures
-        - `logger`: a `Logger` used for messages from this executor
+            count (int):
+                maximum number of concurrently running futures
+
+            logger (~logging.Logger):
+                a logger used for messages from this executor
         """
         self._log = logger if logger else logging.getLogger('ThrottleExecutor')
         self._delegate = delegate

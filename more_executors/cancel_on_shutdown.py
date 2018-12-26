@@ -1,28 +1,27 @@
-"""Cancel futures when executor is shut down."""
 from concurrent.futures import Executor
 from threading import RLock
 import logging
 
 from more_executors._wrap import CanCustomizeBind
 
-__pdoc__ = {}
-__pdoc__['CancelOnShutdownExecutor.submit'] = None
-__pdoc__['CancelOnShutdownExecutor.map'] = None
-
 
 class CancelOnShutdownExecutor(CanCustomizeBind, Executor):
-    """An `Executor` which delegates to another `Executor` and cancels all
+    """An executor which delegates to another executor and cancels all
     futures when the executor is shut down.
 
     This class is useful in conjunction with executors having custom cancel
-    behavior, such as `more_executors.poll.PollExecutor`.
+    behavior, such as :class:`~more_executors.poll.PollExecutor`.
     """
 
     def __init__(self, delegate, logger=None):
-        """Create a new executor.
+        """
+        Parameters:
 
-        - `delegate`: `Executor` instance to which callables will be submitted
-        - `logger`: a `Logger` used for messages from this executor
+            delegate (~concurrent.futures.Executor):
+                executor to which callables will be submitted
+
+            logger (~logging.Logger):
+                a logger used for messages from this executor
         """
         self._log = logger if logger else logging.getLogger('CancelOnShutdownExecutor')
         self._delegate = delegate
@@ -34,8 +33,10 @@ class CancelOnShutdownExecutor(CanCustomizeBind, Executor):
         """Shut down the executor.
 
         All futures created by this executor which have not yet been completed
-        will have `cancel` invoked.  Note that there is no guarantee that the
-        cancel will succeed.
+        will have :meth:`~concurrent.futures.Future.cancel` invoked.
+
+        Note that there is no guarantee that the cancel will succeed, and only a single
+        attempt is made to cancel any future.
         """
         with self._lock:
             if self._shutdown:

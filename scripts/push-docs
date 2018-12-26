@@ -8,7 +8,7 @@ fi
 
 rev=$(git rev-parse --short HEAD)
 
-cd docs/more_executors
+cd docs/_build
 
 git init
 git config user.name "Rohan McGovern"
