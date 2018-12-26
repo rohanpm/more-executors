@@ -1,13 +1,14 @@
 """An executor which invokes callables synchronously."""
 from concurrent.futures import Executor, Future
 
+from more_executors._wrap import CanCustomizeBind
 
 __pdoc__ = {}
 __pdoc__['SyncExecutor.map'] = None
 __pdoc__['SyncExecutor.shutdown'] = None
 
 
-class SyncExecutor(Executor):
+class SyncExecutor(CanCustomizeBind, Executor):
     """An `Executor` which immediately invokes all submitted callables.
 
     This executor is useful for testing.  With executor implementations

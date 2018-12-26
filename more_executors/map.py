@@ -3,6 +3,7 @@
 from concurrent.futures import Executor
 
 from more_executors._common import _Future
+from more_executors._wrap import CanCustomizeBind
 
 __pdoc__ = {}
 __pdoc__['MapExecutor.shutdown'] = None
@@ -69,7 +70,7 @@ class _MapFuture(_Future):
         return self._delegate.cancel()
 
 
-class MapExecutor(Executor):
+class MapExecutor(CanCustomizeBind, Executor):
     """An `Executor` which delegates to another `Executor` while mapping
     output values through a given function.
     """

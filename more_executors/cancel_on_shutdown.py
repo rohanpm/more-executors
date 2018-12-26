@@ -3,12 +3,14 @@ from concurrent.futures import Executor
 from threading import RLock
 import logging
 
+from more_executors._wrap import CanCustomizeBind
+
 __pdoc__ = {}
 __pdoc__['CancelOnShutdownExecutor.submit'] = None
 __pdoc__['CancelOnShutdownExecutor.map'] = None
 
 
-class CancelOnShutdownExecutor(Executor):
+class CancelOnShutdownExecutor(CanCustomizeBind, Executor):
     """An `Executor` which delegates to another `Executor` and cancels all
     futures when the executor is shut down.
 

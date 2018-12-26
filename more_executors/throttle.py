@@ -6,6 +6,7 @@ import logging
 import weakref
 
 from more_executors._common import _MAX_TIMEOUT
+from more_executors._wrap import CanCustomizeBind
 from more_executors.map import _MapFuture
 
 __pdoc__ = {}
@@ -29,7 +30,7 @@ class _ThrottleFuture(_MapFuture):
 _ThrottleJob = namedtuple('_ThrottleJob', ['future', 'fn', 'args', 'kwargs'])
 
 
-class ThrottleExecutor(Executor):
+class ThrottleExecutor(CanCustomizeBind, Executor):
     """An `Executor` which delegates to another `Executor` while enforcing
     a limit on the number of futures running concurrently.
 

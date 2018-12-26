@@ -7,6 +7,7 @@ import sys
 import logging
 
 from more_executors._common import _Future, _MAX_TIMEOUT
+from more_executors._wrap import CanCustomizeBind
 
 __pdoc__ = {}
 __pdoc__['PollExecutor.shutdown'] = None
@@ -86,7 +87,7 @@ if sys.version_info[0] > 2:
         """The poll function can call this function to make the future raise the given exception."""
 
 
-class PollExecutor(Executor):
+class PollExecutor(CanCustomizeBind, Executor):
     """Instances of `PollExecutor` submit callables to a delegate `Executor`
     and resolve the returned futures via a provided poll function.
 
