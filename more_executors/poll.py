@@ -2,6 +2,7 @@
 from concurrent.futures import Executor
 from collections import namedtuple
 from threading import RLock, Thread, Event
+import weakref
 import sys
 import logging
 
@@ -238,7 +239,11 @@ class PollExecutor(Executor):
         self._cancel_fn = cancel_fn
         self._poll_descriptors = []
         self._poll_event = Event()
-        self._poll_thread = Thread(name='PollExecutor', target=self._poll_loop)
+
+        poll_event = self._poll_event
+        self_ref = weakref.ref(self, lambda _: poll_event.set())
+
+        self._poll_thread = Thread(name='PollExecutor', target=_poll_loop, args=(self_ref,))
         self._poll_thread.daemon = True
         self._shutdown = False
         self._lock = RLock()
@@ -306,18 +311,6 @@ class PollExecutor(Executor):
             # depending on the poll also immediately fails.
             [d.yield_exception(e) for d in descriptors]
 
-    def _poll_loop(self):
-        while not self._shutdown:
-            self._log.debug("Polling...")
-
-            next_sleep = self._run_poll_fn()
-            if not (isinstance(next_sleep, int) or isinstance(next_sleep, float)):
-                next_sleep = self._default_interval
-
-            self._log.debug("Sleeping...")
-            self._poll_event.wait(next_sleep)
-            self._poll_event.clear()
-
     def shutdown(self, wait=True):
         self._shutdown = True
         self._poll_event.set()
@@ -326,3 +319,27 @@ class PollExecutor(Executor):
             self._log.debug("Join poll thread...")
             self._poll_thread.join(_MAX_TIMEOUT)
             self._log.debug("Joined poll thread.")
+
+
+def _poll_loop(executor_ref):
+    while True:
+        executor = executor_ref()
+        if not executor:
+            break
+
+        if executor._shutdown:
+            break
+
+        executor._log.debug("Polling...")
+
+        next_sleep = executor._run_poll_fn()
+        if not (isinstance(next_sleep, int) or isinstance(next_sleep, float)):
+            next_sleep = executor._default_interval
+
+        executor._log.debug("Sleeping...")
+
+        poll_event = executor._poll_event
+        del executor
+
+        poll_event.wait(next_sleep)
+        poll_event.clear()

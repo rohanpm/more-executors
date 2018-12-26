@@ -68,6 +68,11 @@ def fetch_urls(urls):
 
 ## Changelog
 
+### v1.14.0
+
+- Fixed thread leaks when `shutdown()` is never called
+  ([#87](https://github.com/rohanpm/more-executors/issues/87))
+
 ### v1.13.0
 
 - Introduced Executors.bind

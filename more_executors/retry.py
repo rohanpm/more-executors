@@ -8,6 +8,7 @@ from collections import namedtuple
 from concurrent.futures import Executor
 from threading import RLock, Thread, Event
 import logging
+import weakref
 
 from monotonic import monotonic
 
@@ -97,7 +98,7 @@ class _RetryFuture(_Future):
     def __init__(self, executor):
         super(_RetryFuture, self).__init__()
         self.delegate_future = None
-        self._executor = executor
+        self._executor_ref = weakref.ref(executor)
 
     def running(self):
         with self._me_lock:
@@ -128,7 +129,8 @@ class _RetryFuture(_Future):
         self._me_invoke_callbacks()
 
     def _me_cancel(self):
-        return self._executor._cancel(self)
+        executor = self._executor_ref()
+        return executor and executor._cancel(self)
 
 
 class RetryExecutor(Executor):
@@ -165,10 +167,14 @@ class RetryExecutor(Executor):
         self._delegate = delegate
         self._default_retry_policy = retry_policy or ExceptionRetryPolicy.new_default()
         self._jobs = []
-        self._submit_thread = Thread(
-            name='RetryExecutor', target=self._submit_loop)
-        self._submit_thread.daemon = True
         self._submit_event = Event()
+
+        event = self._submit_event
+        self_ref = weakref.ref(self, lambda _: event.set())
+        self._submit_thread = Thread(
+            name='RetryExecutor', target=_submit_loop, args=(self_ref,))
+        self._submit_thread.daemon = True
+
         self._shutdown = False
         self._lock = RLock()
 
@@ -238,38 +244,6 @@ class RetryExecutor(Executor):
             elif job.when < min_job.when:
                 min_job = job
         return min_job
-
-    def _submit_wait(self, timeout=None):
-        self._submit_event.wait(timeout)
-        self._submit_event.clear()
-
-    def _submit_loop(self):
-        # Runs in a separate thread continuously submitting to the delegate
-        # executor until no jobs are ready, or waiting until next job is ready
-        while not self._shutdown:
-            self._log.debug("_submit_loop iter")
-
-            with self._lock:
-                job = self._get_next_job()
-
-            if not job:
-                self._log.debug("No jobs at all. Waiting...")
-                self._submit_wait()
-                continue
-
-            now = monotonic()
-            if job.when <= now:
-                # Can submit immediately and check for next job
-                self._submit_now(job)
-                continue
-
-            # There is nothing to submit immediately.
-            # Sleep until either:
-            # - reaching the time of the nearest job, or...
-            # - woken up by condvar
-            delta = job.when - now
-            self._log.debug("No ready job.  Waiting: %s", delta)
-            self._submit_wait(delta)
 
     def _submit_now(self, job):
         # Pop job since we'll replace it.
@@ -415,3 +389,49 @@ class RetryExecutor(Executor):
         self._pop_job(found_job)
 
         self._log.debug("Finalized %s", found_job)
+
+
+def _submit_loop(executor_ref):
+    # Runs in a separate thread continuously submitting to the delegate
+    # executor until no jobs are ready, or waiting until next job is ready
+    while True:
+        executor = executor_ref()
+        if not executor:
+            break
+
+        if executor._shutdown:
+            break
+
+        executor._log.debug("_submit_loop iter")
+
+        with executor._lock:
+            job = executor._get_next_job()
+
+        if not job:
+            executor._log.debug("No jobs at all. Waiting...")
+            event = executor._submit_event
+            del executor
+            _submit_wait(event)
+            continue
+
+        now = monotonic()
+        if job.when <= now:
+            # Can submit immediately and check for next job
+            executor._submit_now(job)
+            continue
+
+        # There is nothing to submit immediately.
+        # Sleep until either:
+        # - reaching the time of the nearest job, or...
+        # - woken up by condvar
+        delta = job.when - now
+        executor._log.debug("No ready job.  Waiting: %s", delta)
+        event = executor._submit_event
+        del executor
+        del job
+        _submit_wait(event, delta)
+
+
+def _submit_wait(event, timeout=None):
+    event.wait(timeout)
+    event.clear()
