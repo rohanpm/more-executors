@@ -19,83 +19,58 @@ class Executors(object):
     This class produces wrapped executors which may be customized
     by use of the `with_*` methods, as in the following example:
 
-    ```
-    Executors.thread_pool(max_workers=4).with_retry().with_map(lambda x: x*2)
-    ```
+    >>> Executors.thread_pool(max_workers=4).with_retry().with_map(lambda x: x*2)
 
     Produces a thread pool executor which will retry on failure
     and multiply all output values by 2."""
-
-    _WRAP_METHODS = [
-        'with_retry',
-        'with_map',
-        'with_flat_map',
-        'with_poll',
-        'with_timeout',
-        'with_throttle',
-        'with_cancel_on_shutdown',
-        'with_asyncio',
-        'bind',
-    ]
 
     @classmethod
     def bind(cls, executor, fn):
         """Bind a callable to an executor.
 
-        - `executor` - an `Executor` instance
-        - `fn` - any function or callable
+        Arguments:
+            executor (~concurrent.futures.Executor): an executor
+            fn (callable): any function or callable
 
-        Returns a new callable which, when invoked, will submit `fn` to `executor` and return
-        the resulting future.
+        Returns:
+            callable:
+                A new callable which, when invoked, will submit `fn` to `executor` and return
+                the resulting future.
 
-        The returned callable provides the `Executors.with_*` methods, which may be chained to
-        further customize the behavior of the callable.
+                This returned callable provides the `Executors.with_*` methods, which may be
+                chained to further customize the behavior of the callable.
 
-        ### **Example**
-
-        Consider this code to fetch data from a list of URLs expected to provide JSON,
-        with up to 8 concurrent requests and retries on failure, without using `bind`:
-
-            executor = Executors.thread_pool(max_workers=8). \\
-                with_map(lambda response: response.json()). \\
-                with_retry()
-
-            futures = [executor.submit(requests.get, url)
-                       for url in urls]
-
-        The following code using `bind` is functionally equivalent:
-
-            async_get = Executors.thread_pool(max_workers=8). \\
-                bind(requests.get). \\
-                with_map(lambda response: response.json()). \\
-                with_retry()
-
-            futures = [async_get(url) for url in urls]
-
-        The latter example using `bind` is more readable because the order of the calls to set
-        up the pipeline more closely reflects the order in which the pipeline executes at
-        runtime.
-
-        In contrast, without using `bind`, the *first* step of the pipeline - `requests.get` -
-        appears at the *end* of the code, which is harder to follow.
-
-        *Since version 1.13.0*
+        .. versionadded:: 1.13.0
         """
         return BoundCallable(executor, fn)
 
     @classmethod
     def thread_pool(cls, *args, **kwargs):
-        """Creates a new `concurrent.futures.ThreadPoolExecutor` with the given arguments."""
+        """Create a thread pool executor.
+
+        Returns:
+            ~concurrent.futures.ThreadPoolExecutor:
+                a new executor, initialized with the given arguments
+        """
         return CustomizableThreadPoolExecutor(*args, **kwargs)
 
     @classmethod
     def process_pool(cls, *args, **kwargs):
-        """Creates a new `concurrent.futures.ProcessPoolExecutor` with the given arguments."""
+        """Create a process pool executor.
+
+        Returns:
+            ~concurrent.futures.ProcessPoolExecutor:
+                a new executor, initialized with the given arguments
+        """
         return CustomizableProcessPoolExecutor(*args, **kwargs)
 
     @classmethod
     def sync(cls, *args, **kwargs):
-        """Creates a new `more_executors.sync.SyncExecutor`.
+        """Creates a new synchronous executor.
+
+        Returns:
+            ~more_executors.sync.SyncExecutor:
+                a new synchronous executor
 
         Submitted functions will be immediately invoked on the calling thread."""
         return SyncExecutor(*args, **kwargs)
@@ -112,82 +87,97 @@ class Executors(object):
 
     @classmethod
     def with_retry(cls, executor, *args, **kwargs):
-        """Wrap an executor in a `more_executors.retry.RetryExecutor`.
-
-        Submitted functions will be retried on failure.
+        """
+        Returns:
+            ~more_executors.retry.RetryExecutor:
+                a new executor which will retry callables on failure
         """
         return cls._customize(executor, RetryExecutor, *args, **kwargs)
 
     @classmethod
     def with_map(cls, executor, *args, **kwargs):
-        """Wrap an executor in a `more_executors.map.MapExecutor`.
-
-        Submitted callables will have their output transformed by the given function.
+        """
+        Returns:
+            ~more_executors.map.MapExecutor:
+                a new executor which will transform results through the given function
         """
         return cls._customize(executor, MapExecutor, *args, **kwargs)
 
     @classmethod
     def with_flat_map(cls, executor, *args, **kwargs):
-        """Wrap an executor in a `more_executors.flat_map.FlatMapExecutor`.
+        """
+        Returns:
+            ~more_executors.flat_map.FlatMapExecutor:
+                a new executor which will transform results through the given
+                :class:`~concurrent.futures.Future`-providing function
 
-        Submitted callables will have their output transformed by the given
-        `Future`-producing function.
-
-        *Since version 1.12.0*
+        .. versionadded:: 1.12.0
         """
         return cls._customize(executor, FlatMapExecutor, *args, **kwargs)
 
     @classmethod
     def with_poll(cls, executor, *args, **kwargs):
-        """Wrap an executor in a `more_executors.poll.PollExecutor`.
+        """
+        Returns:
+            ~more_executors.poll.PollExecutor:
+                a new executor which produces polled futures.
 
-        Submitted callables will have their output passed into the poll function.
-        See the class documentation for more information.
+                Submitted callables will have their output passed into
+                a poll function.
         """
         return cls._customize(executor, PollExecutor, *args, **kwargs)
 
     @classmethod
     def with_timeout(cls, executor, *args, **kwargs):
-        """Wrap an executor in a `more_executors.timeout.TimeoutExecutor`.
+        """
+        Returns:
+            ~more_executors.timeout.TimeoutExecutor:
+                a new executor which will attempt to cancel any futures if they've
+                not completed within the given timeout.
 
-        Returned futures will be cancelled if they've not completed within the
-        given timeout.
-
-        *Since version 1.7.0*
+        .. versionadded:: 1.7.0
         """
         return cls._customize(executor, TimeoutExecutor, *args, **kwargs)
 
     @classmethod
     def with_throttle(cls, executor, *args, **kwargs):
-        """Wrap an executor in a `more_executors.throttle.ThrottleExecutor`.
+        """
+        Returns:
+            ~more_executors.throttle.ThrottleExecutor:
+                a new executor which enforces a limit on the number of concurrently
+                pending futures.
 
-        *Since version 1.9.0*
+        .. versionadded:: 1.9.0
         """
         return cls._customize(executor, ThrottleExecutor, *args, **kwargs)
 
     @classmethod
     def with_cancel_on_shutdown(cls, executor, *args, **kwargs):
-        """Wrap an executor in a `more_executors.cancel_on_shutdown.CancelOnShutdownExecutor`.
-
-        Returned futures will have `cancel` invoked if the executor is shut down
-        before the future has completed."""
+        """
+        Returns:
+            ~more_executors.cancel_on_shutdown.CancelOnShutdownExecutor:
+                a new executor which attempts to cancel any pending futures when
+                the executor is shut down.
+        """
         return cls._customize(executor, CancelOnShutdownExecutor, *args, **kwargs)
 
     @classmethod
     def with_asyncio(cls, executor, *args, **kwargs):
-        """Wrap an executor in a `more_executors.asyncio.AsyncioExecutor`.
+        """
+        Returns:
+            ~more_executors.asyncio.AsyncioExecutor:
+                a new executor which returns :class:`asyncio.Future` instances
+                rather than :class:`concurrent.futures.Future` instances, i.e. may be used
+                with the `await` keyword and coroutines.
 
-        Returned futures will be
-        [`asyncio` futures](https://docs.python.org/3/library/asyncio-task.html)
-        rather than `concurrent.futures` futures, i.e. may be used with the `await`
-        keyword and coroutines.
+        .. note::
+            Since the other executors from :class:`Executors` class are designed
+            for use with :class:`concurrent.futures.Future`, if an executor is being
+            configured using chained `with_*` methods, this must be the last method called.
 
-        Note that since the other executors from the `Executors` class are designed
-        for use with `concurrent.futures`, if an executor is being configured using
-        chained `with_*` methods, this must be the last method called.
+        .. note::
+            Only usable for Python >= 3.5.
 
-        Only usable for Python >= 3.5.
-
-        *Since version 1.7.0*
+        .. versionadded:: 1.7.0
         """
         return cls._customize(executor, AsyncioExecutor, *args, **kwargs)

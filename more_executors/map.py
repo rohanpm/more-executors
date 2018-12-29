@@ -1,13 +1,7 @@
-"""Transform the output value of a future synchronously."""
-
 from concurrent.futures import Executor
 
 from more_executors._common import _Future
 from more_executors._wrap import CanCustomizeBind
-
-__pdoc__ = {}
-__pdoc__['MapExecutor.shutdown'] = None
-__pdoc__['MapExecutor.map'] = None
 
 
 class _MapFuture(_Future):
@@ -71,18 +65,21 @@ class _MapFuture(_Future):
 
 
 class MapExecutor(CanCustomizeBind, Executor):
-    """An `Executor` which delegates to another `Executor` while mapping
+    """An executor which delegates to another executor while mapping
     output values through a given function.
     """
 
     _FUTURE_CLASS = _MapFuture
 
     def __init__(self, delegate, fn, logger=None):
-        """Create a new executor.
-
-        - `delegate`: `Executor` instance to which callables will be submitted
-        - `fn`: a callable applied to transform returned values
-        - `logger`: a `Logger` used for messages from this executor
+        """
+        Arguments:
+            delegate (~concurrent.futures.Executor):
+                an executor to which callables will be submitted
+            fn (callable):
+                a callable applied to transform returned values
+            logger (~logging.Logger):
+                a logger used for messages from this executor
         """
         self._delegate = delegate
         self._fn = fn
@@ -93,7 +90,7 @@ class MapExecutor(CanCustomizeBind, Executor):
     def submit(self, fn, *args, **kwargs):
         """Submit a callable.
 
-        The returned `Future` will have its output value transformed by the
+        The returned future will have its output value transformed by the
         map function passed to this executor.  If that map function raises
         an exception, the future will fail with that exception."""
         inner_f = self._delegate.submit(fn, *args, **kwargs)

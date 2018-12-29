@@ -101,4 +101,3 @@ ENV/
 .mypy_cache/
 /MANIFEST
 .pytest_cache/
-docs/
