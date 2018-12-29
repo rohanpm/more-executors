@@ -26,5 +26,4 @@ docs: .PHONY
 
 release: .PHONY
 	tox -e py35
-	.tox/py35/bin/pip install pypandoc
 	.tox/py35/bin/python scripts/release
