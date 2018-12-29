@@ -1,0 +1,291 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>User Guide &#8212; more-executors  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Reference" href="api-reference.html" />
+    <link rel="prev" title="more-executors" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="user-guide">
+<h1>User Guide<a class="headerlink" href="#user-guide" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="base-executors">
+<span id="id1"></span><h2>Base executors<a class="headerlink" href="#base-executors" title="Permalink to this headline">¶</a></h2>
+<p>These methods on the <code class="xref py py-class docutils literal notranslate"><span class="pre">more_executors.Executors</span></code> class
+create standalone <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>
+instances which may serve as the basis of <a class="reference internal" href="#composing-executors">composing executors</a>.</p>
+<blockquote>
+<div><dl class="docutils">
+<dt><a class="reference internal" href="api-reference.html#more_executors.Executors.thread_pool" title="more_executors.Executors.thread_pool"><code class="xref py py-meth docutils literal notranslate"><span class="pre">thread_pool()</span></code></a></dt>
+<dd>creates a new <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.ThreadPoolExecutor" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ThreadPoolExecutor</span></code></a>
+to execute callables in threads.</dd>
+<dt><a class="reference internal" href="api-reference.html#more_executors.Executors.process_pool" title="more_executors.Executors.process_pool"><code class="xref py py-meth docutils literal notranslate"><span class="pre">process_pool()</span></code></a></dt>
+<dd>creates a new <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.ProcessPoolExecutor" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProcessPoolExecutor</span></code></a>
+to execute callables in processes.</dd>
+<dt><a class="reference internal" href="api-reference.html#more_executors.Executors.sync" title="more_executors.Executors.sync"><code class="xref py py-meth docutils literal notranslate"><span class="pre">sync()</span></code></a></dt>
+<dd>creates a new <a class="reference internal" href="api-reference.html#more_executors.sync.SyncExecutor" title="more_executors.sync.SyncExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyncExecutor</span></code></a>
+to execute callables in the calling thread.</dd>
+</dl>
+</div></blockquote>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">more_executors</span> <span class="kn">import</span> <span class="n">Executors</span>
+<span class="k">with</span> <span class="n">Executors</span><span class="o">.</span><span class="n">thread_pool</span><span class="p">()</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
+    <span class="n">future</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">,</span> <span class="s1">&#39;https://github.com/rohanpm/more-executors&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="composing-executors">
+<span id="id2"></span><h2>Composing executors<a class="headerlink" href="#composing-executors" title="Permalink to this headline">¶</a></h2>
+<p>Executors produced by this module can be customized by chaining a series of
+<cite>with_*</cite> methods. This may be used to compose different behaviors for specific
+use-cases.</p>
+<p>Methods for composition are provided for all implemented executors:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt><a class="reference internal" href="api-reference.html#more_executors.Executors.with_map" title="more_executors.Executors.with_map"><code class="xref py py-meth docutils literal notranslate"><span class="pre">with_map()</span></code></a></dt>
+<dd>transform the output of a future, synchronously</dd>
+<dt><a class="reference internal" href="api-reference.html#more_executors.Executors.with_flat_map" title="more_executors.Executors.with_flat_map"><code class="xref py py-meth docutils literal notranslate"><span class="pre">with_flat_map()</span></code></a></dt>
+<dd>transform the output of a future, asynchronously</dd>
+<dt><a class="reference internal" href="api-reference.html#more_executors.Executors.with_retry" title="more_executors.Executors.with_retry"><code class="xref py py-meth docutils literal notranslate"><span class="pre">with_retry()</span></code></a></dt>
+<dd>retry failing futures</dd>
+<dt><a class="reference internal" href="api-reference.html#more_executors.Executors.with_poll" title="more_executors.Executors.with_poll"><code class="xref py py-meth docutils literal notranslate"><span class="pre">with_poll()</span></code></a></dt>
+<dd>resolve failing futures via a custom poll function</dd>
+<dt><a class="reference internal" href="api-reference.html#more_executors.Executors.with_timeout" title="more_executors.Executors.with_timeout"><code class="xref py py-meth docutils literal notranslate"><span class="pre">with_timeout()</span></code></a></dt>
+<dd>cancel unresolved futures after a timeout</dd>
+<dt><a class="reference internal" href="api-reference.html#more_executors.Executors.with_throttle" title="more_executors.Executors.with_throttle"><code class="xref py py-meth docutils literal notranslate"><span class="pre">with_throttle()</span></code></a></dt>
+<dd>limit the number of concurrently executing futures</dd>
+<dt><a class="reference internal" href="api-reference.html#more_executors.Executors.with_cancel_on_shutdown" title="more_executors.Executors.with_cancel_on_shutdown"><code class="xref py py-meth docutils literal notranslate"><span class="pre">with_cancel_on_shutdown()</span></code></a></dt>
+<dd>cancel any pending futures on executor shutdown</dd>
+<dt><a class="reference internal" href="api-reference.html#more_executors.Executors.with_asyncio" title="more_executors.Executors.with_asyncio"><code class="xref py py-meth docutils literal notranslate"><span class="pre">with_asyncio()</span></code></a></dt>
+<dd>bridge between <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#module-concurrent.futures" title="(in Python v3.7)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">concurrent.futures</span></code></a> and <a class="reference external" href="https://docs.python.org/3/library/asyncio.html#module-asyncio" title="(in Python v3.7)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">asyncio</span></code></a></dd>
+</dl>
+</div></blockquote>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Run in up to 4 threads, retry on failure, transform output values</span>
+<span class="n">executor</span> <span class="o">=</span> <span class="n">Executors</span><span class="o">.</span><span class="n">thread_pool</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span> \
+    <span class="n">with_map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">response</span><span class="p">:</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">())</span><span class="o">.</span> \
+    <span class="n">with_retry</span><span class="p">()</span>
+<span class="n">responses</span> <span class="o">=</span> <span class="p">[</span><span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+             <span class="k">for</span> <span class="n">url</span> <span class="ow">in</span> <span class="n">urls</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Keep in mind that the order in which executors are composed is significant.
+For example, these two composition sequences have different effects:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Executors</span><span class="o">.</span><span class="n">sync</span><span class="p">()</span><span class="o">.</span><span class="n">with_retry</span><span class="p">()</span><span class="o">.</span><span class="n">with_throttle</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In this example, if 4 callables have failed and retries are currently pending,
+throttling takes effect, and any additional callables will be enqueued until at
+least one of the earlier callables has completed (or exhausted all retry
+attempts).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Executors</span><span class="o">.</span><span class="n">sync</span><span class="p">()</span><span class="o">.</span><span class="n">with_throttle</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">with_retry</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>In this example, an unlimited number of futures may be failed and awaiting
+retries. The throttling in this example has no effect, since a
+<a class="reference internal" href="api-reference.html#more_executors.sync.SyncExecutor" title="more_executors.sync.SyncExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyncExecutor</span></code></a> is intrinsically throttled to
+a single pending future.</p>
+</div>
+<div class="section" id="binding-callables-to-executors">
+<h2>Binding callables to executors<a class="headerlink" href="#binding-callables-to-executors" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference internal" href="api-reference.html#more_executors.Executors.bind" title="more_executors.Executors.bind"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bind()</span></code></a> method produces a callable which is
+bound to a specific executor.</p>
+<p>This is illustrated by the following example.
+Consider this code to fetch data from a list of URLs expected to provide JSON,
+with up to 8 concurrent requests and retries on failure, without using
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">bind()</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">executor</span> <span class="o">=</span> <span class="n">Executors</span><span class="o">.</span><span class="n">thread_pool</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span><span class="o">.</span> \
+    <span class="n">with_map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">response</span><span class="p">:</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">())</span><span class="o">.</span> \
+    <span class="n">with_retry</span><span class="p">()</span>
+
+<span class="n">futures</span> <span class="o">=</span> <span class="p">[</span><span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">url</span> <span class="ow">in</span> <span class="n">urls</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The following code using <code class="xref py py-meth docutils literal notranslate"><span class="pre">bind()</span></code> is functionally
+equivalent:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">async_get</span> <span class="o">=</span> <span class="n">Executors</span><span class="o">.</span><span class="n">thread_pool</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span><span class="o">.</span> \
+    <span class="n">bind</span><span class="p">(</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">)</span><span class="o">.</span> \
+    <span class="n">with_map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">response</span><span class="p">:</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">())</span><span class="o">.</span> \
+    <span class="n">with_retry</span><span class="p">()</span>
+
+<span class="n">futures</span> <span class="o">=</span> <span class="p">[</span><span class="n">async_get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span> <span class="k">for</span> <span class="n">url</span> <span class="ow">in</span> <span class="n">urls</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The latter example using <code class="xref py py-meth docutils literal notranslate"><span class="pre">bind()</span></code> is more readable because the order of
+the calls to set up the pipeline more closely reflects the order in
+which the pipeline executes at runtime.</p>
+<p>In contrast, without using <code class="xref py py-meth docutils literal notranslate"><span class="pre">bind()</span></code>, the <em>first</em> step of the pipeline -
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">requests.get()</span></code> - appears at the <em>end</em> of the code, which is harder
+to follow.</p>
+</div>
+<div class="section" id="usage-of-threads">
+<h2>Usage of threads<a class="headerlink" href="#usage-of-threads" title="Permalink to this headline">¶</a></h2>
+<p>Several executors internally make use of threads. Thus, executors should be
+considered relatively heavyweight: creating dozens of executors within a
+process is probably fine, creating thousands is possibly not.</p>
+<p>Callbacks added by <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future.add_done_callback" title="(in Python v3.7)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_done_callback()</span></code></a> may
+be invoked from any thread and should avoid any slow blocking operations.</p>
+<p>All provided executors are thread-safe with the exception of the
+<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor.shutdown" title="(in Python v3.7)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">shutdown()</span></code></a> method, which should be called
+from one thread only.</p>
+</div>
+<div class="section" id="executor-shutdown">
+<h2>Executor shutdown<a class="headerlink" href="#executor-shutdown" title="Permalink to this headline">¶</a></h2>
+<p>Shutting down an executor will also shut down all wrapped executors.</p>
+<p>In the example below, any threads created by the
+<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.ThreadPoolExecutor" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ThreadPoolExecutor</span></code></a>, as well as the thread
+created by the <a class="reference internal" href="api-reference.html#more_executors.retry.RetryExecutor" title="more_executors.retry.RetryExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">RetryExecutor</span></code></a>, will be joined
+at the end of the <cite>with</cite> block:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">executor</span> <span class="o">=</span> <span class="n">Executors</span><span class="o">.</span><span class="n">thread_pool</span><span class="p">()</span><span class="o">.</span> \
+    <span class="n">with_map</span><span class="p">(</span><span class="n">check_result</span><span class="p">)</span><span class="o">.</span> \
+    <span class="n">with_retry</span><span class="p">()</span>
+
+<span class="k">with</span> <span class="n">executor</span><span class="p">:</span>
+    <span class="n">do_something</span><span class="p">(</span><span class="n">executor</span><span class="p">)</span>
+    <span class="n">do_other_thing</span><span class="p">(</span><span class="n">executor</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Note this implies that sharing of executors needs to be done carefully.
+For example, this code is broken:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">executor</span> <span class="o">=</span> <span class="n">Executors</span><span class="o">.</span><span class="n">thread_pool</span><span class="p">()</span><span class="o">.</span><span class="n">with_map</span><span class="p">(</span><span class="n">check_result</span><span class="p">)</span>
+
+<span class="c1"># Only need retries on this part</span>
+<span class="k">with</span> <span class="n">executor</span><span class="o">.</span><span class="n">with_retry</span><span class="p">()</span> <span class="k">as</span> <span class="n">retry_executor</span><span class="p">:</span>
+    <span class="n">do_flaky_something</span><span class="p">(</span><span class="n">retry_executor</span><span class="p">)</span>
+
+<span class="c1"># BUG: don&#39;t do this!</span>
+<span class="c1"># The thread pool executor was already shut down, so this won&#39;t work.</span>
+<span class="k">with</span> <span class="n">executor</span><span class="p">:</span>
+    <span class="n">do_something</span><span class="p">(</span><span class="n">executor</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Shutting down executors is optional and is not necessary to (eventually)
+reclaim resources.</p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">more-executors</a></h1>
+
+
+
+<p class="blurb">A library of composable Python executors</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=rohanpm&repo=more-executors&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a class="badge" href="https://travis-ci.org/rohanpm/more-executors">
+    <img
+        alt="https://secure.travis-ci.org/rohanpm/more-executors.svg?branch=master"
+        src="https://secure.travis-ci.org/rohanpm/more-executors.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">User Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#base-executors">Base executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#composing-executors">Composing executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#binding-callables-to-executors">Binding callables to executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#usage-of-threads">Usage of threads</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#executor-shutdown">Executor shutdown</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api-reference.html">Reference</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">more-executors</a></li>
+      <li>Next: <a href="api-reference.html" title="next chapter">Reference</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Rohan McGovern.
+      
+      |
+      <a href="_sources/user-guide.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
