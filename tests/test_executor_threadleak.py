@@ -10,7 +10,8 @@ from .util import assert_soon
 
 
 def poll_noop(descriptors):
-    pass
+    for descriptor in descriptors:
+        descriptor.yield_result(descriptor.result)
 
 
 @fixture
@@ -38,12 +39,19 @@ def ctor_with_poll():
 @fixture
 def ctor_with_throttle():
     def fn():
-        return Executors.sync().with_throttle(4)
+        return Executors.sync().with_throttle(2)
+    return fn
+
+
+@fixture
+def ctor_with_poll_throttle():
+    def fn():
+        return Executors.sync().with_poll(poll_noop).with_throttle(2)
     return fn
 
 
 @fixture(params=['sync', 'thread_pool', 'with_retry', 'with_poll',
-                 'with_throttle'])
+                 'with_throttle', 'with_poll_throttle'])
 def executor_ctor(request):
     return request.getfixturevalue('ctor_' + request.param)
 
@@ -79,5 +87,16 @@ def test_no_leak_on_discarded_futures(executor_ctor):
     futures = [executor.submit(mult2, n) for n in [10, 20, 30]]
     del executor
     del futures
+
+    assert_soon(no_extra_threads)
+
+
+def test_no_leak_on_completed_futures(executor_ctor):
+    no_extra_threads = partial(assert_no_extra_threads, thread_names())
+
+    executor = executor_ctor()
+    results = [executor.submit(mult2, n) for n in [10, 20, 30]]
+    results = map(lambda f: f.result(), results)
+    del executor
 
     assert_soon(no_extra_threads)

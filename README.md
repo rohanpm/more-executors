@@ -68,6 +68,11 @@ def fetch_urls(urls):
 
 ## Changelog
 
+### v1.15.0
+
+- Fixed ThrottleExecutor thread leak when `shutdown()` is never called
+  ([#93](https://github.com/rohanpm/more-executors/issues/93))
+
 ### v1.14.0
 
 - API break: removed `Executors.wrap` class method
