@@ -74,6 +74,8 @@ def fetch_urls(urls):
   ([#98](https://github.com/rohanpm/more-executors/issues/98))
 - Fixed `Executors.bind` with `functools.partial`
   ([#96](https://github.com/rohanpm/more-executors/issues/96))
+- Fixed ThrottleExecutor thread leak when `shutdown()` is never called
+  ([#93](https://github.com/rohanpm/more-executors/issues/93))
 
 ### v1.14.0
 
