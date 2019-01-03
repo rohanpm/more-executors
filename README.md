@@ -68,6 +68,11 @@ def fetch_urls(urls):
 
 ## Changelog
 
+### v1.15.0
+
+- Fixed `Executors.bind` with `functools.partial`
+  ([#96](https://github.com/rohanpm/more-executors/issues/96))
+
 ### v1.14.0
 
 - API break: removed `Executors.wrap` class method
