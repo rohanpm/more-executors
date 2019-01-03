@@ -70,6 +70,8 @@ def fetch_urls(urls):
 
 ### v1.15.0
 
+- Fixed possible deadlock in CancelOnShutdownExecutor
+  ([#98](https://github.com/rohanpm/more-executors/issues/98))
 - Fixed `Executors.bind` with `functools.partial`
   ([#96](https://github.com/rohanpm/more-executors/issues/96))
 
