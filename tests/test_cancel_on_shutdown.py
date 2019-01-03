@@ -1,4 +1,5 @@
 from threading import Event
+import time
 
 from hamcrest import assert_that, equal_to, is_in, calling, raises, \
                      less_than_or_equal_to, greater_than_or_equal_to
@@ -79,6 +80,39 @@ def test_submit_during_shutdown():
 
     # That should have cancelled futures[2]
     assert_that(futures[2].cancelled())
+
+    # And the tests in submit_more should have run
+    assert_that(submit_more_done[0], equal_to(True))
+
+
+def test_submit_during_shutdown_no_deadlock():
+    proceed = Event()
+    submit_more_done = [False]
+
+    executor = Executors.thread_pool(max_workers=2).with_cancel_on_shutdown()
+
+    def submit_more():
+        proceed.wait()
+        assert_that(calling(executor.submit).with_args(lambda: None),
+                    raises(RuntimeError, 'Cannot submit after shutdown'))
+        submit_more_done[0] = True
+
+    futures = [executor.submit(submit_more)
+               for _ in (1, 2, 3)]
+
+    # Let threads proceed only after shutdown has already started...
+    def set_soon():
+        time.sleep(0.10)
+        proceed.set()
+
+    proceed_f = Executors.thread_pool(max_workers=1).submit(set_soon)
+    executor.shutdown(wait=True)
+    proceed_f.result()
+
+    # It should have reached here without deadlocking
+
+    # All futures should have completed
+    assert all([f.done() for f in futures])
 
     # And the tests in submit_more should have run
     assert_that(submit_more_done[0], equal_to(True))

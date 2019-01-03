@@ -109,34 +109,37 @@ class ThrottleExecutor(CanCustomizeBind, Executor):
         self._event.set()
 
 
+def _submit_loop_iter(executor):
+    if not executor:
+        return
+
+    if executor._shutdown:
+        return
+
+    to_submit = []
+    with executor._lock:
+        while executor._to_submit:
+            if not executor._sem.acquire(False):
+                executor._log.debug("Throttled")
+                break
+            job = executor._to_submit.popleft()
+            executor._log.debug("Will submit: %s", job)
+            to_submit.append(job)
+
+        executor._log.debug("Submitting %s, throttling %s",
+                            len(to_submit), len(executor._to_submit))
+
+    for job in to_submit:
+        executor._do_submit(job)
+
+    return executor._event
+
+
 def _submit_loop(executor_ref):
     while True:
-        executor = executor_ref()
-
-        if not executor:
+        event = _submit_loop_iter(executor_ref())
+        if not event:
             break
-
-        if executor._shutdown:
-            break
-
-        to_submit = []
-        with executor._lock:
-            while executor._to_submit:
-                if not executor._sem.acquire(False):
-                    executor._log.debug("Throttled")
-                    break
-                job = executor._to_submit.popleft()
-                executor._log.debug("Will submit: %s", job)
-                to_submit.append(job)
-
-            executor._log.debug("Submitting %s, throttling %s",
-                                len(to_submit), len(executor._to_submit))
-
-        for job in to_submit:
-            executor._do_submit(job)
-
-        event = executor._event
-        del executor
 
         event.wait()
         event.clear()

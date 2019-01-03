@@ -42,12 +42,13 @@ class CancelOnShutdownExecutor(CanCustomizeBind, Executor):
             if self._shutdown:
                 return
             self._shutdown = True
+            futures = self._futures.copy()
 
-            for f in self._futures.copy():
-                cancel = f.cancel()
-                self._log.debug("Cancel %s: %s", f, cancel)
+        for f in futures:
+            cancel = f.cancel()
+            self._log.debug("Cancel %s: %s", f, cancel)
 
-            self._delegate.shutdown(wait)
+        self._delegate.shutdown(wait)
 
     def submit(self, fn, *args, **kwargs):
         with self._lock:
