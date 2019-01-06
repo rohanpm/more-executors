@@ -187,8 +187,16 @@ For example, this code is broken:</p>
     <span class="n">do_something</span><span class="p">(</span><span class="n">executor</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Shutting down executors is optional and is not necessary to (eventually)
-reclaim resources.</p>
+<p>Generally, shutting down executors is optional and is not necessary to
+(eventually) reclaim resources.</p>
+<p>However, where executors accept caller-provided code (such as the polling
+function to <a class="reference internal" href="api-reference.html#more_executors.poll.PollExecutor" title="more_executors.poll.PollExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">PollExecutor</span></code></a> or the retry
+policy to <a class="reference internal" href="api-reference.html#more_executors.retry.RetryExecutor" title="more_executors.retry.RetryExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">RetryExecutor</span></code></a>), it is easy to
+accidentally create a circular reference between the provided code and the
+executor. When this happens, it will no longer be possible for the garbage
+collector to clean up the executor’s resources automatically and a thread
+leak may occur. If in doubt, call
+<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor.shutdown" title="(in Python v3.7)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">shutdown()</span></code></a>.</p>
 </div>
 </div>
 

@@ -184,5 +184,14 @@ For example, this code is broken:
     with executor:
         do_something(executor)
 
-Shutting down executors is optional and is not necessary to (eventually)
-reclaim resources.
+Generally, shutting down executors is optional and is not necessary to
+(eventually) reclaim resources.
+
+However, where executors accept caller-provided code (such as the polling
+function to :class:`~more_executors.poll.PollExecutor` or the retry
+policy to :class:`~more_executors.retry.RetryExecutor`), it is easy to
+accidentally create a circular reference between the provided code and the
+executor. When this happens, it will no longer be possible for the garbage
+collector to clean up the executor's resources automatically and a thread
+leak may occur. If in doubt, call
+:meth:`~concurrent.futures.Executor.shutdown`.

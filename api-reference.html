@@ -616,6 +616,13 @@ will fail with that exception.  The poll function will be retried later.</li>
 <li>If the poll function returns an int or float, it is used as the delay
 in seconds until the next poll.</li>
 </ul>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">The poll function should avoid holding a reference to the corresponding
+<a class="reference internal" href="#more_executors.poll.PollExecutor" title="more_executors.poll.PollExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">PollExecutor</span></code></a>. If it holds a reference to the
+executor, invoking <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor.shutdown" title="(in Python v3.7)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">shutdown()</span></code></a> becomes
+mandatory in order to stop the polling thread.</p>
+</div>
 </div>
 <div class="section" id="cancel-function">
 <span id="id2"></span><h3>Cancel function<a class="headerlink" href="#cancel-function" title="Permalink to this headline">¶</a></h3>
