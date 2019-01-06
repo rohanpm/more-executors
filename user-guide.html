@@ -145,6 +145,9 @@ which the pipeline executes at runtime.</p>
 <p>In contrast, without using <code class="xref py py-meth docutils literal notranslate"><span class="pre">bind()</span></code>, the <em>first</em> step of the pipeline -
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">requests.get()</span></code> - appears at the <em>end</em> of the code, which is harder
 to follow.</p>
+<p><a class="reference internal" href="api-reference.html#more_executors.Executors.flat_bind" title="more_executors.Executors.flat_bind"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flat_bind()</span></code></a> is also provided for use with
+callables returning a future. It behaves in the same way as <code class="xref py py-meth docutils literal notranslate"><span class="pre">bind()</span></code>,
+but avoids returning a nested future.</p>
 </div>
 <div class="section" id="usage-of-threads">
 <h2>Usage of threads<a class="headerlink" href="#usage-of-threads" title="Permalink to this headline">¶</a></h2>
