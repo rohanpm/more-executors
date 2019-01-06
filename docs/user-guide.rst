@@ -92,49 +92,54 @@ retries. The throttling in this example has no effect, since a
 a single pending future.
 
 
-Binding callables to executors
-------------------------------
+Composing futures
+-----------------
 
-The :meth:`~more_executors.Executors.bind` method produces a callable which is
-bound to a specific executor.
+A series of functions are provided for creating and composing
+:class:`~concurrent.future.Future` objects.  These functions
+may be used standalone, or in conjunction with the Executor
+implementations in ``more-executors``.
 
-This is illustrated by the following example.
-Consider this code to fetch data from a list of URLs expected to provide JSON,
-with up to 8 concurrent requests and retries on failure, without using
-:meth:`bind`:
-
-.. code-block:: python
-
-    executor = Executors.thread_pool(max_workers=8). \
-        with_map(lambda response: response.json()). \
-        with_retry()
-
-    futures = [executor.submit(requests.get, url)
-                for url in urls]
-
-The following code using :meth:`bind` is functionally
-equivalent:
-
-.. code-block:: python
-
-    async_get = Executors.thread_pool(max_workers=8). \
-        bind(requests.get). \
-        with_map(lambda response: response.json()). \
-        with_retry()
-
-    futures = [async_get(url) for url in urls]
-
-The latter example using :meth:`bind` is more readable because the order of
-the calls to set up the pipeline more closely reflects the order in
-which the pipeline executes at runtime.
-
-In contrast, without using :meth:`bind`, the *first* step of the pipeline -
-:meth:`requests.get` - appears at the *end* of the code, which is harder
-to follow.
-
-:meth:`~more_executors.Executors.flat_bind` is also provided for use with
-callables returning a future. It behaves in the same way as :meth:`bind`,
-but avoids returning a nested future.
++----------------------------------------------------+----------------------------------------------------------------------+--------------------------------------+
+| Function                                           | Signature                                                            | Description                          |
++====================================================+======================================================================+======================================+
+| :meth:`~more_executors.futures.f_return`           | X                                                                    | wrap any value in a future           |
+|                                                    |  ⟶ Future<X>                                                         |                                      |
++----------------------------------------------------+----------------------------------------------------------------------+--------------------------------------+
+| :meth:`~more_executors.futures.f_return_error`     | `n/a`                                                                | wrap any exception in a future       |
++----------------------------------------------------+----------------------------------------------------------------------+--------------------------------------+
+| :meth:`~more_executors.futures.f_return_cancelled` | `n/a`                                                                | get a cancelled future               |
++----------------------------------------------------+----------------------------------------------------------------------+--------------------------------------+
+| :meth:`~more_executors.futures.f_apply`            | Future<fn<A[,B[,...]]⟶R>>, Future<A>[, Future<B>[, ...]]             |                                      |
+|                                                    |   ⟶ Future<R>                                                        | apply a function in the future       |
++----------------------------------------------------+----------------------------------------------------------------------+--------------------------------------+
+| :meth:`~more_executors.futures.f_or`               | Future<A>[, Future<B>[, ...]]                                        |                                      |
+|                                                    |   ⟶ Future<A|B|...>                                                  | boolean ``OR``                       |
++----------------------------------------------------+----------------------------------------------------------------------+--------------------------------------+
+| :meth:`~more_executors.futures.f_and`              | Future<A>[, Future<B>[, ...]]                                        |                                      |
+|                                                    |   ⟶ Future<A|B|...>                                                  | boolean ``AND``                      |
++----------------------------------------------------+----------------------------------------------------------------------+--------------------------------------+
+| :meth:`~more_executors.futures.f_zip`              | Future<A>[, Future<B>[, ...]]                                        |                                      |
+|                                                    |   ⟶ Future<A[, B[, ...]]>                                            | combine futures into a tuple         |
++----------------------------------------------------+----------------------------------------------------------------------+--------------------------------------+
+| :meth:`~more_executors.futures.f_map`              | Future<A>, fn<A⟶B>                                                   | transform output value of a future   |
+|                                                    |   ⟶ Future<B>                                                        | via a blocking function              |
++----------------------------------------------------+----------------------------------------------------------------------+--------------------------------------+
+| :meth:`~more_executors.futures.f_flat_map`         | Future<A>, fn<A⟶Future<B>>                                           | transform output value of a future   |
+|                                                    |   ⟶ Future<B>                                                        | via a non-blocking function          |
++----------------------------------------------------+----------------------------------------------------------------------+--------------------------------------+
+| :meth:`~more_executors.futures.f_traverse`         | fn<A⟶Future<B>>, iterable<A>                                         | run non-blocking function over       |
+|                                                    |   ⟶ Future<list<B>>                                                  | iterable                             |
++----------------------------------------------------+----------------------------------------------------------------------+--------------------------------------+
+| :meth:`~more_executors.futures.f_sequence`         | list<Future<X>>                                                      | convert list of futures to a future  |
+|                                                    |   ⟶ Future<list<X>>                                                  | of list                              |
++----------------------------------------------------+----------------------------------------------------------------------+--------------------------------------+
+| :meth:`~more_executors.futures.f_nocancel`         | Future<X>                                                            | make a future unable to be cancelled |
+|                                                    |   ⟶ Future<X>                                                        |                                      |
++----------------------------------------------------+----------------------------------------------------------------------+--------------------------------------+
+| :meth:`~more_executors.futures.f_timeout`          | Future<X>, float                                                     | make a future cancel itself after a  |
+|                                                    |   ⟶ Future<X>                                                        | timeout has elapsed                  |
++----------------------------------------------------+----------------------------------------------------------------------+--------------------------------------+
 
 
 Usage of threads

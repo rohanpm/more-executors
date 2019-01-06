@@ -1,12 +1,10 @@
-import threading
-import gc
 from functools import partial
 
 from pytest import fixture
 
 from more_executors._executors import Executors
 
-from .util import assert_soon
+from .util import assert_soon, thread_names, assert_no_extra_threads
 
 
 def poll_noop(descriptors):
@@ -61,17 +59,6 @@ def ctor_with_poll_throttle():
                  'with_throttle', 'with_poll_throttle', 'with_timeout'])
 def executor_ctor(request):
     return request.getfixturevalue('ctor_' + request.param)
-
-
-def thread_names():
-    return set([t.name for t in threading.enumerate()])
-
-
-def assert_no_extra_threads(threads_before):
-    gc.collect()
-    threads_after = thread_names()
-    extra_threads = threads_after - threads_before
-    assert extra_threads == set()
 
 
 def test_no_leak_on_noop(executor_ctor):

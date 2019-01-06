@@ -2,7 +2,7 @@ from setuptools import setup
 
 
 def get_description():
-    return 'A library of composable Python executors'
+    return 'A library of composable Python executors and futures'
 
 
 def get_long_description():
