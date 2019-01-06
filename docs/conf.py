@@ -89,7 +89,8 @@ html_theme_options = dict(
     description='A library of composable Python executors',
     github_user='rohanpm',
     github_repo='more-executors',
-    github_button=True,
+    github_banner=True,
+    github_button=False,
     travis_button=True,
     show_powered_by=False,
 )
