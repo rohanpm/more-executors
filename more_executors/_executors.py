@@ -26,7 +26,9 @@ class Executors(object):
 
     @classmethod
     def bind(cls, executor, fn):
-        """Bind a callable to an executor.
+        """Bind a synchronous callable to an executor.
+
+        If the callable returns a future, consider using :meth:`flat_bind` instead.
 
         Arguments:
             executor (~concurrent.futures.Executor): an executor
@@ -43,6 +45,32 @@ class Executors(object):
         .. versionadded:: 1.13.0
         """
         return BoundCallable(executor, fn)
+
+    @classmethod
+    def flat_bind(cls, executor, fn):
+        """Bind an asynchronous callable to an executor.
+
+        This convenience method should be used in preference to :meth:`bind`
+        when the bound callable returns a future, in order to avoid a nested
+        future in the returned value. It is equivalent to:
+
+        >>> bind(fn).with_flat_map(lambda future: future)
+
+        Arguments:
+            executor (~concurrent.futures.Executor): an executor
+            fn (callable): any function or callable which returns a future
+
+        Returns:
+            callable:
+                A new callable which, when invoked, will submit `fn` to `executor` and return
+                the resulting (flattened) future.
+
+                This returned callable provides the `Executors.with_*` methods, which may be
+                chained to further customize the behavior of the callable.
+
+        .. versionadded:: 1.16.0
+        """
+        return cls.bind(executor, fn).with_flat_map(lambda f: f)
 
     @classmethod
     def thread_pool(cls, *args, **kwargs):

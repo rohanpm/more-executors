@@ -7,6 +7,8 @@ bind
 
 .. automethod:: more_executors.Executors.bind
 
+.. automethod:: more_executors.Executors.flat_bind
+
 
 concurrent.futures
 ..................

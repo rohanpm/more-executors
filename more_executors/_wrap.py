@@ -3,6 +3,10 @@ class CanBind(object):
         from more_executors._executors import Executors
         return Executors.bind(self, *args, **kwargs)
 
+    def flat_bind(self, *args, **kwargs):
+        from more_executors._executors import Executors
+        return Executors.flat_bind(self, *args, **kwargs)
+
 
 class CanCustomize(object):
     def with_retry(self, *args, **kwargs):
