@@ -133,6 +133,13 @@ The poll function has the following semantics:
 - If the poll function returns an int or float, it is used as the delay
   in seconds until the next poll.
 
+.. warning::
+
+  The poll function should avoid holding a reference to the corresponding
+  :class:`~more_executors.poll.PollExecutor`. If it holds a reference to the
+  executor, invoking :meth:`~concurrent.futures.Executor.shutdown` becomes
+  mandatory in order to stop the polling thread.
+
 .. _cancel function:
 
 
