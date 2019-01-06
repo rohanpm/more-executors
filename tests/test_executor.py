@@ -48,7 +48,7 @@ def poll_noop(ds):
 
 @fixture
 def retry_executor():
-    return Executors.thread_pool().with_retry(RetryPolicy())
+    return Executors.thread_pool().with_retry(max_attempts=1)
 
 
 @fixture
@@ -149,7 +149,7 @@ def everything_executor(base_executor):
         with_map(map_noop).\
         with_retry(RetryPolicy()).\
         with_cancel_on_shutdown().\
-        with_retry(RetryPolicy()).\
+        with_retry(max_attempts=1, max_sleep=0.1).\
         with_retry(RetryPolicy()).\
         with_throttle(10).\
         with_flat_map(partial(flat_map_noop, base_executor)).\

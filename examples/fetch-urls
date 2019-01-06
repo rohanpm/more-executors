@@ -12,7 +12,7 @@ class LoggingRetryPolicy(RetryPolicy):
     """A RetryPolicy which prints a message before each retry."""
     def __init__(self):
         # Inherit the behavior from the default policy
-        self.policy = ExceptionRetryPolicy.new_default()
+        self.policy = ExceptionRetryPolicy()
 
     def should_retry(self, attempt, future):
         retry = self.policy.should_retry(attempt, future)

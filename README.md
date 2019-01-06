@@ -70,6 +70,8 @@ def fetch_urls(urls):
 
 ### v1.16.0
 
+- API break: removed `new_default` methods in retry module
+- Minor usability improvements to retry API
 - Introduced flat_bind
   ([#97](https://github.com/rohanpm/more-executors/issues/97))
 

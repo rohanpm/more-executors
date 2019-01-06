@@ -105,7 +105,7 @@ def test_cancel_delegate():
     inner = MagicMock()
     inner.submit.side_effect = null_submit
 
-    executor = RetryExecutor.new_default(inner)
+    executor = RetryExecutor(inner)
 
     def never_called():
         assert False, 'this should not have been called!'
@@ -218,3 +218,21 @@ def test_override_policy(executor):
     result = executor.submit_retry(policy, fn).result()
     assert_that(result, equal_to(3))
     assert_that(fn.call_count, equal_to(3))
+
+
+def test_only_retry_exception_type(executor):
+    policy = ExceptionRetryPolicy(
+        exception_base=[RuntimeError, ValueError, ArithmeticError],
+        max_attempts=10,
+        max_sleep=0.01)
+
+    errors = [ValueError('error 1'), RuntimeError('error 2'), Exception('error 3')]
+
+    fn = MagicMock()
+    fn.side_effect = errors
+
+    future = executor.submit_retry(policy, fn)
+
+    # It should have retried on the first two due to exception match, then failed
+    assert_that(future.exception(), is_(errors[-1]))
+    assert_that(fn.call_count, equal_to(len(errors)))
