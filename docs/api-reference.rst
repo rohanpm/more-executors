@@ -47,7 +47,7 @@ RetryExecutor produces futures which will implicitly retry on error.
 .. autoclass:: more_executors.retry.RetryPolicy
    :members:
 
-.. autoclass:: more_executors.retry.ExceptionRetryPolicy
+.. autoclass:: more_executors.retry.ExceptionRetryPolicy(max_attempts, exponent, sleep, max_sleep, exception_base)
    :members:
 
 

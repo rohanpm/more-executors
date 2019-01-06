@@ -44,11 +44,11 @@ class RetryPolicy(object):
 
 
 class ExceptionRetryPolicy(RetryPolicy):
-    """Retries on any exceptions under the given base class,
+    """Retries on any exceptions under the given base class(es),
     up to a fixed number of attempts, with an exponential
     backoff between each attempt."""
 
-    def __init__(self, max_attempts, exponent, sleep, max_sleep, exception_base):
+    def __init__(self, **kwargs):
         """
         Parameters:
             max_attempts (int): maximum number of times a callable should be attempted
@@ -57,24 +57,18 @@ class ExceptionRetryPolicy(RetryPolicy):
             sleep (float): base value for delay between attempts in seconds, e.g. 1.0
                            will delay by one second between first two attempts
             max_sleep (float): maximum delay between attempts, in seconds
-            exception_base (type): future will be retried if (and only if) it raises
-                            an exception inheriting from this class
-        """
-        self._max_attempts = max_attempts
-        self._exponent = exponent
-        self._sleep = sleep
-        self._max_sleep = max_sleep
-        self._exception_base = exception_base
+            exception_base (type, list(type)): future will be retried if (and only if)
+                            it raises an exception inheriting from one of these classes
 
-    @classmethod
-    def new_default(cls):
-        """Returns:
-            a new policy with a reasonable implementation:
-
-            - allows up to 10 attempts
-            - retries on any :class:`Exception`
+        All parameters are optional; reasonable defaults apply when omitted.
         """
-        return cls(10, 2.0, 1.0, 120, Exception)
+        self._max_attempts = kwargs.get('max_attempts', 3)
+        self._exponent = kwargs.get('exponent', 2.0)
+        self._sleep = kwargs.get('sleep', 1.0)
+        self._max_sleep = kwargs.get('max_sleep', 120)
+        self._exception_base = kwargs.get('exception_base', Exception)
+        if isinstance(self._exception_base, type):
+            self._exception_base = [self._exception_base]
 
     def should_retry(self, attempt, future):
         exception = future.exception()
@@ -82,7 +76,10 @@ class ExceptionRetryPolicy(RetryPolicy):
             return False
         if attempt >= self._max_attempts:
             return False
-        return isinstance(exception, self._exception_base)
+        for klass in self._exception_base:
+            if isinstance(exception, klass):
+                return True
+        return False
 
     def sleep_time(self, attempt, future):
         return min(self._sleep * (self._exponent ** attempt), self._max_sleep)
@@ -154,7 +151,7 @@ class RetryExecutor(CanCustomizeBind, Executor):
     - This executor is thread-safe.
     """
 
-    def __init__(self, delegate, retry_policy=None, logger=None):
+    def __init__(self, delegate, retry_policy=None, logger=None, **kwargs):
         """
         Parameters:
 
@@ -163,14 +160,15 @@ class RetryExecutor(CanCustomizeBind, Executor):
 
             retry_policy (RetryPolicy):
                 policy used to determine when futures shall be retried; if omitted,
-                a default :class:`ExceptionRetryPolicy` is used
+                an :class:`ExceptionRetryPolicy` is used, supplied with keyword
+                arguments to this constructor
 
             logger (~logging.Logger):
                 a logger used for messages from this executor
         """
         self._log = logger if logger else logging.getLogger('RetryExecutor')
         self._delegate = delegate
-        self._default_retry_policy = retry_policy or ExceptionRetryPolicy.new_default()
+        self._default_retry_policy = retry_policy or ExceptionRetryPolicy(**kwargs)
         self._jobs = []
         self._submit_event = Event()
 
@@ -194,14 +192,6 @@ class RetryExecutor(CanCustomizeBind, Executor):
             self._log.info("Waiting for thread")
             self._submit_thread.join(_MAX_TIMEOUT)
         self._log.debug("Shutdown complete")
-
-    @classmethod
-    def new_default(cls, delegate):
-        """
-        Returns:
-            an executor with a reasonable default retry policy
-        """
-        return cls(delegate, ExceptionRetryPolicy.new_default())
 
     def submit(self, fn, *args, **kwargs):
         return self.submit_retry(
