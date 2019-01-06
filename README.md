@@ -68,6 +68,11 @@ def fetch_urls(urls):
 
 ## Changelog
 
+### v1.16.0
+
+- Introduced flat_bind
+  ([#97](https://github.com/rohanpm/more-executors/issues/97))
+
 ### v1.15.0
 
 - Fixed possible deadlock in CancelOnShutdownExecutor

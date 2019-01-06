@@ -132,6 +132,10 @@ In contrast, without using :meth:`bind`, the *first* step of the pipeline -
 :meth:`requests.get` - appears at the *end* of the code, which is harder
 to follow.
 
+:meth:`~more_executors.Executors.flat_bind` is also provided for use with
+callables returning a future. It behaves in the same way as :meth:`bind`,
+but avoids returning a nested future.
+
 
 Usage of threads
 ----------------

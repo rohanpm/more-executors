@@ -14,6 +14,10 @@ def mult(x, y):
     return x*y
 
 
+def async_mult(x, y):
+    return Executors.sync().submit(mult, x, y)
+
+
 def test_single_bind():
     async_mult2 = Executors. \
         thread_pool(). \
@@ -50,6 +54,17 @@ def test_bind_then_map():
     results = [f.result() for f in futures]
 
     assert results == [0, 200, 400]
+
+
+def test_flat_bind():
+    bound_async_mult = Executors.thread_pool().flat_bind(async_mult)
+
+    inputs = [(0, 1), (2, 3), (4, 5)]
+    expected_results = [0, 6, 20]
+    futures = [bound_async_mult(x, y) for (x, y) in inputs]
+    results = [f.result() for f in futures]
+
+    assert results == expected_results
 
 
 def test_no_rebind():
