@@ -38,3 +38,12 @@ matrix:
 script: tox -e $TOX_ENV
 after_success:
 - test $TOX_ENV = docs && scripts/push-docs
+deploy:
+  provider: pypi
+  user: rohanpm
+  password:
+    secure: AYK5kq8zbBcpnhZPWwO6xxMh/FvMpUMBrC31xrNi+e8z607MW+VnF4b5B/x8j2Ls722nCodg6Ms+PHOY6CD+8DDyAkqOthhJlrAeJrhrY0JPQ3nwnMheENi0yHimKm+XX7u9gKV/1/DNs5Pt9YvnxXq1QFifLCvbagcwvAAu0US+IgVR9erfZdw2FsV6fLMi/+ZkUFmvgidRx79AFfeIJcc81bK5s85YNXxL4plrgatbx4NXbvjtX5uI3n68xHhZod2IlLL7WSff38/K+LRTDTNiiOvNEcIVEidNICeKD8a3wE1PesRpfCdeGsJe7bGi3GqZKgDn7dr1gok/9cjpCyZ4QuDYHoP63qCOfku4F8QLV/A26TvDGMlOMrbfJWUCw3/7nzKYeW+Dd5siZmDGLCw6z9lR1epp1OJ+RGC/w8Yhh3eZ3VblX50VL7O1qJH/AMw44Z9tfzKQm3e3XwPZuxr1xq7e/ko76DBznEWfYSYAahAwEqNu7s725jnfBeFKnjqbTw+C0LvELei6/t1XYeEAGNv29CNgxi2MctQfHJfuD847E3K+vKaGtkKfHaDgfffJw2gJ/wzKMBNwEE3OHGDrmeFxaUMT4SoEkewb00HX0QbjqJhGiYVLuRj/MLgWP+SRdUes0j8xi9zzwJTTkPWzty+HoyTkBQFTYrWFlUk=
+  on:
+    tags: true
+  distributions: sdist bdist_wheel
+  skip_existing: true
