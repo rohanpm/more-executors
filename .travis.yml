@@ -14,6 +14,12 @@ matrix:
   include:
   # Each python version is repeated multiple times here to make flaky
   # tests less likely to get past Travis by running them more times
+  - python: "3.6"
+    env: TOX_ENV=static
+  - python: "3.6"
+    env: TOX_ENV=docs
+  - python: "3.6"
+    env: TOX_ENV=cov-travis-py27,cov-travis-py36
   - python: "2.6"
     env: TOX_ENV=py26 ITER=1
   - python: "2.6"
@@ -22,12 +28,6 @@ matrix:
     env: TOX_ENV=py27 ITER=1
   - python: "3.6"
     env: TOX_ENV=py36 ITER=1
-  - python: "3.6"
-    env: TOX_ENV=cov-travis-py27,cov-travis-py36
-  - python: "3.6"
-    env: TOX_ENV=static
-  - python: "3.6"
-    env: TOX_ENV=docs
 script: tox -e $TOX_ENV
 after_success:
 - test $TOX_ENV = docs && scripts/push-docs
@@ -38,5 +38,6 @@ deploy:
     secure: AYK5kq8zbBcpnhZPWwO6xxMh/FvMpUMBrC31xrNi+e8z607MW+VnF4b5B/x8j2Ls722nCodg6Ms+PHOY6CD+8DDyAkqOthhJlrAeJrhrY0JPQ3nwnMheENi0yHimKm+XX7u9gKV/1/DNs5Pt9YvnxXq1QFifLCvbagcwvAAu0US+IgVR9erfZdw2FsV6fLMi/+ZkUFmvgidRx79AFfeIJcc81bK5s85YNXxL4plrgatbx4NXbvjtX5uI3n68xHhZod2IlLL7WSff38/K+LRTDTNiiOvNEcIVEidNICeKD8a3wE1PesRpfCdeGsJe7bGi3GqZKgDn7dr1gok/9cjpCyZ4QuDYHoP63qCOfku4F8QLV/A26TvDGMlOMrbfJWUCw3/7nzKYeW+Dd5siZmDGLCw6z9lR1epp1OJ+RGC/w8Yhh3eZ3VblX50VL7O1qJH/AMw44Z9tfzKQm3e3XwPZuxr1xq7e/ko76DBznEWfYSYAahAwEqNu7s725jnfBeFKnjqbTw+C0LvELei6/t1XYeEAGNv29CNgxi2MctQfHJfuD847E3K+vKaGtkKfHaDgfffJw2gJ/wzKMBNwEE3OHGDrmeFxaUMT4SoEkewb00HX0QbjqJhGiYVLuRj/MLgWP+SRdUes0j8xi9zzwJTTkPWzty+HoyTkBQFTYrWFlUk=
   on:
     tags: true
+    condition: $TOX_ENV = py36
   distributions: sdist bdist_wheel
   skip_existing: true
