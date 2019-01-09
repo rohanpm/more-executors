@@ -38,8 +38,11 @@ class _PollFuture(_Future):
 
     def set_exception(self, exception):
         with self._me_lock:
-            if self.done():
-                return
+            # We can't get here because we always try set_exception_info first,
+            # which succeeds if done() is true, in which case we won't fall
+            # back to set_exception.
+            # if self.done():
+            #    return
             super(_PollFuture, self).set_exception(exception)
         self._me_invoke_callbacks()
 
