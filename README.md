@@ -68,6 +68,11 @@ def fetch_urls(urls):
 
 ## Changelog
 
+### v1.17.0
+
+- Exception tracebacks are now propagated correctly on python2
+  via `exception_info`
+
 ### v1.16.0
 
 - API break: removed `new_default` methods in retry module

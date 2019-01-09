@@ -1,3 +1,4 @@
+import sys
 from concurrent.futures import Future
 from threading import RLock
 import logging
@@ -64,3 +65,25 @@ class _Future(Future):
 
     def _me_cancel(self):
         assert False, 'BUG: override this method in subclasses!'  # pragma: no cover
+
+
+def _copy_future_exception(f1, f2):
+    if 'exception_info' in dir(f1):
+        (exception, traceback) = f1.exception_info()
+    else:
+        (exception, traceback) = (f1.exception(), None)
+
+    _copy_exception(f2, exception, traceback)
+
+
+def _copy_exception(future, exception=None, traceback=None):
+    exc_info = sys.exc_info()
+    if exception is None:
+        exception = exc_info[1]
+    if traceback is None:
+        traceback = exc_info[2]
+
+    try:
+        future.set_exception_info(exception, traceback)
+    except AttributeError:
+        future.set_exception(exception)

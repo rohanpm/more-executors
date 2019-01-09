@@ -1,11 +1,9 @@
 from concurrent.futures import Executor
-from collections import namedtuple
 from threading import RLock, Thread, Event
 import weakref
-import sys
 import logging
 
-from more_executors._common import _Future, _MAX_TIMEOUT
+from more_executors._common import _Future, _MAX_TIMEOUT, _copy_exception, _copy_future_exception
 from more_executors._wrap import CanCustomizeBind
 
 
@@ -23,7 +21,7 @@ class _PollFuture(_Future):
         if delegate.cancelled():
             return
         elif delegate.exception():
-            self.set_exception(delegate.exception())
+            _copy_future_exception(delegate, self)
         else:
             self._executor._register_poll(self, self._delegate)
 
@@ -45,6 +43,15 @@ class _PollFuture(_Future):
             super(_PollFuture, self).set_exception(exception)
         self._me_invoke_callbacks()
 
+    def set_exception_info(self, exception, traceback):
+        # For python2 compat.
+        # pylint: disable=no-member
+        with self._me_lock:
+            if self.done():
+                return
+            super(_PollFuture, self).set_exception_info(exception, traceback)
+        self._me_invoke_callbacks()
+
     def running(self):
         with self._me_lock:
             if self._delegate:
@@ -61,25 +68,46 @@ class _PollFuture(_Future):
         return True
 
 
-PollDescriptor = namedtuple('PollDescriptor', ['result', 'yield_result', 'yield_exception'])
+class PollDescriptor(object):
+    """Represents an unresolved :class:`~concurrent.futures.Future`.
 
-if sys.version_info[0] > 2:
-    PollDescriptor.__doc__ = \
-        """Represents an unresolved :class:`~concurrent.futures.Future`.
+    The poll function used by :class:`PollExecutor` will be
+    invoked with a list of PollDescriptor objects.
+    """
 
-        The poll function used by :class:`PollExecutor` will be
-        invoked with a list of PollDescriptor objects.
-        """
+    def __init__(self, future, result):
+        self.__future = future
+        self.__result = result
 
-    PollDescriptor.result.__doc__ = \
+    @property
+    def result(self):
         """The result from the delegate executor's future, which should be used to
         drive the poll."""
+        return self.__result
 
-    PollDescriptor.yield_result.__doc__ = \
-        """The poll function can call this function to make the future yield the given result."""
+    def yield_result(self, result):
+        """The poll function can call this function to make the future yield the given result.
 
-    PollDescriptor.yield_exception.__doc__ = \
-        """The poll function can call this function to make the future raise the given exception."""
+        Arguments:
+            result (object):
+                a result to be returned by the future associated with this descriptor
+        """
+
+        self.__future.set_result(result)
+
+    def yield_exception(self, exception, traceback=None):
+        """The poll function can call this function to make the future raise the given exception.
+
+        Arguments:
+           exception (Exception):
+               An exception to be returned or raised by the future associated with this
+               descriptor
+           traceback (traceback):
+               An optional associated traceback. This argument only has an effect on python 2.x,
+               where exception objects do not include a traceback.
+        """
+
+        _copy_exception(self.__future, exception, traceback)
 
 
 class PollExecutor(CanCustomizeBind, Executor):
@@ -134,10 +162,7 @@ class PollExecutor(CanCustomizeBind, Executor):
         return out
 
     def _register_poll(self, future, delegate_future):
-        descriptor = PollDescriptor(
-            delegate_future.result(),
-            future.set_result,
-            future.set_exception)
+        descriptor = PollDescriptor(future, delegate_future.result())
         with self._lock:
             self._poll_descriptors.append((future, descriptor))
             future._clear_delegate()

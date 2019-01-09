@@ -6,7 +6,7 @@ import weakref
 
 from monotonic import monotonic
 
-from more_executors._common import _Future, _MAX_TIMEOUT
+from more_executors._common import _Future, _MAX_TIMEOUT, _copy_future_exception
 from more_executors._wrap import CanCustomizeBind
 
 
@@ -123,6 +123,14 @@ class _RetryFuture(_Future):
         with self._me_lock:
             self._clear_delegate()
             super(_RetryFuture, self).set_exception(exception)
+        self._me_invoke_callbacks()
+
+    def set_exception_info(self, exception, traceback):
+        # For python2 compat.
+        # pylint: disable=no-member
+        with self._me_lock:
+            self._clear_delegate()
+            super(_RetryFuture, self).set_exception_info(exception, traceback)
         self._me_invoke_callbacks()
 
     def _me_cancel(self):
@@ -374,7 +382,7 @@ class RetryExecutor(CanCustomizeBind, Executor):
 
         # OK, it won't be retried.  Resolve the future.
         if exception:
-            found_job.future.set_exception(exception)
+            _copy_future_exception(delegate_future, found_job.future)
         else:
             found_job.future.set_result(result)
 

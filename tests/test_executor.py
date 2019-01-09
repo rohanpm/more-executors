@@ -4,12 +4,14 @@ from __future__ import print_function
 
 from functools import partial
 from random import randint
+import traceback
 from threading import RLock
 from concurrent.futures import CancelledError, wait, FIRST_COMPLETED
 
 from six.moves.queue import Queue
 from monotonic import monotonic
-from hamcrest import assert_that, equal_to, calling, raises, instance_of, has_length, is_
+from hamcrest import assert_that, equal_to, calling, raises, instance_of, has_length, is_, \
+                     contains_string
 from pytest import fixture, skip
 
 from more_executors.retry import RetryPolicy
@@ -366,6 +368,13 @@ def test_blocked_cancel(any_executor, request):
     assert_that(future.result(TIMEOUT), equal_to(123))
 
 
+def get_traceback(future):
+    exception = future.exception()
+    if '__traceback__' in dir(exception):
+        return exception.__traceback__
+    return future.exception_info()[1]
+
+
 def test_submit_mixed(any_executor):
     values = [1, 2, 3, 4]
 
@@ -384,6 +393,9 @@ def test_submit_mixed(any_executor):
 
     # Crash, via exception
     assert_that(futures[1].exception(TIMEOUT), instance_of(SimulatedError))
+    assert_that(
+        ''.join(traceback.format_tb(get_traceback(futures[1]))),
+        contains_string('crash_on_even'))
 
     # Success
     assert_that(futures[2].result(TIMEOUT), equal_to(6))
