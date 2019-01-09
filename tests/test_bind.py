@@ -14,6 +14,14 @@ def mult(x, y):
     return x*y
 
 
+class mult_class(object):
+    def __init__(self, operand):
+        self.operand = operand
+
+    def __call__(self, x):
+        return x*self.operand
+
+
 def async_mult(x, y):
     return Executors.sync().submit(mult, x, y)
 
@@ -34,6 +42,18 @@ def test_bind_with_partial():
     async_mult2 = Executors. \
         thread_pool(). \
         bind(partial(mult, 2))
+
+    inputs = [0, 1, 2]
+    futures = [async_mult2(x) for x in inputs]
+    results = [f.result() for f in futures]
+
+    assert results == [0, 2, 4]
+
+
+def test_bind_with_callable():
+    async_mult2 = Executors. \
+        thread_pool(). \
+        bind(mult_class(2))
 
     inputs = [0, 1, 2]
     futures = [async_mult2(x) for x in inputs]
