@@ -18,18 +18,10 @@ matrix:
     env: TOX_ENV=py26 ITER=1
   - python: "2.6"
     env: TOX_ENV=py26 ITER=2
-  - python: "2.6"
-    env: TOX_ENV=py26 ITER=3
   - python: "2.7"
     env: TOX_ENV=py27 ITER=1
-  - python: "2.7"
-    env: TOX_ENV=py27 ITER=2
-  - python: "2.7"
-    env: TOX_ENV=py27 ITER=3
   - python: "3.6"
     env: TOX_ENV=py36 ITER=1
-  - python: "3.6"
-    env: TOX_ENV=py36 ITER=2
   - python: "3.6"
     env: TOX_ENV=cov-travis-py27,cov-travis-py36
   - python: "3.6"
