@@ -10,6 +10,8 @@ branches:
     - trying
     # This is where changes end up
     - master
+    # This is how releases are tagged
+    - /^v\d+\.\d+\.\d+$/
 matrix:
   include:
   # Each python version is repeated multiple times here to make flaky
