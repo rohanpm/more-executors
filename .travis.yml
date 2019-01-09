@@ -1,4 +1,5 @@
 sudo: false
+dist: trusty
 language: python
 install: pip install tox
 branches:
@@ -25,15 +26,15 @@ matrix:
     env: TOX_ENV=py27 ITER=2
   - python: "2.7"
     env: TOX_ENV=py27 ITER=3
-  - python: "3.5"
-    env: TOX_ENV=py35 ITER=1
-  - python: "3.5"
-    env: TOX_ENV=py35 ITER=2
-  - python: "3.5"
-    env: TOX_ENV=cov-travis
-  - python: "3.5"
+  - python: "3.6"
+    env: TOX_ENV=py36 ITER=1
+  - python: "3.6"
+    env: TOX_ENV=py36 ITER=2
+  - python: "3.6"
+    env: TOX_ENV=cov-travis-py27,cov-travis-py36
+  - python: "3.6"
     env: TOX_ENV=static
-  - python: "3.5"
+  - python: "3.6"
     env: TOX_ENV=docs
 script: tox -e $TOX_ENV
 after_success:

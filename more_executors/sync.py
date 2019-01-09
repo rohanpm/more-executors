@@ -1,5 +1,6 @@
 from concurrent.futures import Executor, Future
 
+from more_executors._common import _copy_exception
 from more_executors._wrap import CanCustomizeBind
 
 
@@ -31,6 +32,6 @@ class SyncExecutor(CanCustomizeBind, Executor):
         try:
             result = fn(*args, **kwargs)
             future.set_result(result)
-        except Exception as e:
-            future.set_exception(e)
+        except Exception:
+            _copy_exception(future)
         return future

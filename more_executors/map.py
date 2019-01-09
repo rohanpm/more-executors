@@ -1,6 +1,6 @@
 from concurrent.futures import Executor
 
-from more_executors._common import _Future
+from more_executors._common import _Future, _copy_exception, _copy_future_exception
 from more_executors._wrap import CanCustomizeBind
 
 
@@ -25,21 +25,21 @@ class _MapFuture(_Future):
             return
 
         ex = delegate.exception()
-        if not ex:
-            result = delegate.result()
-            try:
-                result = self._map_fn(result)
-            except Exception as map_ex:
-                ex = map_ex
-                result = None
-
         if ex:
-            self.set_exception(ex)
-        else:
-            try:
-                self._on_mapped(result)
-            except Exception as ex:
-                self.set_exception(ex)
+            _copy_future_exception(delegate, self)
+            return
+
+        result = delegate.result()
+        try:
+            result = self._map_fn(result)
+        except Exception:
+            _copy_exception(self)
+            return
+
+        try:
+            self._on_mapped(result)
+        except Exception:
+            _copy_exception(self)
 
     def _on_mapped(self, result):
         self.set_result(result)
@@ -52,6 +52,13 @@ class _MapFuture(_Future):
     def set_exception(self, exception):
         with self._me_lock:
             super(_MapFuture, self).set_exception(exception)
+        self._me_invoke_callbacks()
+
+    def set_exception_info(self, exception, traceback):
+        # For python2 compat.
+        # pylint: disable=no-member
+        with self._me_lock:
+            super(_MapFuture, self).set_exception_info(exception, traceback)
         self._me_invoke_callbacks()
 
     def running(self):
