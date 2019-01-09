@@ -21,7 +21,7 @@ def get_long_description():
 
 setup(
     name='more-executors',
-    version='1.17.1',
+    version='1.17.2',
     author='Rohan McGovern',
     author_email='rohan@mcgovern.id.au',
     packages=['more_executors'],
