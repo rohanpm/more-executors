@@ -1,5 +1,4 @@
 from setuptools import setup
-import os
 
 
 def get_description():
@@ -7,16 +6,17 @@ def get_description():
 
 
 def get_long_description():
-    if os.environ.get('USE_PANDOC') != '1':
-        return
-
-    import pypandoc
-    converted = pypandoc.convert('README.md', 'rst')
+    try:
+        text = open('README.md').read()
+    except IOError as error:
+        if error.errno == 2:
+            return get_description()
+        raise
 
     # The README starts with the same text as "description",
     # which makes sense, but on PyPI causes same text to be
     # displayed twice.  So let's strip that.
-    return converted.replace(get_description() + '.\n\n', '', 1)
+    return text.replace(get_description() + '.\n\n', '', 1)
 
 
 setup(
@@ -29,6 +29,7 @@ setup(
     license='GNU General Public License',
     description=get_description(),
     long_description=get_long_description(),
+    long_description_content_type='text/markdown',
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
