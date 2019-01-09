@@ -286,7 +286,7 @@ like this:
 
 .. automethod:: more_executors.Executors.with_poll(executor, poll_fn, cancel_fn=None, default_interval=5.0, logger=None)
 
-.. autoclass:: more_executors.poll.PollDescriptor
+.. autoclass:: more_executors.poll.PollDescriptor()
    :members:
 
 
