@@ -84,7 +84,7 @@ def test_no_leak_on_discarded_futures(executor_ctor):
     no_extra_threads = partial(assert_no_extra_threads, thread_names())
 
     executor = executor_ctor()
-    futures = [executor.submit(mult2, n) for n in [10, 20, 30]]
+    futures = [executor.submit(mult2, n) for n in range(0, 1000)]
     del executor
     del futures
 
@@ -99,8 +99,20 @@ def test_no_leak_on_completed_futures(executor_ctor):
     no_extra_threads = partial(assert_no_extra_threads, thread_names())
 
     executor = executor_ctor()
-    results = [executor.submit(mult2, n) for n in [10, 20, 30]]
+    results = [executor.submit(mult2, n) for n in range(0, 1000)]
     results = get_future_results(results)
+
+    del executor
+
+    assert_soon(no_extra_threads)
+
+
+def test_no_leak_on_completed_held_futures(executor_ctor):
+    no_extra_threads = partial(assert_no_extra_threads, thread_names())
+
+    executor = executor_ctor()
+    futures = [executor.submit(mult2, n) for n in range(0, 1000)]
+    get_future_results(futures)
 
     del executor
 

@@ -49,58 +49,61 @@ def poll_noop(ds):
 
 
 @fixture
-def retry_executor():
-    return Executors.thread_pool().with_retry(max_attempts=1)
+def retry_executor_ctor():
+    return lambda: Executors.thread_pool().with_retry(max_attempts=1)
 
 
 @fixture
-def threadpool_executor():
-    return Executors.thread_pool(max_workers=20)
+def threadpool_executor_ctor():
+    return lambda: Executors.thread_pool(max_workers=20)
 
 
 @fixture
-def sync_executor():
-    return Executors.sync()
+def sync_executor_ctor():
+    return Executors.sync
 
 
 @fixture
-def map_executor(threadpool_executor):
-    return threadpool_executor.with_map(map_noop)
+def map_executor_ctor(threadpool_executor_ctor):
+    return lambda: threadpool_executor_ctor().with_map(map_noop)
 
 
 @fixture
-def flat_map_executor(threadpool_executor):
-    return threadpool_executor.with_flat_map(partial(flat_map_noop, threadpool_executor))
+def flat_map_executor_ctor(threadpool_executor_ctor):
+    def out():
+        threadpool_executor = threadpool_executor_ctor()
+        return threadpool_executor.with_flat_map(partial(flat_map_noop, threadpool_executor))
+    return out
 
 
 @fixture
-def throttle_executor(threadpool_executor):
-    return threadpool_executor.with_throttle(10)
+def throttle_executor_ctor(threadpool_executor_ctor):
+    return lambda: threadpool_executor_ctor().with_throttle(10)
 
 
 @fixture
-def cancel_on_shutdown_executor(threadpool_executor):
-    return threadpool_executor.with_cancel_on_shutdown()
+def cancel_on_shutdown_executor_ctor(threadpool_executor_ctor):
+    return lambda: threadpool_executor_ctor().with_cancel_on_shutdown()
 
 
 @fixture
-def map_retry_executor(threadpool_executor):
-    return threadpool_executor.with_retry(RetryPolicy()).with_map(map_noop)
+def map_retry_executor_ctor(threadpool_executor_ctor):
+    return lambda: threadpool_executor_ctor().with_retry(RetryPolicy()).with_map(map_noop)
 
 
 @fixture
-def retry_map_executor(threadpool_executor):
-    return threadpool_executor.with_map(map_noop).with_retry(RetryPolicy())
+def retry_map_executor_ctor(threadpool_executor_ctor):
+    return lambda: threadpool_executor_ctor().with_map(map_noop).with_retry(RetryPolicy())
 
 
 @fixture
-def timeout_executor(threadpool_executor):
-    return threadpool_executor.with_timeout(60.0)
+def timeout_executor_ctor(threadpool_executor_ctor):
+    return lambda: threadpool_executor_ctor().with_timeout(60.0)
 
 
 @fixture
-def cancel_poll_map_retry_executor(threadpool_executor):
-    return threadpool_executor.\
+def cancel_poll_map_retry_executor_ctor(threadpool_executor_ctor):
+    return lambda: threadpool_executor_ctor().\
         with_retry(RetryPolicy()).\
         with_map(map_noop).\
         with_poll(poll_noop).\
@@ -108,8 +111,8 @@ def cancel_poll_map_retry_executor(threadpool_executor):
 
 
 @fixture
-def cancel_retry_map_poll_executor(threadpool_executor):
-    return threadpool_executor.\
+def cancel_retry_map_poll_executor_ctor(threadpool_executor_ctor):
+    return lambda: threadpool_executor_ctor().\
         with_poll(poll_noop).\
         with_map(map_noop).\
         with_retry(RetryPolicy()).\
@@ -117,8 +120,8 @@ def cancel_retry_map_poll_executor(threadpool_executor):
 
 
 @fixture
-def retry_map_poll_executor(threadpool_executor):
-    return threadpool_executor.\
+def retry_map_poll_executor_ctor(threadpool_executor_ctor):
+    return lambda: threadpool_executor_ctor().\
         with_poll(poll_noop).\
         with_map(map_noop).\
         with_retry(RetryPolicy())
@@ -138,8 +141,8 @@ def random_cancel(_value):
 
 
 @fixture
-def poll_executor(threadpool_executor):
-    return threadpool_executor.\
+def poll_executor_ctor(threadpool_executor_ctor):
+    return lambda: threadpool_executor_ctor().\
         with_poll(poll_noop,
                   random_cancel)
 
@@ -168,21 +171,25 @@ def everything_executor(base_executor):
 
 
 @fixture
-def everything_sync_executor(sync_executor):
-    return everything_executor(sync_executor)
+def everything_sync_executor_ctor(sync_executor_ctor):
+    return lambda: everything_executor(sync_executor_ctor())
 
 
 @fixture
-def everything_threadpool_executor(threadpool_executor):
-    return everything_executor(threadpool_executor)
+def everything_threadpool_executor_ctor(threadpool_executor_ctor):
+    return lambda: everything_executor(threadpool_executor_ctor())
 
 
-@fixture(params=['threadpool', 'retry', 'map', 'retry_map', 'map_retry', 'poll', 'retry_map_poll',
-                 'sync', 'timeout', 'throttle', 'cancel_poll_map_retry', 'cancel_retry_map_poll',
-                 'flat_map',
-                 'everything_sync', 'everything_threadpool'])
+EXECUTOR_TYPES = ['threadpool', 'retry', 'map', 'retry_map', 'map_retry', 'poll', 'retry_map_poll',
+                  'sync', 'timeout', 'throttle', 'cancel_poll_map_retry', 'cancel_retry_map_poll',
+                  'flat_map',
+                  'everything_sync', 'everything_threadpool']
+
+
+@fixture(params=EXECUTOR_TYPES)
 def any_executor(request):
-    ex = request.getfixturevalue(request.param + '_executor')
+    ctor = request.getfixturevalue(request.param + '_executor_ctor')
+    ex = ctor()
 
     # Capture log messages onto the executor itself,
     # for use with dump_executor if test fails.
@@ -212,6 +219,11 @@ def any_executor(request):
     ex.shutdown(False)
 
 
+@fixture(params=EXECUTOR_TYPES)
+def any_executor_ctor(request):
+    return request.getfixturevalue(request.param + '_executor_ctor')
+
+
 def test_submit_results(any_executor):
     values = range(0, 1000)
     expected_results = [v*2 for v in values]
@@ -226,6 +238,17 @@ def test_submit_results(any_executor):
 
     results = [f.result(TIMEOUT) for f in futures]
     assert_that(results, equal_to(expected_results))
+
+
+def test_future_outlive_executor(any_executor_ctor):
+    def make_futures(executor):
+        return [executor.submit(lambda x: x*2, y)
+                for y in [1, 2, 3, 4]]
+
+    futures = make_futures(any_executor_ctor())
+    results = [f.result(TIMEOUT) for f in futures]
+
+    assert results == [2, 4, 6, 8]
 
 
 def test_broken_callback(any_executor):

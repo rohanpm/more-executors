@@ -72,6 +72,8 @@ def fetch_urls(urls):
 
 - Reduced log verbosity
   ([#115](https://github.com/rohanpm/more-executors/issues/115))
+- Fixed deadlock when awaiting a future whose executor was garbage collected
+  ([#114](https://github.com/rohanpm/more-executors/issues/114))
 
 ### v1.17.0
 

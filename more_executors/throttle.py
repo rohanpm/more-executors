@@ -1,6 +1,7 @@
 from concurrent.futures import Executor
 from threading import Event, Thread, Lock, Semaphore
 from collections import namedtuple, deque
+from functools import partial
 import logging
 import weakref
 
@@ -11,14 +12,19 @@ from more_executors.map import _MapFuture
 
 class _ThrottleFuture(_MapFuture):
     def __init__(self, executor):
-        self._executor_ref = weakref.ref(executor)
+        self._executor = executor
         super(_ThrottleFuture, self).__init__(delegate=None, map_fn=lambda x: x)
+        self.add_done_callback(self._clear_executor)
 
     def _me_cancel(self):
         if self._delegate:
             return self._delegate.cancel()
-        executor = self._executor_ref()
+        executor = self._executor
         return executor and executor._do_cancel(self)
+
+    @classmethod
+    def _clear_executor(cls, future):
+        future._executor = None
 
 
 _ThrottleJob = namedtuple('_ThrottleJob', ['future', 'fn', 'args', 'kwargs'])
@@ -87,7 +93,8 @@ class ThrottleExecutor(CanCustomizeBind, Executor):
         delegate_future = self._delegate.submit(job.fn, *job.args, **job.kwargs)
         self._log.debug("Submitted %s yielding %s", job, delegate_future)
 
-        delegate_future.add_done_callback(self._delegate_future_done)
+        delegate_future.add_done_callback(
+            partial(self._delegate_future_done, self._log, self._sem, self._event))
         job.future._set_delegate(delegate_future)
 
     def _do_cancel(self, future):
@@ -100,13 +107,14 @@ class ThrottleExecutor(CanCustomizeBind, Executor):
         self._log.debug("Could not find for cancel: %s", future)
         return False
 
-    def _delegate_future_done(self, future):
+    @classmethod
+    def _delegate_future_done(cls, log, sem, event, future):
         # Whenever an inner future completes, one more execution slot becomes
         # available, and the thread should wake up in case there's something to
         # be submitted
-        self._log.debug("Delegate future done: %s", future)
-        self._sem.release()
-        self._event.set()
+        log.debug("Delegate future done: %s", future)
+        sem.release()
+        event.set()
 
 
 def _submit_loop_iter(executor):

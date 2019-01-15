@@ -95,7 +95,8 @@ class _RetryFuture(_Future):
     def __init__(self, executor):
         super(_RetryFuture, self).__init__()
         self.delegate_future = None
-        self._executor_ref = weakref.ref(executor)
+        self._executor = executor
+        self.add_done_callback(self._clear_executor)
 
     def running(self):
         with self._me_lock:
@@ -112,6 +113,11 @@ class _RetryFuture(_Future):
     def _clear_delegate(self):
         with self._me_lock:
             self.delegate_future = None
+
+    @classmethod
+    def _clear_executor(cls, future):
+        with future._me_lock:
+            future._executor = None
 
     def set_result(self, result):
         with self._me_lock:
@@ -134,7 +140,7 @@ class _RetryFuture(_Future):
         self._me_invoke_callbacks()
 
     def _me_cancel(self):
-        executor = self._executor_ref()
+        executor = self._executor
         return executor and executor._cancel(self)
 
 
