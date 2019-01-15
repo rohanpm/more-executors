@@ -192,12 +192,12 @@ class RetryExecutor(CanCustomizeBind, Executor):
         self._submit_thread.start()
 
     def shutdown(self, wait=True):
-        self._log.info("Shutting down.")
+        self._log.debug("Shutting down.")
         self._shutdown = True
         self._wake_thread()
         self._delegate.shutdown(wait)
         if wait:
-            self._log.info("Waiting for thread")
+            self._log.debug("Waiting for thread")
             self._submit_thread.join(_MAX_TIMEOUT)
         self._log.debug("Shutdown complete")
 

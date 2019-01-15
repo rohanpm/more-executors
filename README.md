@@ -68,6 +68,11 @@ def fetch_urls(urls):
 
 ## Changelog
 
+### v1.18.0
+
+- Reduced log verbosity
+  ([#115](https://github.com/rohanpm/more-executors/issues/115))
+
 ### v1.17.0
 
 - Exception tracebacks are now propagated correctly on python2
