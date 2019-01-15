@@ -13,6 +13,7 @@ class _PollFuture(_Future):
         self._delegate = delegate
         self._executor = executor
         self._delegate.add_done_callback(self._delegate_resolved)
+        self.add_done_callback(self._clear_executor)
 
     def _delegate_resolved(self, delegate):
         assert delegate is self._delegate, \
@@ -28,6 +29,11 @@ class _PollFuture(_Future):
     def _clear_delegate(self):
         with self._me_lock:
             self._delegate = None
+
+    @classmethod
+    def _clear_executor(cls, future):
+        future._executor._deregister_poll(future)
+        future._executor = None
 
     def set_result(self, result):
         with self._me_lock:
@@ -65,10 +71,8 @@ class _PollFuture(_Future):
     def _me_cancel(self):
         if self._delegate and not self._delegate.cancel():
             return False
-        if not self._executor._run_cancel_fn(self):
-            return False
-        self._executor._deregister_poll(self)
-        return True
+        executor = self._executor
+        return executor and executor._run_cancel_fn(self)
 
 
 class PollDescriptor(object):
@@ -160,9 +164,7 @@ class PollExecutor(CanCustomizeBind, Executor):
 
     def submit(self, fn, *args, **kwargs):
         delegate_future = self._delegate.submit(fn, *args, **kwargs)
-        out = _PollFuture(delegate_future, self)
-        out.add_done_callback(self._deregister_poll)
-        return out
+        return _PollFuture(delegate_future, self)
 
     def _register_poll(self, future, delegate_future):
         descriptor = PollDescriptor(future, delegate_future.result())
