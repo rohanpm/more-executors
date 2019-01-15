@@ -68,6 +68,10 @@ def fetch_urls(urls):
 
 ## Changelog
 
+### v1.19.0
+
+- Fixed TimeoutExecutor thread leak when `shutdown()` is never called
+
 ### v1.18.0
 
 - Reduced log verbosity

@@ -44,6 +44,13 @@ def ctor_with_throttle():
 
 
 @fixture
+def ctor_with_timeout():
+    def fn():
+        return Executors.sync().with_timeout(30.0)
+    return fn
+
+
+@fixture
 def ctor_with_poll_throttle():
     def fn():
         return Executors.sync().with_poll(poll_noop).with_throttle(2)
@@ -51,7 +58,7 @@ def ctor_with_poll_throttle():
 
 
 @fixture(params=['sync', 'thread_pool', 'with_retry', 'with_poll',
-                 'with_throttle', 'with_poll_throttle'])
+                 'with_throttle', 'with_poll_throttle', 'with_timeout'])
 def executor_ctor(request):
     return request.getfixturevalue('ctor_' + request.param)
 

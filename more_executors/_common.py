@@ -38,6 +38,10 @@ class _Future(Future):
             except Exception:
                 _LOG.exception('exception calling callback for %r', self)
 
+        # Drop references to the callbacks once no longer required,
+        # so that futures don't keep other objects alive longer than needed
+        self._me_done_callbacks = []
+
     def add_done_callback(self, fn):
         # Overrides function from parent; intentionally does not call super,
         # so we own the callbacks ourself

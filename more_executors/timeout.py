@@ -1,6 +1,7 @@
 from concurrent.futures import Executor
 from threading import Event, Thread, Lock
 from collections import namedtuple
+import weakref
 import logging
 
 from monotonic import monotonic
@@ -9,6 +10,7 @@ from more_executors.map import _MapFuture
 from more_executors._common import _MAX_TIMEOUT
 from more_executors._wrap import CanCustomizeBind
 
+_LOG = logging.getLogger('TimeoutExecutor')
 
 _Job = namedtuple('_Job', ['future', 'delegate_future', 'deadline'])
 
@@ -45,15 +47,19 @@ class TimeoutExecutor(CanCustomizeBind, Executor):
             logger (~logging.Logger):
                 a logger used for messages from this executor
         """
-        self._log = logger if logger else logging.getLogger('TimeoutExecutor')
+        self._log = logger if logger else _LOG
         self._delegate = delegate
         self._timeout = timeout
         self._shutdown = False
         self._jobs = []
         self._jobs_lock = Lock()
         self._jobs_write = Event()
+
+        event = self._jobs_write
+        self_ref = weakref.ref(self, lambda _: event.set())
+
         self._job_thread = Thread(
-            name='TimeoutExecutor', target=self._job_loop)
+            name='TimeoutExecutor', target=self._job_loop, args=(self_ref,))
         self._job_thread.daemon = True
         self._job_thread.start()
 
@@ -97,24 +103,40 @@ class TimeoutExecutor(CanCustomizeBind, Executor):
         cancel_result = job.future.cancel()
         self._log.debug("Cancel of %s resulted in %s", job, cancel_result)
 
-    def _job_loop(self):
-        while not self._shutdown:
-            self._log.debug("job loop")
+    @classmethod
+    def _job_loop(cls, executor_ref):
+        while True:
+            (event, wait_time) = cls._job_loop_iter(executor_ref())
+            if not event:
+                break
+            event.wait(wait_time)
+            event.clear()
 
-            with self._jobs_lock:
-                (pending, overdue) = self._partition_jobs()
-                self._jobs = pending
+    @classmethod
+    def _job_loop_iter(cls, executor):
+        if not executor:
+            _LOG.debug("Executor was collected")
+            return (None, None)
 
-            self._log.debug("jobs: %s overdue, %s pending", len(overdue), len(pending))
+        if executor._shutdown:
+            executor._log.debug("Executor was shut down")
+            return (None, None)
 
-            for job in overdue:
-                self._do_cancel(job)
+        executor._log.debug("job loop")
 
-            wait_time = None
-            if pending:
-                earliest = min([job.deadline for job in pending])
-                wait_time = max(earliest - monotonic(), 0)
+        with executor._jobs_lock:
+            (pending, overdue) = executor._partition_jobs()
+            executor._jobs = pending
 
-            self._log.debug("Wait until %s", wait_time)
-            self._jobs_write.wait(wait_time)
-            self._jobs_write.clear()
+        executor._log.debug("jobs: %s overdue, %s pending", len(overdue), len(pending))
+
+        for job in overdue:
+            executor._do_cancel(job)
+
+        wait_time = None
+        if pending:
+            earliest = min([job.deadline for job in pending])
+            wait_time = max(earliest - monotonic(), 0)
+
+        executor._log.debug("Wait until %s", wait_time)
+        return (executor._jobs_write, wait_time)
