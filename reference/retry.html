@@ -1,0 +1,293 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Retrying: RetryExecutor &#8212; more-executors  documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Throttling: ThrottleExecutor" href="throttle.html" />
+    <link rel="prev" title="Base executors: thread_pool, process_pool, sync" href="base-executors.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="retrying-retryexecutor">
+<h1>Retrying: <code class="docutils literal notranslate"><span class="pre">RetryExecutor</span></code><a class="headerlink" href="#retrying-retryexecutor" title="Permalink to this headline">¶</a></h1>
+<p>RetryExecutor produces futures which will implicitly retry on error.</p>
+<dl class="class">
+<dt id="more_executors.retry.RetryExecutor">
+<em class="property">class </em><code class="descclassname">more_executors.retry.</code><code class="descname">RetryExecutor</code><span class="sig-paren">(</span><em>delegate</em>, <em>retry_policy=None</em>, <em>logger=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.retry.RetryExecutor" title="Permalink to this definition">¶</a></dt>
+<dd><p>An executor which delegates to another executor while adding
+implicit retry behavior.</p>
+<ul class="simple">
+<li>Callables are submitted to the delegate executor, and may be
+submitted more than once if retries are required.</li>
+<li>The callables may be submitted to that executor from a different
+thread than the calling thread.</li>
+<li>Cancelling is supported if the delegate executor allows it.</li>
+<li>Cancelling between retries is always supported.</li>
+<li>The returned futures from this executor are only resolved or
+failed once the callable either succeeded, or all retries
+were exhausted.  This includes activation of the done callback.</li>
+<li>This executor is thread-safe.</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>delegate</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor" title="(in Python v3.7)"><em>Executor</em></a>) – executor to which callables will be submitted</li>
+<li><strong>retry_policy</strong> (<a class="reference internal" href="#more_executors.retry.RetryPolicy" title="more_executors.retry.RetryPolicy"><em>RetryPolicy</em></a>) – policy used to determine when futures shall be retried; if omitted,
+an <a class="reference internal" href="#more_executors.retry.ExceptionRetryPolicy" title="more_executors.retry.ExceptionRetryPolicy"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExceptionRetryPolicy</span></code></a> is used, supplied with keyword
+arguments to this constructor</li>
+<li><strong>logger</strong> (<a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.7)"><em>Logger</em></a>) – a logger used for messages from this executor</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="more_executors.retry.RetryExecutor.submit_retry">
+<code class="descname">submit_retry</code><span class="sig-paren">(</span><em>retry_policy</em>, <em>fn</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.retry.RetryExecutor.submit_retry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Submit a callable with a specific retry policy.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>retry_policy</strong> (<a class="reference internal" href="#more_executors.retry.RetryPolicy" title="more_executors.retry.RetryPolicy"><em>RetryPolicy</em></a>) – a policy which is used for this call only</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="more_executors.Executors.with_retry">
+<em class="property">classmethod </em><code class="descclassname">Executors.</code><code class="descname">with_retry</code><span class="sig-paren">(</span><em>executor</em>, <em>retry_policy=None</em>, <em>logger=None</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.Executors.with_retry" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a new executor which will retry callables on failure</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#more_executors.retry.RetryExecutor" title="more_executors.retry.RetryExecutor">RetryExecutor</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="more_executors.retry.RetryPolicy">
+<em class="property">class </em><code class="descclassname">more_executors.retry.</code><code class="descname">RetryPolicy</code><a class="headerlink" href="#more_executors.retry.RetryPolicy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Instances of this class may be supplied to <a class="reference internal" href="#more_executors.retry.RetryExecutor" title="more_executors.retry.RetryExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">RetryExecutor</span></code></a>
+to customize the retry behavior.</p>
+<p>This base class will never retry.  See <a class="reference internal" href="#more_executors.retry.ExceptionRetryPolicy" title="more_executors.retry.ExceptionRetryPolicy"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExceptionRetryPolicy</span></code></a> for
+a general-purpose implementation.</p>
+<dl class="method">
+<dt id="more_executors.retry.RetryPolicy.should_retry">
+<code class="descname">should_retry</code><span class="sig-paren">(</span><em>attempt</em>, <em>future</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.retry.RetryPolicy.should_retry" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>attempt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – number of times the future has been attempted; starts counting at 1</li>
+<li><strong>future</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.7)"><em>Future</em></a>) – a completed future</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">True if and only if a future should be retried.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="more_executors.retry.RetryPolicy.sleep_time">
+<code class="descname">sleep_time</code><span class="sig-paren">(</span><em>attempt</em>, <em>future</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.retry.RetryPolicy.sleep_time" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>attempt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – number of times the future has been attempted; starts counting at 1</li>
+<li><strong>future</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.7)"><em>Future</em></a>) – a completed future</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The amount of time (in seconds) to delay before the next
+attempt at running a future.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)">float</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="more_executors.retry.ExceptionRetryPolicy">
+<em class="property">class </em><code class="descclassname">more_executors.retry.</code><code class="descname">ExceptionRetryPolicy</code><span class="sig-paren">(</span><em>max_attempts</em>, <em>exponent</em>, <em>sleep</em>, <em>max_sleep</em>, <em>exception_base</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.retry.ExceptionRetryPolicy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retries on any exceptions under the given base class(es),
+up to a fixed number of attempts, with an exponential
+backoff between each attempt.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>max_attempts</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – maximum number of times a callable should be attempted</li>
+<li><strong>exponent</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – exponent used for backoff, e.g. 2.0 will result in a delay
+which doubles between each attempt</li>
+<li><strong>sleep</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – base value for delay between attempts in seconds, e.g. 1.0
+will delay by one second between first two attempts</li>
+<li><strong>max_sleep</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – maximum delay between attempts, in seconds</li>
+<li><strong>exception_base</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.7)"><em>type</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>(</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.7)"><em>type</em></a><em>)</em>) – future will be retried if (and only if)
+it raises an exception inheriting from one of these classes</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>All parameters are optional; reasonable defaults apply when omitted.</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">more-executors</a></h1>
+
+
+
+<p class="blurb">A library of composable Python executors</p>
+
+
+
+
+
+
+
+
+    
+
+<p>
+<a class="badge" href="https://travis-ci.org/rohanpm/more-executors">
+    <img
+        alt="https://secure.travis-ci.org/rohanpm/more-executors.svg?branch=master"
+        src="https://secure.travis-ci.org/rohanpm/more-executors.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user-guide.html">User Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api-reference.html">Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="base-executors.html">Base executors: <code class="docutils literal notranslate"><span class="pre">thread_pool</span></code>, <code class="docutils literal notranslate"><span class="pre">process_pool</span></code>, <code class="docutils literal notranslate"><span class="pre">sync</span></code></a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Retrying: <code class="docutils literal notranslate"><span class="pre">RetryExecutor</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="throttle.html">Throttling: <code class="docutils literal notranslate"><span class="pre">ThrottleExecutor</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeout.html">Timing out futures: <code class="docutils literal notranslate"><span class="pre">f_timeout</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeoutExecutor</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cancel.html">Cancellation of futures: <code class="docutils literal notranslate"><span class="pre">f_nocancel</span></code>, <code class="docutils literal notranslate"><span class="pre">CancelOnShutdownExecutor</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="poll.html">Polling: <code class="docutils literal notranslate"><span class="pre">PollExecutor</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="asyncio.html">asyncio bridge: <code class="docutils literal notranslate"><span class="pre">AsyncioExecutor</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="bind.html">Binding callables to executors: <code class="docutils literal notranslate"><span class="pre">bind</span></code>, <code class="docutils literal notranslate"><span class="pre">flat_bind</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="futures-create.html">Creating futures from values: <code class="docutils literal notranslate"><span class="pre">f_return*</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="futures-map.html">Transforming futures: <code class="docutils literal notranslate"><span class="pre">f_map</span></code>, <code class="docutils literal notranslate"><span class="pre">f_flat_map</span></code>, <code class="docutils literal notranslate"><span class="pre">MapExecutor</span></code>, <code class="docutils literal notranslate"><span class="pre">FlatMapExecutor</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="futures-apply.html">Applying functions: <code class="docutils literal notranslate"><span class="pre">f_apply</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="futures-bool.html">Boolean operations: <code class="docutils literal notranslate"><span class="pre">f_or</span></code>, <code class="docutils literal notranslate"><span class="pre">f_and</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="futures-lists.html">Futures and sequences: <code class="docutils literal notranslate"><span class="pre">f_traverse</span></code>, <code class="docutils literal notranslate"><span class="pre">f_sequence</span></code>, <code class="docutils literal notranslate"><span class="pre">f_zip</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../api-reference.html">Reference</a><ul>
+      <li>Previous: <a href="base-executors.html" title="previous chapter">Base executors: <code class="docutils literal notranslate"><span class="pre">thread_pool</span></code>, <code class="docutils literal notranslate"><span class="pre">process_pool</span></code>, <code class="docutils literal notranslate"><span class="pre">sync</span></code></a></li>
+      <li>Next: <a href="throttle.html" title="next chapter">Throttling: <code class="docutils literal notranslate"><span class="pre">ThrottleExecutor</span></code></a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Rohan McGovern.
+      
+      |
+      <a href="../_sources/reference/retry.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/rohanpm/more-executors" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

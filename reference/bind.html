@@ -1,0 +1,248 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Binding callables to executors: bind, flat_bind &#8212; more-executors  documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Creating futures from values: f_return*" href="futures-create.html" />
+    <link rel="prev" title="asyncio bridge: AsyncioExecutor" href="asyncio.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="binding-callables-to-executors-bind-flat-bind">
+<h1>Binding callables to executors: <code class="docutils literal notranslate"><span class="pre">bind</span></code>, <code class="docutils literal notranslate"><span class="pre">flat_bind</span></code><a class="headerlink" href="#binding-callables-to-executors-bind-flat-bind" title="Permalink to this headline">¶</a></h1>
+<p>The <a class="reference internal" href="#more_executors.Executors.bind" title="more_executors.Executors.bind"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bind()</span></code></a> method produces a callable which is
+bound to a specific executor.</p>
+<p>This is illustrated by the following example.
+Consider this code to fetch data from a list of URLs expected to provide JSON,
+with up to 8 concurrent requests and retries on failure, without using
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">bind()</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">executor</span> <span class="o">=</span> <span class="n">Executors</span><span class="o">.</span><span class="n">thread_pool</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span><span class="o">.</span> \
+    <span class="n">with_map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">response</span><span class="p">:</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">())</span><span class="o">.</span> \
+    <span class="n">with_retry</span><span class="p">()</span>
+
+<span class="n">futures</span> <span class="o">=</span> <span class="p">[</span><span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">url</span> <span class="ow">in</span> <span class="n">urls</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The following code using <code class="xref py py-meth docutils literal notranslate"><span class="pre">bind()</span></code> is functionally
+equivalent:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">async_get</span> <span class="o">=</span> <span class="n">Executors</span><span class="o">.</span><span class="n">thread_pool</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span><span class="o">.</span> \
+    <span class="n">bind</span><span class="p">(</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">)</span><span class="o">.</span> \
+    <span class="n">with_map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">response</span><span class="p">:</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">())</span><span class="o">.</span> \
+    <span class="n">with_retry</span><span class="p">()</span>
+
+<span class="n">futures</span> <span class="o">=</span> <span class="p">[</span><span class="n">async_get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span> <span class="k">for</span> <span class="n">url</span> <span class="ow">in</span> <span class="n">urls</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The latter example using <code class="xref py py-meth docutils literal notranslate"><span class="pre">bind()</span></code> is more readable because the order of
+the calls to set up the pipeline more closely reflects the order in
+which the pipeline executes at runtime.</p>
+<p>In contrast, without using <code class="xref py py-meth docutils literal notranslate"><span class="pre">bind()</span></code>, the <em>first</em> step of the pipeline -
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">requests.get()</span></code> - appears at the <em>end</em> of the code, which is harder
+to follow.</p>
+<p><a class="reference internal" href="#more_executors.Executors.flat_bind" title="more_executors.Executors.flat_bind"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flat_bind()</span></code></a> is also provided for use with
+callables returning a future. It behaves in the same way as <code class="xref py py-meth docutils literal notranslate"><span class="pre">bind()</span></code>,
+but avoids returning a nested future.</p>
+<dl class="classmethod">
+<dt id="more_executors.Executors.bind">
+<em class="property">classmethod </em><code class="descclassname">Executors.</code><code class="descname">bind</code><span class="sig-paren">(</span><em>executor</em>, <em>fn</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.Executors.bind" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bind a synchronous callable to an executor.</p>
+<p>If the callable returns a future, consider using <a class="reference internal" href="#more_executors.Executors.flat_bind" title="more_executors.Executors.flat_bind"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flat_bind()</span></code></a> instead.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>executor</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor" title="(in Python v3.7)"><em>Executor</em></a>) – an executor</li>
+<li><strong>fn</strong> (<em>callable</em>) – any function or callable</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><p>A new callable which, when invoked, will submit <cite>fn</cite> to <cite>executor</cite> and return
+the resulting future.</p>
+<p>This returned callable provides the <cite>Executors.with_*</cite> methods, which may be
+chained to further customize the behavior of the callable.</p>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">callable</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="versionadded">
+<p><span class="versionmodified">New in version 1.13.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="more_executors.Executors.flat_bind">
+<em class="property">classmethod </em><code class="descclassname">Executors.</code><code class="descname">flat_bind</code><span class="sig-paren">(</span><em>executor</em>, <em>fn</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.Executors.flat_bind" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bind an asynchronous callable to an executor.</p>
+<p>This convenience method should be used in preference to <a class="reference internal" href="#more_executors.Executors.bind" title="more_executors.Executors.bind"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bind()</span></code></a>
+when the bound callable returns a future, in order to avoid a nested
+future in the returned value. It is equivalent to:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bind</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span><span class="o">.</span><span class="n">with_flat_map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">future</span><span class="p">:</span> <span class="n">future</span><span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>executor</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor" title="(in Python v3.7)"><em>Executor</em></a>) – an executor</li>
+<li><strong>fn</strong> (<em>callable</em>) – any function or callable which returns a future</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><p>A new callable which, when invoked, will submit <cite>fn</cite> to <cite>executor</cite> and return
+the resulting (flattened) future.</p>
+<p>This returned callable provides the <cite>Executors.with_*</cite> methods, which may be
+chained to further customize the behavior of the callable.</p>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">callable</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="versionadded">
+<p><span class="versionmodified">New in version 1.16.0.</span></p>
+</div>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">more-executors</a></h1>
+
+
+
+<p class="blurb">A library of composable Python executors</p>
+
+
+
+
+
+
+
+
+    
+
+<p>
+<a class="badge" href="https://travis-ci.org/rohanpm/more-executors">
+    <img
+        alt="https://secure.travis-ci.org/rohanpm/more-executors.svg?branch=master"
+        src="https://secure.travis-ci.org/rohanpm/more-executors.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user-guide.html">User Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api-reference.html">Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="base-executors.html">Base executors: <code class="docutils literal notranslate"><span class="pre">thread_pool</span></code>, <code class="docutils literal notranslate"><span class="pre">process_pool</span></code>, <code class="docutils literal notranslate"><span class="pre">sync</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="retry.html">Retrying: <code class="docutils literal notranslate"><span class="pre">RetryExecutor</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="throttle.html">Throttling: <code class="docutils literal notranslate"><span class="pre">ThrottleExecutor</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeout.html">Timing out futures: <code class="docutils literal notranslate"><span class="pre">f_timeout</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeoutExecutor</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cancel.html">Cancellation of futures: <code class="docutils literal notranslate"><span class="pre">f_nocancel</span></code>, <code class="docutils literal notranslate"><span class="pre">CancelOnShutdownExecutor</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="poll.html">Polling: <code class="docutils literal notranslate"><span class="pre">PollExecutor</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="asyncio.html">asyncio bridge: <code class="docutils literal notranslate"><span class="pre">AsyncioExecutor</span></code></a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Binding callables to executors: <code class="docutils literal notranslate"><span class="pre">bind</span></code>, <code class="docutils literal notranslate"><span class="pre">flat_bind</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="futures-create.html">Creating futures from values: <code class="docutils literal notranslate"><span class="pre">f_return*</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="futures-map.html">Transforming futures: <code class="docutils literal notranslate"><span class="pre">f_map</span></code>, <code class="docutils literal notranslate"><span class="pre">f_flat_map</span></code>, <code class="docutils literal notranslate"><span class="pre">MapExecutor</span></code>, <code class="docutils literal notranslate"><span class="pre">FlatMapExecutor</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="futures-apply.html">Applying functions: <code class="docutils literal notranslate"><span class="pre">f_apply</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="futures-bool.html">Boolean operations: <code class="docutils literal notranslate"><span class="pre">f_or</span></code>, <code class="docutils literal notranslate"><span class="pre">f_and</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="futures-lists.html">Futures and sequences: <code class="docutils literal notranslate"><span class="pre">f_traverse</span></code>, <code class="docutils literal notranslate"><span class="pre">f_sequence</span></code>, <code class="docutils literal notranslate"><span class="pre">f_zip</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../api-reference.html">Reference</a><ul>
+      <li>Previous: <a href="asyncio.html" title="previous chapter">asyncio bridge: <code class="docutils literal notranslate"><span class="pre">AsyncioExecutor</span></code></a></li>
+      <li>Next: <a href="futures-create.html" title="next chapter">Creating futures from values: <code class="docutils literal notranslate"><span class="pre">f_return*</span></code></a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Rohan McGovern.
+      
+      |
+      <a href="../_sources/reference/bind.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/rohanpm/more-executors" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

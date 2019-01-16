@@ -46,30 +46,32 @@ It includes a collection of <a class="reference external" href="https://docs.pyt
 implementations in order to extend the behavior of
 <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a> objects.</p>
 <p>Compatible with Python 2.6, 2.7 and 3.x.</p>
-<p>This documentation was built from more-executors 1.18.0, revision c03e212.</p>
+<p>This documentation was built from more-executors 1.18.0, revision 153a99f.</p>
 <div class="toctree-wrapper compound">
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="user-guide.html">User Guide</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="user-guide.html#base-executors">Base executors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user-guide.html#composing-executors">Composing executors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="user-guide.html#binding-callables-to-executors">Binding callables to executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user-guide.html#composing-futures">Composing futures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user-guide.html#usage-of-threads">Usage of threads</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user-guide.html#executor-shutdown">Executor shutdown</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api-reference.html">Reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="api-reference.html#bind">bind</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api-reference.html#concurrent-futures">concurrent.futures</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api-reference.html#sync">sync</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api-reference.html#retry">retry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api-reference.html#map">map</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api-reference.html#flat-map">flat map</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api-reference.html#timeout">timeout</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api-reference.html#throttle">throttle</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api-reference.html#cancel-on-shutdown">cancel on shutdown</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api-reference.html#poll">poll</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api-reference.html#asyncio">asyncio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/base-executors.html">Base executors: <code class="docutils literal notranslate"><span class="pre">thread_pool</span></code>, <code class="docutils literal notranslate"><span class="pre">process_pool</span></code>, <code class="docutils literal notranslate"><span class="pre">sync</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/retry.html">Retrying: <code class="docutils literal notranslate"><span class="pre">RetryExecutor</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/throttle.html">Throttling: <code class="docutils literal notranslate"><span class="pre">ThrottleExecutor</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/timeout.html">Timing out futures: <code class="docutils literal notranslate"><span class="pre">f_timeout</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeoutExecutor</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/cancel.html">Cancellation of futures: <code class="docutils literal notranslate"><span class="pre">f_nocancel</span></code>, <code class="docutils literal notranslate"><span class="pre">CancelOnShutdownExecutor</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/poll.html">Polling: <code class="docutils literal notranslate"><span class="pre">PollExecutor</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/asyncio.html">asyncio bridge: <code class="docutils literal notranslate"><span class="pre">AsyncioExecutor</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/bind.html">Binding callables to executors: <code class="docutils literal notranslate"><span class="pre">bind</span></code>, <code class="docutils literal notranslate"><span class="pre">flat_bind</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/futures-create.html">Creating futures from values: <code class="docutils literal notranslate"><span class="pre">f_return*</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/futures-map.html">Transforming futures: <code class="docutils literal notranslate"><span class="pre">f_map</span></code>, <code class="docutils literal notranslate"><span class="pre">f_flat_map</span></code>, <code class="docutils literal notranslate"><span class="pre">MapExecutor</span></code>, <code class="docutils literal notranslate"><span class="pre">FlatMapExecutor</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/futures-apply.html">Applying functions: <code class="docutils literal notranslate"><span class="pre">f_apply</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/futures-bool.html">Boolean operations: <code class="docutils literal notranslate"><span class="pre">f_or</span></code>, <code class="docutils literal notranslate"><span class="pre">f_and</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/futures-lists.html">Futures and sequences: <code class="docutils literal notranslate"><span class="pre">f_traverse</span></code>, <code class="docutils literal notranslate"><span class="pre">f_sequence</span></code>, <code class="docutils literal notranslate"><span class="pre">f_zip</span></code></a></li>
 </ul>
 </li>
 </ul>

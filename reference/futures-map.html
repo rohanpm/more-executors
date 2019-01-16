@@ -1,0 +1,316 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Transforming futures: f_map, f_flat_map, MapExecutor, FlatMapExecutor &#8212; more-executors  documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Applying functions: f_apply" href="futures-apply.html" />
+    <link rel="prev" title="Creating futures from values: f_return*" href="futures-create.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="transforming-futures-f-map-f-flat-map-mapexecutor-flatmapexecutor">
+<h1>Transforming futures: <code class="docutils literal notranslate"><span class="pre">f_map</span></code>, <code class="docutils literal notranslate"><span class="pre">f_flat_map</span></code>, <code class="docutils literal notranslate"><span class="pre">MapExecutor</span></code>, <code class="docutils literal notranslate"><span class="pre">FlatMapExecutor</span></code><a class="headerlink" href="#transforming-futures-f-map-f-flat-map-mapexecutor-flatmapexecutor" title="Permalink to this headline">¶</a></h1>
+<p>The output value of a future can be mapped to other values using a
+provided function.</p>
+<div class="section" id="module-more_executors.futures">
+<span id="futures-api"></span><h2>Futures API<a class="headerlink" href="#module-more_executors.futures" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="more_executors.futures.f_map">
+<code class="descclassname">more_executors.futures.</code><code class="descname">f_map</code><span class="sig-paren">(</span><em>future</em>, <em>fn</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.futures.f_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Map the output value of a future using the given function.</p>
+<p>Signature: <code class="code docutils literal notranslate"><span class="pre">Future&lt;A&gt;,</span> <span class="pre">fn&lt;A⟶B&gt;</span> <span class="pre">⟶</span> <span class="pre">Future&lt;B&gt;</span></code></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>future</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.7)"><em>Future</em></a>) – Any future.</li>
+<li><strong>fn</strong> (<em>callable</em>) – Any callable.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><dl class="docutils">
+<dt><a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a></dt>
+<dd><p class="first last">A future resolved with the returned value of <code class="code docutils literal notranslate"><span class="pre">fn(future.result())</span></code>,
+or with the exception raised by <code class="xref py py-obj docutils literal notranslate"><span class="pre">future</span></code> or <code class="xref py py-obj docutils literal notranslate"><span class="pre">fn</span></code>.</p>
+</dd>
+</dl>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="versionadded">
+<p><span class="versionmodified">New in version 1.19.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="more_executors.futures.f_flat_map">
+<code class="descclassname">more_executors.futures.</code><code class="descname">f_flat_map</code><span class="sig-paren">(</span><em>future</em>, <em>fn</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.futures.f_flat_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Map the output value of a future using the given future-returning function.</p>
+<p>Like <a class="reference internal" href="#more_executors.futures.f_map" title="more_executors.futures.f_map"><code class="xref py py-meth docutils literal notranslate"><span class="pre">f_map()</span></code></a>, except that the mapping function must return a future,
+and that future will be flattened into the output value (avoiding a nested future).</p>
+<p>Signature: <code class="code docutils literal notranslate"><span class="pre">Future&lt;A&gt;,</span> <span class="pre">fn&lt;A⟶Future&lt;B&gt;&gt;</span> <span class="pre">⟶</span> <span class="pre">Future&lt;B&gt;</span></code></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>future</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.7)"><em>Future</em></a>) – Any future.</li>
+<li><strong>fn</strong> (<em>callable</em>) – Any callable which returns a future.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><dl class="docutils">
+<dt><a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a></dt>
+<dd><p class="first last">A future equivalent to that returned by <code class="xref py py-obj docutils literal notranslate"><span class="pre">fn</span></code>, or resolved with an exception
+if <code class="xref py py-obj docutils literal notranslate"><span class="pre">future</span></code> or <code class="xref py py-obj docutils literal notranslate"><span class="pre">fn</span></code> failed.</p>
+</dd>
+</dl>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="versionadded">
+<p><span class="versionmodified">New in version 1.19.0.</span></p>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="executors-api">
+<h2>Executors API<a class="headerlink" href="#executors-api" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="more_executors.map.MapExecutor">
+<em class="property">class </em><code class="descclassname">more_executors.map.</code><code class="descname">MapExecutor</code><span class="sig-paren">(</span><em>delegate</em>, <em>fn</em>, <em>logger=None</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.map.MapExecutor" title="Permalink to this definition">¶</a></dt>
+<dd><p>An executor which delegates to another executor while mapping
+output values through a given function.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>delegate</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor" title="(in Python v3.7)"><em>Executor</em></a>) – an executor to which callables will be submitted</li>
+<li><strong>fn</strong> (<em>callable</em>) – a callable applied to transform returned values</li>
+<li><strong>logger</strong> (<a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.7)"><em>Logger</em></a>) – a logger used for messages from this executor</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="more_executors.map.MapExecutor.submit">
+<code class="descname">submit</code><span class="sig-paren">(</span><em>fn</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.map.MapExecutor.submit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Submit a callable.</p>
+<p>The returned future will have its output value transformed by the
+map function passed to this executor.  If that map function raises
+an exception, the future will fail with that exception.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="more_executors.Executors.with_map">
+<em class="property">classmethod </em><code class="descclassname">Executors.</code><code class="descname">with_map</code><span class="sig-paren">(</span><em>executor</em>, <em>fn</em>, <em>logger=None</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.Executors.with_map" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a new executor which will transform results through the given function</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#more_executors.map.MapExecutor" title="more_executors.map.MapExecutor">MapExecutor</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="more_executors.flat_map.FlatMapExecutor">
+<em class="property">class </em><code class="descclassname">more_executors.flat_map.</code><code class="descname">FlatMapExecutor</code><span class="sig-paren">(</span><em>delegate</em>, <em>fn</em>, <em>logger=None</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.flat_map.FlatMapExecutor" title="Permalink to this definition">¶</a></dt>
+<dd><p>An executor which delegates to another executor while mapping
+output values through a given future-producing function.</p>
+<p>This executor behaves like <a class="reference internal" href="#more_executors.map.MapExecutor" title="more_executors.map.MapExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">MapExecutor</span></code></a>,
+except that the given mapping function must return instances of
+<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a>, and the mapped future is
+flattened into the future returned from this executor.
+This allows chaining multiple future-producing functions into a single
+future.</p>
+<ul class="simple">
+<li>If the map function returns a <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a>, the
+result/exception of that future will be propagated to the future returned
+by this executor.</li>
+<li>If the map function returns any other type, the returned future will fail
+with a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeError</span></code></a>.</li>
+<li>If the map function raises an exception, the returned future will fail
+with that exception.</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>delegate</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor" title="(in Python v3.7)"><em>Executor</em></a>) – an executor to which callables will be submitted</li>
+<li><strong>fn</strong> (<em>callable</em>) – a callable applied to transform returned values</li>
+<li><strong>logger</strong> (<a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.7)"><em>Logger</em></a>) – a logger used for messages from this executor</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="more_executors.Executors.with_flat_map">
+<em class="property">classmethod </em><code class="descclassname">Executors.</code><code class="descname">with_flat_map</code><span class="sig-paren">(</span><em>executor</em>, <em>fn</em>, <em>logger=None</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.Executors.with_flat_map" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a new executor which will transform results through the given
+<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a>-providing function</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#more_executors.flat_map.FlatMapExecutor" title="more_executors.flat_map.FlatMapExecutor">FlatMapExecutor</a></td>
+</tr>
+</tbody>
+</table>
+<div class="versionadded">
+<p><span class="versionmodified">New in version 1.12.0.</span></p>
+</div>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">more-executors</a></h1>
+
+
+
+<p class="blurb">A library of composable Python executors</p>
+
+
+
+
+
+
+
+
+    
+
+<p>
+<a class="badge" href="https://travis-ci.org/rohanpm/more-executors">
+    <img
+        alt="https://secure.travis-ci.org/rohanpm/more-executors.svg?branch=master"
+        src="https://secure.travis-ci.org/rohanpm/more-executors.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user-guide.html">User Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api-reference.html">Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="base-executors.html">Base executors: <code class="docutils literal notranslate"><span class="pre">thread_pool</span></code>, <code class="docutils literal notranslate"><span class="pre">process_pool</span></code>, <code class="docutils literal notranslate"><span class="pre">sync</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="retry.html">Retrying: <code class="docutils literal notranslate"><span class="pre">RetryExecutor</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="throttle.html">Throttling: <code class="docutils literal notranslate"><span class="pre">ThrottleExecutor</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeout.html">Timing out futures: <code class="docutils literal notranslate"><span class="pre">f_timeout</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeoutExecutor</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cancel.html">Cancellation of futures: <code class="docutils literal notranslate"><span class="pre">f_nocancel</span></code>, <code class="docutils literal notranslate"><span class="pre">CancelOnShutdownExecutor</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="poll.html">Polling: <code class="docutils literal notranslate"><span class="pre">PollExecutor</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="asyncio.html">asyncio bridge: <code class="docutils literal notranslate"><span class="pre">AsyncioExecutor</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="bind.html">Binding callables to executors: <code class="docutils literal notranslate"><span class="pre">bind</span></code>, <code class="docutils literal notranslate"><span class="pre">flat_bind</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="futures-create.html">Creating futures from values: <code class="docutils literal notranslate"><span class="pre">f_return*</span></code></a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Transforming futures: <code class="docutils literal notranslate"><span class="pre">f_map</span></code>, <code class="docutils literal notranslate"><span class="pre">f_flat_map</span></code>, <code class="docutils literal notranslate"><span class="pre">MapExecutor</span></code>, <code class="docutils literal notranslate"><span class="pre">FlatMapExecutor</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="futures-apply.html">Applying functions: <code class="docutils literal notranslate"><span class="pre">f_apply</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="futures-bool.html">Boolean operations: <code class="docutils literal notranslate"><span class="pre">f_or</span></code>, <code class="docutils literal notranslate"><span class="pre">f_and</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="futures-lists.html">Futures and sequences: <code class="docutils literal notranslate"><span class="pre">f_traverse</span></code>, <code class="docutils literal notranslate"><span class="pre">f_sequence</span></code>, <code class="docutils literal notranslate"><span class="pre">f_zip</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../api-reference.html">Reference</a><ul>
+      <li>Previous: <a href="futures-create.html" title="previous chapter">Creating futures from values: <code class="docutils literal notranslate"><span class="pre">f_return*</span></code></a></li>
+      <li>Next: <a href="futures-apply.html" title="next chapter">Applying functions: <code class="docutils literal notranslate"><span class="pre">f_apply</span></code></a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Rohan McGovern.
+      
+      |
+      <a href="../_sources/reference/futures-map.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/rohanpm/more-executors" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>
