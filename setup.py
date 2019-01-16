@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 
 def get_description():
@@ -24,7 +24,7 @@ setup(
     version='1.19.0',
     author='Rohan McGovern',
     author_email='rohan@mcgovern.id.au',
-    packages=['more_executors'],
+    packages=find_packages(exclude=['tests', 'tests.*']),
     url='https://github.com/rohanpm/more-executors',
     license='GNU General Public License',
     description=get_description(),
