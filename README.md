@@ -1,6 +1,6 @@
 # more-executors
 
-A library of composable Python executors.
+A library of composable Python executors and futures.
 
 [![Build Status](https://travis-ci.org/rohanpm/more-executors.svg?branch=master)](https://travis-ci.org/rohanpm/more-executors)
 [![Coverage Status](https://coveralls.io/repos/github/rohanpm/more-executors/badge.svg?branch=master)](https://coveralls.io/github/rohanpm/more-executors?branch=master)
@@ -71,6 +71,7 @@ def fetch_urls(urls):
 ### v1.19.0
 
 - Fixed TimeoutExecutor thread leak when `shutdown()` is never called
+- Introduced `more_executors.futures` module for composing futures
 
 ### v1.18.0
 

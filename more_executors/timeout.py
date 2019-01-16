@@ -64,10 +64,18 @@ class TimeoutExecutor(CanCustomizeBind, Executor):
         self._job_thread.start()
 
     def submit(self, fn, *args, **kwargs):
+        return self.submit_timeout(self._timeout, fn, *args, **kwargs)
+
+    def submit_timeout(self, timeout, fn, *args, **kwargs):
+        """Like :code:`submit(fn, *args, **kwargs)`, but uses the specified
+        timeout rather than this executor's default.
+
+        .. versionadded:: 1.19.0
+        """
         delegate_future = self._delegate.submit(fn, *args, **kwargs)
         future = _TimeoutFuture(delegate_future)
         future.add_done_callback(self._on_future_done)
-        job = _Job(future, delegate_future, monotonic() + self._timeout)
+        job = _Job(future, delegate_future, monotonic() + timeout)
         with self._jobs_lock:
             self._jobs.append(job)
         self._jobs_write.set()

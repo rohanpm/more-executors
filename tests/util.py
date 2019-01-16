@@ -1,5 +1,7 @@
 import time
-from threading import Thread
+import gc
+import traceback
+import threading
 from functools import partial
 
 
@@ -27,7 +29,7 @@ def run_or_timeout(fn, *args, **kwargs):
     retval = []
     safe_fn = partial(_run_or_record_exception, exception, retval, fn)
 
-    thread = Thread(target=safe_fn, args=args, kwargs=kwargs, name='run_or_timeout')
+    thread = threading.Thread(target=safe_fn, args=args, kwargs=kwargs, name='run_or_timeout')
     thread.daemon = True
     thread.start()
 
@@ -41,3 +43,27 @@ def run_or_timeout(fn, *args, **kwargs):
     else:
         # OK!
         return retval[0]
+
+
+def thread_names():
+    return set([t.name for t in threading.enumerate()])
+
+
+def assert_no_extra_threads(threads_before):
+    gc.collect()
+    threads_after = thread_names()
+    extra_threads = threads_after - threads_before
+    assert extra_threads == set()
+
+
+def get_traceback(future):
+    exception = future.exception()
+    if '__traceback__' in dir(exception):
+        return exception.__traceback__
+    return future.exception_info()[1]
+
+
+def assert_in_traceback(future, needle):
+    tb = get_traceback(future)
+    tb_str = ''.join(traceback.format_tb(tb))
+    assert needle in tb_str
