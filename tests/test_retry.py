@@ -16,9 +16,14 @@ from .util import assert_soon
 
 
 @fixture
-def executor():
+def max_attempts():
+    return 10
+
+
+@fixture
+def executor(max_attempts):
     policy = ExceptionRetryPolicy(
-        max_attempts=10,
+        max_attempts=max_attempts,
         exponent=2.0,
         sleep=0.001,
         max_sleep=0.010,
@@ -236,3 +241,33 @@ def test_only_retry_exception_type(executor):
     # It should have retried on the first two due to exception match, then failed
     assert_that(future.exception(), is_(errors[-1]))
     assert_that(fn.call_count, equal_to(len(errors)))
+
+
+def test_cancel_stops_retry(executor, max_attempts):
+    calls = [0, 0]
+    future = []
+    cancelled = [None, None]
+    error = RuntimeError("Simulated error")
+
+    def fn(idx, do_cancel):
+        calls[idx] += 1
+        if calls[idx] == 2 and do_cancel:
+            cancelled[idx] = future[idx].cancel()
+        raise error
+
+    future.append(executor.submit(fn, idx=0, do_cancel=False))
+    future.append(executor.submit(fn, idx=1, do_cancel=True))
+
+    # Both futures should fail
+    assert future[0].exception() is error
+    assert future[1].exception() is error
+
+    # future0 didn't cancel, so it should have run as many
+    # times as permitted
+    assert cancelled[0] is None
+    assert calls[0] == max_attempts
+
+    # future1 had cancel() called.
+    # The call to cancel() failed, but it stopped any further retries.
+    assert cancelled[1] is False
+    assert calls[1] == 2
