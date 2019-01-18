@@ -86,7 +86,7 @@ html_theme = 'alabaster'
 # documentation.
 #
 html_theme_options = dict(
-    description='A library of composable Python executors',
+    description='A library of composable Python executors and futures',
     github_user='rohanpm',
     github_repo='more-executors',
     github_banner=True,
