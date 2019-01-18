@@ -68,6 +68,11 @@ def fetch_urls(urls):
 
 ## Changelog
 
+### v1.20.0
+
+- `cancel()` now terminates retries from RetryExecutor
+  ([#51](https://github.com/rohanpm/more-executors/issues/51))
+
 ### v1.19.0
 
 - Fixed TimeoutExecutor thread leak when `shutdown()` is never called

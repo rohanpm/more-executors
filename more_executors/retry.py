@@ -1,4 +1,3 @@
-from collections import namedtuple
 from concurrent.futures import Executor
 from threading import RLock, Thread, Event
 import logging
@@ -85,9 +84,18 @@ class ExceptionRetryPolicy(RetryPolicy):
         return min(self._sleep * (self._exponent ** attempt), self._max_sleep)
 
 
-_RetryJob = namedtuple('_RetryJob',
-                       ['policy', 'delegate_future', 'future',
-                        'attempt', 'when', 'fn', 'args', 'kwargs'])
+class _RetryJob(object):
+    def __init__(self, policy, delegate_future, future,
+                 attempt, when, fn, args, kwargs):
+        self.policy = policy
+        self.delegate_future = delegate_future
+        self.future = future
+        self.attempt = attempt
+        self.when = when
+        self.fn = fn
+        self.args = args
+        self.kwargs = kwargs
+        self.stop_retry = False
 
 
 class _RetryFuture(_Future):
@@ -157,6 +165,9 @@ class RetryExecutor(CanCustomizeBind, Executor):
     - Cancelling is supported if the delegate executor allows it.
 
     - Cancelling between retries is always supported.
+
+    - Attempting to cancel a future prevents any more retries, regardless
+      of whether the cancel succeeds.
 
     - The returned futures from this executor are only resolved or
       failed once the callable either succeeded, or all retries
@@ -337,6 +348,10 @@ class RetryExecutor(CanCustomizeBind, Executor):
         #   for the future's lock.
         assert found_job, "Cancel called on orphan %s" % future
 
+        # Whether or not we can successfully cancel, the request to cancel
+        # means that we don't want to retry any more.
+        found_job.stop_retry = True
+
         self._log.debug("Try cancel delegate: %s", found_job)
 
         if found_job.delegate_future.cancel():
@@ -372,7 +387,11 @@ class RetryExecutor(CanCustomizeBind, Executor):
             self._log.debug("Delegate was cancelled: %s", delegate_future)
             return
 
-        should_retry = found_job.policy.should_retry(found_job.attempt, delegate_future)
+        if found_job.stop_retry:
+            should_retry = False
+        else:
+            should_retry = found_job.policy.should_retry(found_job.attempt, delegate_future)
+
         if should_retry:
             sleep_time = found_job.policy.sleep_time(found_job.attempt, delegate_future)
             self._retry(found_job, sleep_time)
