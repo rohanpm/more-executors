@@ -49,6 +49,8 @@ submitted more than once if retries are required.</li>
 thread than the calling thread.</li>
 <li>Cancelling is supported if the delegate executor allows it.</li>
 <li>Cancelling between retries is always supported.</li>
+<li>Attempting to cancel a future prevents any more retries, regardless
+of whether the cancel succeeds.</li>
 <li>The returned futures from this executor are only resolved or
 failed once the callable either succeeded, or all retries
 were exhausted.  This includes activation of the done callback.</li>
