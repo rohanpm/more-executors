@@ -1,7 +1,7 @@
 more-executors
 ==============
 
-A library of composable Python executors.
+A library of composable Python executors and futures.
 
 * `Documentation <https://rohanpm.github.io/more-executors/>`_
 * `Source <https://github.com/rohanpm/more-executors>`_
