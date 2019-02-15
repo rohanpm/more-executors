@@ -6,17 +6,16 @@ def get_description():
 
 
 def get_long_description():
-    try:
-        text = open('README.md').read()
-    except IOError as error:
-        if error.errno == 2:
-            return get_description()
-        raise
+    text = open('README.md').read()
 
     # The README starts with the same text as "description",
     # which makes sense, but on PyPI causes same text to be
     # displayed twice.  So let's strip that.
     return text.replace(get_description() + '.\n\n', '', 1)
+
+
+def get_install_requires():
+    return open('requirements.txt').readlines()
 
 
 setup(
@@ -40,9 +39,5 @@ setup(
         'Programming Language :: Python :: 3',
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
-    install_requires=[
-        'futures;python_version<"3"',
-        'six',
-        'monotonic',
-    ],
+    install_requires=get_install_requires(),
 )
