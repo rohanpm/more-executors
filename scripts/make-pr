@@ -1,6 +1,5 @@
 #!/usr/bin/env python
-"""Make a pull request from HEAD and immediately request it to be merged by
-posting 'bors r+' comment."""
+"""Make a pull request from HEAD"""
 from __future__ import print_function
 from argparse import ArgumentParser
 from subprocess import check_call, check_output, Popen, PIPE, CalledProcessError
@@ -33,22 +32,6 @@ def github_session():
     return github3.login(token=token)
 
 
-def bors_comment(name):
-    gh = github_session()
-    repo = gh.repository(OWNER, REPO)
-    pull_requests = repo.pull_requests(
-        state='open',
-        head=':'.join([OWNER, name]),
-        sort='created',
-        direction='desc',
-        number=1)
-
-    for pr in pull_requests:
-        comment = pr.create_comment('bors r+')
-        print(comment.html_url)
-        break
-
-
 def run(raw_args):
     parser = ArgumentParser()
     parser.add_argument('name', help='name for branch')
@@ -78,7 +61,6 @@ def run(raw_args):
         pr_cmd.extend(['-m', args.m])
 
     check_call(pr_cmd)
-    bors_comment(args.name)
 
 
 if __name__ == '__main__':
