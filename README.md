@@ -66,6 +66,29 @@ def fetch_urls(urls):
         do_something(url, data)
 ```
 
+## Development
+
+`virtualenv` and `pip` may be used to locally install this project from
+source:
+
+```
+virtualenv ~/dev/python
+. ~/dev/python/bin/activate
+
+git clone https://github.com/rohanpm/more-executors
+cd more-executors
+
+pip install --editable .
+```
+
+Autotests may be run with pytest:
+
+```
+pip install -r test-requirements.txt
+py.test
+```
+
+Submit pull requests against https://github.com/rohanpm/more-executors.
 
 ## License
 
