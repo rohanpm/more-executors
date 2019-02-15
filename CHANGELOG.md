@@ -7,6 +7,9 @@ from version 1.20.0 onwards.
 
 
 ## [Unreleased]
+
+## [1.20.1] - 2019-02-15
+
 ### Changed
 - Minor packaging improvements
 
@@ -138,7 +141,8 @@ from version 1.20.0 onwards.
 - Minor improvements to logging
 
 
-[Unreleased]: https://github.com/rohanpm/more-executors/compare/v1.20.0...HEAD
+[Unreleased]: https://github.com/rohanpm/more-executors/compare/v1.20.1...HEAD
+[1.20.1]: https://github.com/rohanpm/more-executors/compare/v1.20.0...v1.20.1
 [1.20.0]: https://github.com/rohanpm/more-executors/compare/v1.19.0...v1.20.0
 [1.19.0]: https://github.com/rohanpm/more-executors/compare/v1.18.0...v1.19.0
 [1.18.0]: https://github.com/rohanpm/more-executors/compare/v1.17.1...v1.18.0
