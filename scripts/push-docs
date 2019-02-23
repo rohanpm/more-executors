@@ -9,6 +9,9 @@ fi
 
 rev=$(git rev-parse --short HEAD)
 
+# Copy circle config under docs build so that circle knows to ignore gh-pages branch
+cp -rv .circleci docs/_build
+
 cd docs/_build
 
 git init
