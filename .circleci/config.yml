@@ -73,7 +73,7 @@ jobs:
     - run: python ./setup.py sdist bdist_wheel
     - run: >-
         if ! test -z "${TWINE_USERNAME}" && ! test -z "${CIRCLE_TAG}"; then
-          twine upload --skip-existing dist/*.tar.gz dist/*.whl
+          twine upload --skip-existing dist/*.tar.gz dist/*.whl;
         fi
 
   tox:
