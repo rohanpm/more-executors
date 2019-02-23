@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e
+set -o pipefail
 
 if [ "${CIRCLE_BRANCH}" != "master" ] || [ "${CIRCLE_PULL_REQUEST}" != "" ]; then
   echo "Docs would now be pushed, if this were submitted to master."
