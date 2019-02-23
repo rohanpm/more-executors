@@ -18,24 +18,18 @@ workflows:
         name: Python 2.7 tests
         toxenv: py27
         image_tag: 2.7.15-stretch
+        save_coverage: true
         filters:
           <<: *ci_filters
     - tox:
         name: Python 3.6 tests
         toxenv: py36
+        save_coverage: true
         filters:
           <<: *ci_filters
     - tox:
         name: Static checks
         toxenv: static
-        filters:
-          <<: *ci_filters
-    - tox:
-        name: Coverage
-        toxenv: cov-circle-py27,cov-circle-py36
-        # For coveralls token.
-        # How to make it work for pull requests??
-        context: secrets
         filters:
           <<: *ci_filters
     - tox:
@@ -45,6 +39,14 @@ workflows:
         context: secrets
         post-steps:
         - run: scripts/push-docs
+        filters:
+          <<: *ci_filters
+    - coveralls:
+        name: Submit coverage results to Coveralls.io
+        requires:
+        - Python 2.7 tests
+        - Python 3.6 tests
+        context: secrets
         filters:
           <<: *ci_filters
     - release:
@@ -57,7 +59,6 @@ workflows:
         - Python 2.7 tests
         - Python 3.6 tests
         - Static checks
-        - Coverage
         - Build docs
         filters:
           <<: *ci_filters
@@ -76,6 +77,7 @@ jobs:
           ~/.local/bin/twine upload --skip-existing dist/*.tar.gz dist/*.whl;
         fi
 
+
   tox:
     parameters:
       toxenv:
@@ -86,6 +88,9 @@ jobs:
         default: 3.6.8-stretch
         type: string
       install_py26:
+        default: false
+        type: boolean
+      save_coverage:
         default: false
         type: boolean
 
@@ -132,9 +137,22 @@ jobs:
             - "~/.local"
 
       - run:
-          name: run tests
-          command: |
+          name: Run tests
+          command: |-
             ~/.local/bin/tox -e << parameters.toxenv >>
+
+      - when:
+          condition: <<parameters.save_coverage>>
+          steps:
+          - run:
+              name: Prepare coverage file
+              command: |-
+                if test -f .coverage; then mv .coverage coverage.<< parameters.toxenv >>; fi
+
+          - persist_to_workspace:
+              root: .
+              paths:
+              - coverage.*
 
       - store_test_results:
           path: test-results
@@ -143,3 +161,33 @@ jobs:
           key: v1-cache-pip-{{ checksum "requirements.txt" }}-{{ checksum "test-requirements.txt" }}
           paths:
             - "~/.cache/pip"
+
+
+  coveralls:
+    docker:
+      - image: circleci/python:3.6.8-stretch
+
+    working_directory: ~/repo
+
+    steps:
+      - run:
+          name: install coveralls
+          command: |
+            pip install --user coveralls
+
+      - checkout
+
+      - attach_workspace:
+          at: /tmp/workspace
+
+      - run:
+          name: Coveralls py27
+          command: >-
+            mv /tmp/workspace/coverage.py27 .coverage &&
+            ~/.local/bin/coveralls --output coverage.json
+
+      - run:
+          name: Coveralls py36
+          command: >-
+            mv /tmp/workspace/coverage.py36 .coverage &&
+            ~/.local/bin/coveralls --merge coverage.json
