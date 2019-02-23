@@ -8,6 +8,9 @@ from version 1.20.0 onwards.
 
 ## [Unreleased]
 
+### Changed
+- Minor packaging improvements; add project_urls for PyPI
+
 ## [1.20.1] - 2019-02-15
 
 ### Changed

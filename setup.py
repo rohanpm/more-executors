@@ -40,4 +40,8 @@ setup(
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
     install_requires=get_install_requires(),
+    project_urls={
+        "Changelog": "https://github.com/rohanpm/more-executors/blob/master/CHANGELOG.md",
+        "Documentation": "https://rohanpm.github.io/more-executors/",
+    }
 )
