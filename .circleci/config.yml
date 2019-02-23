@@ -9,22 +9,35 @@ workflows:
         toxenv: py26
         install_py26: true
         image_tag: 2.7.15-jessie
+        filters: &ci_filters
+          branches:
+            ignore: gh-pages
+          tags:
+            only: /^v.*/
     - tox:
         name: Python 2.7 tests
         toxenv: py27
         image_tag: 2.7.15-stretch
+        filters:
+          <<: *ci_filters
     - tox:
         name: Python 3.6 tests
         toxenv: py36
+        filters:
+          <<: *ci_filters
     - tox:
         name: Static checks
         toxenv: static
+        filters:
+          <<: *ci_filters
     - tox:
         name: Coverage
         toxenv: cov-circle-py27,cov-circle-py36
         # For coveralls token.
         # How to make it work for pull requests??
         context: secrets
+        filters:
+          <<: *ci_filters
     - tox:
         name: Build docs
         toxenv: docs
@@ -32,6 +45,8 @@ workflows:
         context: secrets
         post-steps:
         - run: scripts/push-docs
+        filters:
+          <<: *ci_filters
     - release:
         name: Release to PyPI
         # For twine credentials
@@ -45,8 +60,7 @@ workflows:
         - Coverage
         - Build docs
         filters:
-          tags:
-            only: /^v.*/
+          <<: *ci_filters
 
 jobs:
   release:
