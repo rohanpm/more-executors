@@ -1,0 +1,142 @@
+version: 2.1
+
+workflows:
+  version: 2
+  ci-cd:
+    jobs:
+    - tox:
+        name: Python 2.6 tests
+        toxenv: py26
+        install_py26: true
+        image_tag: 2.7.15-jessie
+        filters: &ci_filters
+          branches:
+            ignore: gh-pages
+          tags:
+            only: /^v.*/
+    - tox:
+        name: Python 2.7 tests
+        toxenv: py27
+        image_tag: 2.7.15-stretch
+        filters:
+          <<: *ci_filters
+    - tox:
+        name: Python 3.6 tests
+        toxenv: py36
+        filters:
+          <<: *ci_filters
+    - tox:
+        name: Static checks
+        toxenv: static
+        filters:
+          <<: *ci_filters
+    - tox:
+        name: Coverage
+        toxenv: cov-circle-py27,cov-circle-py36
+        # For coveralls token.
+        # How to make it work for pull requests??
+        context: secrets
+        filters:
+          <<: *ci_filters
+    - tox:
+        name: Build docs
+        toxenv: docs
+        # For pushing to gh-pages
+        context: secrets
+        post-steps:
+        - run: scripts/push-docs
+        filters:
+          <<: *ci_filters
+    - release:
+        name: Release to PyPI
+        # For twine credentials
+        context: secrets
+        # Only release if all tests passed
+        requires:
+        - Python 2.6 tests
+        - Python 2.7 tests
+        - Python 3.6 tests
+        - Static checks
+        - Coverage
+        - Build docs
+        filters:
+          <<: *ci_filters
+
+jobs:
+  release:
+    docker:
+      - image: circleci/python:3.6.8-stretch
+    working_directory: ~/repo
+    steps:
+    - checkout
+    - run: sudo apt-get install twine
+    - run: python ./setup.py sdist bdist_wheel
+    - run: >-
+        if ! test -z "${TWINE_USERNAME}" && ! test -z "${CIRCLE_TAG}"; then
+          echo twine upload --skip-existing dist/*.tar.gz dist/*.whl
+        fi
+
+  tox:
+    parameters:
+      toxenv:
+        description: "tox environment to execute"
+        type: string
+      image_tag:
+        description: tag of circleci/python image
+        default: 3.6.8-stretch
+        type: string
+      install_py26:
+        default: false
+        type: boolean
+
+    docker:
+      - image: circleci/python:<< parameters.image_tag >>
+
+    working_directory: ~/repo
+
+    steps:
+      - when:
+          condition: <<parameters.install_py26>>
+          steps:
+            - run: >-
+                sudo /bin/sh -c '
+                echo "deb http://ppa.launchpad.net/fkrull/deadsnakes/ubuntu trusty main" >
+                /etc/apt/sources.list.d/deadsnakes.list'
+            - run: gpg --keyserver keyserver.ubuntu.com --recv-keys 'FF39 97E8 3CD9 69B4 09FB  24BC 5BB9 2C09 DB82 666C'
+            - run: gpg --export DB82666C | sudo apt-key add -
+            - run: sudo apt-get update
+            - run: sudo apt-get remove python2.7
+            - run: sudo rm -rf /usr/local
+            - run: sudo apt-get install python2.6
+            - run: >-
+                curl -L https://github.com/pypa/get-pip/raw/3de61057f0037f4a12b4a3c6936e9ee91d07a811/2.6/get-pip.py -o /tmp/get-pip.py &&
+                echo '02b9553a4fc36740ff183c40ce413d4ae840d17099e16a43ef4f7996230ea173  /tmp/get-pip.py' | sha256sum --check
+            - run: sudo python2.6 /tmp/get-pip.py -vvv
+
+      - restore_cache:
+          key: v1-local-venv-<< parameters.image_tag >>
+
+      - checkout
+
+      - restore_cache:
+          key: v1-cache-pip-{{ checksum "requirements.txt" }}-{{ checksum "test-requirements.txt" }}
+
+      - run:
+          name: install tox
+          command: |
+            pip install --user tox
+
+      - save_cache:
+          key: v1-local-venv-<< parameters.image_tag >>
+          paths:
+            - "~/.local"
+
+      - run:
+          name: run tests
+          command: |
+            ~/.local/bin/tox -e << parameters.toxenv >>
+
+      - save_cache:
+          key: v1-cache-pip-{{ checksum "requirements.txt" }}-{{ checksum "test-requirements.txt" }}
+          paths:
+            - "~/.cache/pip"
