@@ -136,6 +136,9 @@ jobs:
           command: |
             ~/.local/bin/tox -e << parameters.toxenv >>
 
+      - store_test_results:
+          path: test-results
+
       - save_cache:
           key: v1-cache-pip-{{ checksum "requirements.txt" }}-{{ checksum "test-requirements.txt" }}
           paths:
