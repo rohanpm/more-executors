@@ -69,11 +69,11 @@ jobs:
     working_directory: ~/repo
     steps:
     - checkout
-    - run: sudo apt-get install twine
+    - run: pip install --user twine
     - run: python ./setup.py sdist bdist_wheel
     - run: >-
         if ! test -z "${TWINE_USERNAME}" && ! test -z "${CIRCLE_TAG}"; then
-          twine upload --skip-existing dist/*.tar.gz dist/*.whl;
+          ~/.local/bin/twine upload --skip-existing dist/*.tar.gz dist/*.whl;
         fi
 
   tox:
