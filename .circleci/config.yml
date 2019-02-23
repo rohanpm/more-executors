@@ -2,12 +2,13 @@ version: 2.1
 
 workflows:
   version: 2
-  filters:
-    branches:
-      ignore: gh-pages
-    tags:
-      only: /^v.*/
   ci-cd:
+    filters:
+      branches:
+        ignore: gh-pages
+      tags:
+        only: /^v.*/
+
     jobs:
     - tox:
         name: Python 2.6 tests
