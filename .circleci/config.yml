@@ -1,37 +1,41 @@
 version: 2.1
 
+orbs:
+  python: rohanpm/python@1.0.0
+
 workflows:
   version: 2
   ci-cd:
     jobs:
-    - tox:
+    - python/tox:
         name: Python 2.6 tests
         toxenv: py26
-        image: quay.io/rohanpm/circleci-python:2.6
+        executor: python/python26
         filters: &ci_filters
           branches:
             ignore: gh-pages
           tags:
             only: /^v.*/
-    - tox:
+    - python/tox:
         name: Python 2.7 tests
         toxenv: py27
-        image: circleci/python:2.7.15-stretch
-        save_coverage: true
+        executor: python/python27
+        persist_coverage: true
         filters:
           <<: *ci_filters
-    - tox:
+    - python/tox:
         name: Python 3.6 tests
         toxenv: py36
-        save_coverage: true
+        executor: python/python36
+        persist_coverage: true
         filters:
           <<: *ci_filters
-    - tox:
+    - python/tox:
         name: Static checks
         toxenv: static
         filters:
           <<: *ci_filters
-    - tox:
+    - python/tox:
         name: Build docs
         toxenv: docs
         # For pushing to gh-pages
@@ -40,7 +44,7 @@ workflows:
         - run: scripts/push-docs
         filters:
           <<: *ci_filters
-    - coveralls:
+    - python/coveralls:
         name: Submit coverage results to Coveralls.io
         requires:
         - Python 2.7 tests
@@ -48,7 +52,7 @@ workflows:
         context: secrets
         filters:
           <<: *ci_filters
-    - release:
+    - python/release:
         name: Release to PyPI
         # For twine credentials
         context: secrets
@@ -61,111 +65,3 @@ workflows:
         - Build docs
         filters:
           <<: *ci_filters
-
-jobs:
-  release:
-    docker:
-      - image: circleci/python:3.6.8-stretch
-    working_directory: ~/repo
-    steps:
-    - checkout
-    - run: pip install --user twine
-    - run: python ./setup.py sdist bdist_wheel
-    - run: >-
-        if ! test -z "${TWINE_USERNAME}" && ! test -z "${CIRCLE_TAG}"; then
-          ~/.local/bin/twine upload --skip-existing dist/*.tar.gz dist/*.whl;
-        fi
-
-
-  tox:
-    parameters:
-      toxenv:
-        description: "tox environment to execute"
-        type: string
-      image:
-        description: tag of circleci/python image
-        default: circleci/python:3.6.8-stretch
-        type: string
-      save_coverage:
-        default: false
-        type: boolean
-
-    docker:
-      - image: << parameters.image >>
-
-    working_directory: ~/repo
-
-    steps:
-      - checkout
-
-      - restore_cache:
-          key: v1-local-venv-<< parameters.image >>
-
-      - restore_cache:
-          key: v1-cache-pip-{{ checksum "requirements.txt" }}-{{ checksum "test-requirements.txt" }}
-
-      - run:
-          name: install tox
-          command: |
-            pip install --user tox
-
-      - save_cache:
-          key: v1-local-venv-<< parameters.image >>
-          paths:
-            - "~/.local"
-
-      - run:
-          name: Run tests
-          command: |-
-            ~/.local/bin/tox -e << parameters.toxenv >>
-
-      - when:
-          condition: <<parameters.save_coverage>>
-          steps:
-          - run:
-              name: Prepare coverage file
-              command: |-
-                if test -f .coverage; then mv .coverage coverage.<< parameters.toxenv >>; fi
-
-          - persist_to_workspace:
-              root: .
-              paths:
-              - coverage.*
-
-      - store_test_results:
-          path: test-results
-
-      - save_cache:
-          key: v1-cache-pip-{{ checksum "requirements.txt" }}-{{ checksum "test-requirements.txt" }}
-          paths:
-            - "~/.cache/pip"
-
-
-  coveralls:
-    docker:
-      - image: circleci/python:3.6.8-stretch
-
-    working_directory: ~/repo
-
-    steps:
-      - run:
-          name: install coveralls
-          command: |
-            pip install --user coveralls
-
-      - checkout
-
-      - attach_workspace:
-          at: /tmp/workspace
-
-      - run:
-          name: Coveralls py27
-          command: >-
-            mv /tmp/workspace/coverage.py27 .coverage &&
-            ~/.local/bin/coveralls --output coverage.json
-
-      - run:
-          name: Coveralls py36
-          command: >-
-            mv /tmp/workspace/coverage.py36 .coverage &&
-            ~/.local/bin/coveralls --merge coverage.json
