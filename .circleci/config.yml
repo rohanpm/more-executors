@@ -7,8 +7,7 @@ workflows:
     - tox:
         name: Python 2.6 tests
         toxenv: py26
-        install_py26: true
-        image_tag: 2.7.15-jessie
+        image: quay.io/rohanpm/circleci-python:2.6
         filters: &ci_filters
           branches:
             ignore: gh-pages
@@ -17,7 +16,7 @@ workflows:
     - tox:
         name: Python 2.7 tests
         toxenv: py27
-        image_tag: 2.7.15-stretch
+        image: circleci/python:2.7.15-stretch
         save_coverage: true
         filters:
           <<: *ci_filters
@@ -83,45 +82,24 @@ jobs:
       toxenv:
         description: "tox environment to execute"
         type: string
-      image_tag:
+      image:
         description: tag of circleci/python image
-        default: 3.6.8-stretch
+        default: circleci/python:3.6.8-stretch
         type: string
-      install_py26:
-        default: false
-        type: boolean
       save_coverage:
         default: false
         type: boolean
 
     docker:
-      - image: circleci/python:<< parameters.image_tag >>
+      - image: << parameters.image >>
 
     working_directory: ~/repo
 
     steps:
-      - when:
-          condition: <<parameters.install_py26>>
-          steps:
-            - run: >-
-                sudo /bin/sh -c '
-                echo "deb http://ppa.launchpad.net/fkrull/deadsnakes/ubuntu trusty main" >
-                /etc/apt/sources.list.d/deadsnakes.list'
-            - run: gpg --keyserver keyserver.ubuntu.com --recv-keys 'FF39 97E8 3CD9 69B4 09FB  24BC 5BB9 2C09 DB82 666C'
-            - run: gpg --export DB82666C | sudo apt-key add -
-            - run: sudo apt-get update
-            - run: sudo apt-get remove python2.7
-            - run: sudo rm -rf /usr/local
-            - run: sudo apt-get install python2.6
-            - run: >-
-                curl -L https://github.com/pypa/get-pip/raw/3de61057f0037f4a12b4a3c6936e9ee91d07a811/2.6/get-pip.py -o /tmp/get-pip.py &&
-                echo '02b9553a4fc36740ff183c40ce413d4ae840d17099e16a43ef4f7996230ea173  /tmp/get-pip.py' | sha256sum --check
-            - run: sudo python2.6 /tmp/get-pip.py -vvv
+      - checkout
 
       - restore_cache:
-          key: v1-local-venv-<< parameters.image_tag >>
-
-      - checkout
+          key: v1-local-venv-<< parameters.image >>
 
       - restore_cache:
           key: v1-cache-pip-{{ checksum "requirements.txt" }}-{{ checksum "test-requirements.txt" }}
@@ -132,7 +110,7 @@ jobs:
             pip install --user tox
 
       - save_cache:
-          key: v1-local-venv-<< parameters.image_tag >>
+          key: v1-local-venv-<< parameters.image >>
           paths:
             - "~/.local"
 
