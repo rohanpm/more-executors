@@ -127,25 +127,24 @@ class _RetryFuture(_Future):
         with future._me_lock:
             future._executor = None
 
-    def set_result(self, result):
+    def __terminate_via(self, method, *args, **kwargs):
         with self._me_lock:
             self._clear_delegate()
-            super(_RetryFuture, self).set_result(result)
+            method(*args, **kwargs)
         self._me_invoke_callbacks()
 
+    def set_result(self, result):
+        self.__terminate_via(super(_RetryFuture, self).set_result, result)
+
     def set_exception(self, exception):
-        with self._me_lock:
-            self._clear_delegate()
-            super(_RetryFuture, self).set_exception(exception)
-        self._me_invoke_callbacks()
+        self.__terminate_via(super(_RetryFuture, self).set_exception, exception)
 
     def set_exception_info(self, exception, traceback):
         # For python2 compat.
         # pylint: disable=no-member
-        with self._me_lock:
-            self._clear_delegate()
-            super(_RetryFuture, self).set_exception_info(exception, traceback)
-        self._me_invoke_callbacks()
+        self.__terminate_via(
+            super(_RetryFuture, self).set_exception_info,
+            exception, traceback)
 
     def _me_cancel(self):
         executor = self._executor
