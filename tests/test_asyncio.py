@@ -4,7 +4,8 @@ import sys
 import pytest
 from hamcrest import assert_that, equal_to, calling, raises
 
-from more_executors._executors import Executors
+from more_executors import Executors
+from more_executors.asyncio import AsyncioExecutor
 
 
 @pytest.fixture
@@ -22,7 +23,7 @@ def sleep_then_return(timeout, value):
 
 
 def test_run(asyncio):
-    with Executors.thread_pool().with_asyncio() as executor:
+    with AsyncioExecutor(Executors.thread_pool()) as executor:
         f = executor.submit(sleep_then_return, 0.01, 'abc')
 
         # The result should not be available yet

@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from concurrent.futures import Future
-from more_executors._executors import Executors
-from more_executors._common import _copy_exception
+
+from ..executors import Executors
+from ..common import copy_exception
 
 
 def f_return(x):
@@ -47,7 +48,7 @@ def f_return_error(x, traceback=None):
     """
 
     f = Future()
-    _copy_exception(f, x, traceback)
+    copy_exception(f, x, traceback)
     return f
 
 

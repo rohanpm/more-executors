@@ -5,8 +5,9 @@ from threading import Lock
 import logging
 from concurrent.futures import Future
 
-from ._base import chain_cancel
-from .._common import _copy_future_exception
+from .base import chain_cancel
+from ..common import copy_future_exception
+
 
 LOG = logging.getLogger('more_executors.futures')
 
@@ -55,7 +56,7 @@ class BoolCallback(object):
         if set_result:
             self.output.set_result(result)
         if set_exception:
-            _copy_future_exception(future, self.output)
+            copy_future_exception(future, self.output)
         if cancel_future:
             cancelled = cancel_future.cancel()
             LOG.debug("cancel %s in callback for %s: %s", cancel_future, future, cancelled)

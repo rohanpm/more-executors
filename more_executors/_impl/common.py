@@ -3,7 +3,8 @@ from concurrent.futures import Future
 from threading import RLock
 import logging
 
-_LOG = logging.getLogger('more_executors._Future')
+
+LOG = logging.getLogger('more_executors._Future')
 
 # This value should be used for any blocking waits likely to be invoked
 # from the main thread, where blocking forever is technically appropriate.
@@ -17,7 +18,7 @@ _LOG = logging.getLogger('more_executors._Future')
 # become interruptible, which is desirable.
 #
 # This value is an arbitrary choice.  100 years ought to be enough for anyone :)
-_MAX_TIMEOUT = 60*60*24*365*100
+MAX_TIMEOUT = 60*60*24*365*100
 
 
 class _Future(Future):
@@ -36,7 +37,7 @@ class _Future(Future):
             try:
                 callback(self)
             except Exception:
-                _LOG.exception('exception calling callback for %r', self)
+                LOG.exception('exception calling callback for %r', self)
 
         # Drop references to the callbacks once no longer required,
         # so that futures don't keep other objects alive longer than needed
@@ -71,16 +72,16 @@ class _Future(Future):
         assert False, 'BUG: override this method in subclasses!'  # pragma: no cover
 
 
-def _copy_future_exception(f1, f2):
+def copy_future_exception(f1, f2):
     if 'exception_info' in dir(f1):
         (exception, traceback) = f1.exception_info()
     else:
         (exception, traceback) = (f1.exception(), None)
 
-    _copy_exception(f2, exception, traceback)
+    copy_exception(f2, exception, traceback)
 
 
-def _copy_exception(future, exception=None, traceback=None):
+def copy_exception(future, exception=None, traceback=None):
     exc_info = sys.exc_info()
     if exception is None:
         exception = exc_info[1]

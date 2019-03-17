@@ -1,7 +1,7 @@
 from pytest import fixture
 from hamcrest import assert_that, equal_to, instance_of, calling, raises
 
-from more_executors._executors import Executors
+from more_executors import Executors
 from more_executors.flat_map import FlatMapExecutor
 
 

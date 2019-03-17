@@ -1,9 +1,10 @@
 from threading import Lock
 import time
 
-from hamcrest import assert_that, less_than_or_equal_to, equal_to
+from hamcrest import assert_that, less_than_or_equal_to, equal_to, instance_of
 
-from more_executors._executors import Executors
+from more_executors import Executors
+from more_executors.throttle import ThrottleExecutor
 
 
 def test_throttle():
@@ -27,7 +28,7 @@ def test_throttle():
             running_now.remove(x)
 
     futures = []
-    executor = Executors.thread_pool(max_workers=THREADS).with_throttle(count=COUNT)
+    executor = ThrottleExecutor(Executors.thread_pool(max_workers=THREADS), count=COUNT)
     with executor:
         for i in range(0, 1000):
             future = executor.submit(record, i)
@@ -47,3 +48,7 @@ def test_throttle():
 
     # It should have been able to run up to the limit too
     assert_that(max_len, equal_to(COUNT))
+
+
+def test_with_throttle():
+    assert_that(Executors.sync().with_throttle(4), instance_of(ThrottleExecutor))

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from ._base import f_return, chain_cancel
-from ._map import f_map, f_flat_map
+from .base import f_return, chain_cancel
+from .map import f_map, f_flat_map
 
 
 def f_zip(*fs):
