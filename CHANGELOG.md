@@ -7,7 +7,9 @@ from version 1.20.0 onwards.
 
 ## [Unreleased]
 
-- n/a
+### Removed
+- **API break**: cleaned up all module namespaces, with various duplicate or
+  external names removed. Clients using only documented API are unaffected.
 
 ## [1.20.2] - 2019-02-23
 

@@ -1,5 +1,6 @@
 from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
-from more_executors._wrap import CanCustomizeBind
+
+from .wrap import CanCustomizeBind
 
 
 class CustomizableThreadPoolExecutor(CanCustomizeBind, ThreadPoolExecutor):

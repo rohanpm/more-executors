@@ -4,7 +4,8 @@ import time
 from hamcrest import assert_that, equal_to, is_in, calling, raises, \
                      less_than_or_equal_to, greater_than_or_equal_to
 
-from more_executors._executors import Executors
+from more_executors import Executors
+from more_executors.cancel_on_shutdown import CancelOnShutdownExecutor
 
 
 def test_cancels():
@@ -89,7 +90,7 @@ def test_submit_during_shutdown_no_deadlock():
     proceed = Event()
     submit_more_done = [False]
 
-    executor = Executors.thread_pool(max_workers=2).with_cancel_on_shutdown()
+    executor = CancelOnShutdownExecutor(Executors.thread_pool(max_workers=2))
 
     def submit_more():
         proceed.wait()

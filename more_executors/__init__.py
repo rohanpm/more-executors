@@ -13,7 +13,6 @@ Compatible with Python 2.6, 2.7 and 3.x.
 
 This documentation was built from an unknown revision.
 """
-from more_executors._executors import Executors
+from ._impl.executors import Executors
 
-__all__ = ['asyncio', 'map', 'flat_map', 'retry', 'poll', 'sync', 'timeout',
-           'throttle', 'cancel_on_shutdown', 'Executors', 'futures']
+__all__ = ['Executors']

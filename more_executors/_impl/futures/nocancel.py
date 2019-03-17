@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from more_executors.map import _MapFuture
+from ..map import MapFuture
 
 
-class _NoCancelFuture(_MapFuture):
+class NoCancelFuture(MapFuture):
     def cancel(self):
         return False
 
@@ -23,4 +23,4 @@ def f_nocancel(future):
 
     .. versionadded:: 1.19.0
     """
-    return _NoCancelFuture(future, lambda x: x)
+    return NoCancelFuture(future, lambda x: x)

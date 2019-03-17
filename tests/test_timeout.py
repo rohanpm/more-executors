@@ -3,7 +3,8 @@ import time
 from concurrent.futures import CancelledError
 from hamcrest import assert_that, equal_to, calling, raises
 
-from more_executors._executors import Executors
+from more_executors import Executors
+from more_executors.timeout import TimeoutExecutor
 
 
 TIMEOUT = 0.02
@@ -15,7 +16,7 @@ def sleep_and_return(sleep_time, retval):
 
 
 def test_success():
-    with Executors.thread_pool().with_timeout(TIMEOUT) as executor:
+    with TimeoutExecutor(Executors.thread_pool(), TIMEOUT) as executor:
         f = executor.submit(sleep_and_return, TIMEOUT/10, 'abc')
 
         # Should complete successfully

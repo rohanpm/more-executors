@@ -3,10 +3,6 @@ more-executors
 
 A library of composable Python executors and futures.
 
-* `Documentation <https://rohanpm.github.io/more-executors/>`_
-* `Source <https://github.com/rohanpm/more-executors>`_
-* `PyPI <https://pypi.python.org/pypi/more-executors>`_
-
 This library is intended for use with the :mod:`concurrent.futures` module.
 It includes a collection of :class:`~concurrent.futures.Executor`
 implementations in order to extend the behavior of

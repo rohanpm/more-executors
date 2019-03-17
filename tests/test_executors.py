@@ -1,7 +1,7 @@
 from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 from hamcrest import assert_that, instance_of
 
-from more_executors._executors import Executors
+from more_executors import Executors
 from more_executors.retry import RetryExecutor
 from more_executors.map import MapExecutor
 

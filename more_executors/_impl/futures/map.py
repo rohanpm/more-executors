@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from ._base import wrap, f_return
-from ._apply import f_apply
+from .base import wrap, f_return
+from .apply import f_apply
 
 
 def f_map(future, fn):

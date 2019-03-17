@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from ._base import wrap
+from .base import wrap
 
 
 # for wrapping arguments.

@@ -2,7 +2,7 @@ from functools import partial
 
 from pytest import fixture
 
-from more_executors._executors import Executors
+from more_executors import Executors
 
 from .util import assert_soon, thread_names, assert_no_extra_threads
 

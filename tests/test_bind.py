@@ -1,5 +1,6 @@
 from functools import partial
-from more_executors._executors import Executors
+from more_executors import Executors
+from more_executors.sync import SyncExecutor
 
 
 def mult2(x):
@@ -23,7 +24,7 @@ class mult_class(object):
 
 
 def async_mult(x, y):
-    return Executors.sync().submit(mult, x, y)
+    return SyncExecutor().submit(mult, x, y)
 
 
 def test_single_bind():

@@ -15,9 +15,7 @@ from hamcrest import assert_that, equal_to, calling, raises, instance_of, has_le
 from pytest import fixture, skip
 
 from more_executors.retry import RetryPolicy
-# This class is meant to be imported from the top-level module, but it's
-# confusing the coverage report, so import it directly here.
-from more_executors._executors import Executors
+from more_executors import Executors
 
 from .util import assert_soon, run_or_timeout
 from .logging_util import dump_executor, add_debug_logging

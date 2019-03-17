@@ -1,8 +1,9 @@
 import time
-import pytest
 import logging
 
-from more_executors._executors import Executors
+import pytest
+
+from more_executors import Executors
 from more_executors.futures import f_or, f_nocancel
 from .bool_utils import falsey, truthy, as_future, assert_future_equal, \
                         resolve_inputs, resolve_value

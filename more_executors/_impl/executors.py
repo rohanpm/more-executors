@@ -1,16 +1,16 @@
-from more_executors._wrapped import \
+from .wrapped import \
     CustomizableThreadPoolExecutor, \
     CustomizableProcessPoolExecutor
-from more_executors._bind import BoundCallable
-from more_executors.map import MapExecutor
-from more_executors.flat_map import FlatMapExecutor
-from more_executors.retry import RetryExecutor
-from more_executors.poll import PollExecutor
-from more_executors.timeout import TimeoutExecutor
-from more_executors.throttle import ThrottleExecutor
-from more_executors.cancel_on_shutdown import CancelOnShutdownExecutor
-from more_executors.sync import SyncExecutor
-from more_executors.asyncio import AsyncioExecutor
+from .bind import BoundCallable
+from .map import MapExecutor
+from .flat_map import FlatMapExecutor
+from .retry import RetryExecutor
+from .poll import PollExecutor
+from .timeout import TimeoutExecutor
+from .throttle import ThrottleExecutor
+from .cancel_on_shutdown import CancelOnShutdownExecutor
+from .sync import SyncExecutor
+from .asyncio import AsyncioExecutor
 
 
 class Executors(object):

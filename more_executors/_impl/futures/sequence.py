@@ -2,10 +2,10 @@
 
 from concurrent.futures import Future
 
-from ._zip import f_zip
-from ._map import f_map
+from .zip import f_zip
+from .map import f_map
 
-from .._common import _copy_exception
+from ..common import copy_exception
 
 
 def f_sequence(futures):
@@ -54,7 +54,7 @@ def f_traverse(fn, xs):
         futures = [fn(x) for x in xs]
     except Exception:
         future = Future()
-        _copy_exception(future)
+        copy_exception(future)
         return future
 
     zipped = f_zip(*futures)

@@ -1,6 +1,6 @@
 from functools import update_wrapper
 
-from more_executors._wrap import CanCustomize
+from .wrap import CanCustomize
 
 
 class BoundCallable(CanCustomize, object):
