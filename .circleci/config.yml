@@ -49,14 +49,6 @@ workflows:
         - run: scripts/push-docs
         filters:
           <<: *ci_filters
-    - python/coveralls:
-        name: Submit coverage results to Coveralls.io
-        requires:
-        - Python 2.7 tests
-        - Python 3.6 tests
-        context: secrets
-        filters:
-          <<: *ci_filters
     - python/codeclimate-upload-coverage:
         name: Submit coverage results to codeclimate
         test_reporter_id: d02a1b5b6e33a7225c7c9e39145d3e89dc984a56e465bac4f9d276bba6ee4b84

@@ -3,7 +3,8 @@
 A library of composable Python executors and futures.
 
 [![Build Status](https://circleci.com/gh/rohanpm/more-executors/tree/master.svg?style=svg)](https://circleci.com/gh/rohanpm/more-executors/tree/master)
-[![Coverage Status](https://coveralls.io/repos/github/rohanpm/more-executors/badge.svg?branch=master)](https://coveralls.io/github/rohanpm/more-executors?branch=master)
+[![Maintainability](https://api.codeclimate.com/v1/badges/ce1b17e4d606337aa8e0/maintainability)](https://codeclimate.com/github/rohanpm/more-executors/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/ce1b17e4d606337aa8e0/test_coverage)](https://codeclimate.com/github/rohanpm/more-executors/test_coverage)
 
 - [API documentation](https://rohanpm.github.io/more-executors/)
 - [Source](https://github.com/rohanpm/more-executors)
