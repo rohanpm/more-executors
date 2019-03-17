@@ -7,6 +7,10 @@ from version 1.20.0 onwards.
 
 ## [Unreleased]
 
+- n/a
+
+## [2.0.0] - 2019-03-17
+
 ### Removed
 - **API break**: cleaned up all module namespaces, with various duplicate or
   external names removed. Clients using only documented API are unaffected.
@@ -149,7 +153,8 @@ from version 1.20.0 onwards.
 - Minor improvements to logging
 
 
-[Unreleased]: https://github.com/rohanpm/more-executors/compare/v1.20.2...HEAD
+[Unreleased]: https://github.com/rohanpm/more-executors/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/rohanpm/more-executors/compare/v1.20.2...v2.0.0
 [1.20.2]: https://github.com/rohanpm/more-executors/compare/v1.20.1...v1.20.2
 [1.20.1]: https://github.com/rohanpm/more-executors/compare/v1.20.0...v1.20.1
 [1.20.0]: https://github.com/rohanpm/more-executors/compare/v1.19.0...v1.20.0
