@@ -31,6 +31,11 @@ workflows:
         filters:
           <<: *ci_filters
     - python/tox:
+        name: API compatibility check
+        toxenv: pidiff
+        filters:
+          <<: *ci_filters
+    - python/tox:
         name: Static checks
         toxenv: static
         filters:
