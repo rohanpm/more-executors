@@ -91,8 +91,11 @@ html_theme_options = dict(
     github_repo='more-executors',
     github_banner=True,
     github_button=False,
-    travis_button=True,
     show_powered_by=False,
+    extra_nav_links=dict(
+        Source='https://github.com/rohanpm/more-executors',
+        PyPI='https://pypi.python.org/pypi/more-executors',
+    ),
 )
 
 # Add any paths that contain custom static files (such as style sheets) here,
