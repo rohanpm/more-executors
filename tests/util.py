@@ -34,7 +34,7 @@ def run_or_timeout(fn, *args, **kwargs):
     thread.start()
 
     thread.join(timeout)
-    if thread.isAlive():
+    if thread.is_alive():
         # Failed - did not complete within timeout
         raise AssertionError("Function %s did not complete within %s seconds" % (fn, timeout))
     elif exception:
