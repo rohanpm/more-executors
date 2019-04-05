@@ -1,11 +1,9 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>Timing out futures: f_timeout, TimeoutExecutor &#8212; more-executors  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -43,31 +41,26 @@
 <code class="descclassname">more_executors.futures.</code><code class="descname">f_timeout</code><span class="sig-paren">(</span><em>future</em>, <em>timeout</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.futures.f_timeout" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wrap a future to cancel it after a timeout is reached.</p>
 <p>Signature: <code class="code docutils literal notranslate"><span class="pre">Future&lt;X&gt;,</span> <span class="pre">float</span> <span class="pre">⟶</span> <span class="pre">Future&lt;X&gt;</span></code></p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>future</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.7)"><em>Future</em></a>) – Any future.</li>
-<li><strong>timeout</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – A timeout to apply to the future, in seconds.</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>future</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.7)"><em>Future</em></a>) – Any future.</p></li>
+<li><p><strong>timeout</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – A timeout to apply to the future, in seconds.</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><dl class="docutils">
-<dt><a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a></dt>
-<dd><p class="first">A wrapped version of <code class="xref py py-obj docutils literal notranslate"><span class="pre">future</span></code> which may be cancelled if the
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl>
+<dt><a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a></dt><dd><p>A wrapped version of <code class="xref py py-obj docutils literal notranslate"><span class="pre">future</span></code> which may be cancelled if the
 future has not completed within <code class="xref py py-obj docutils literal notranslate"><span class="pre">timeout</span></code> seconds.</p>
-<p class="last">Note: only a single attempt is made to cancel the future, and there
+<p>Note: only a single attempt is made to cancel the future, and there
 is no guarantee that the cancel will succeed.</p>
 </dd>
 </dl>
 </p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <div class="versionadded">
-<p><span class="versionmodified">New in version 1.19.0.</span></p>
+<p><span class="versionmodified added">New in version 1.19.0.</span></p>
 </div>
 </dd></dl>
 
@@ -85,29 +78,25 @@ an attempt will be made to cancel the future.</p>
 <p>Note that only a single attempt is made to cancel any future, and there
 is no guarantee that this will succeed.</p>
 <div class="versionadded">
-<p><span class="versionmodified">New in version 1.7.0.</span></p>
+<p><span class="versionmodified added">New in version 1.7.0.</span></p>
 </div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>delegate</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor" title="(in Python v3.7)"><em>Executor</em></a>) – an executor to which callables are submitted</li>
-<li><strong>timeout</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – timeout (in seconds) after which <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future.cancel" title="(in Python v3.7)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">concurrent.futures.Future.cancel()</span></code></a>
-will be invoked on any generated future which has not completed</li>
-<li><strong>logger</strong> (<a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.7)"><em>Logger</em></a>) – a logger used for messages from this executor</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>delegate</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor" title="(in Python v3.7)"><em>Executor</em></a>) – an executor to which callables are submitted</p></li>
+<li><p><strong>timeout</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – timeout (in seconds) after which <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future.cancel" title="(in Python v3.7)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">concurrent.futures.Future.cancel()</span></code></a>
+will be invoked on any generated future which has not completed</p></li>
+<li><p><strong>logger</strong> (<a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.7)"><em>Logger</em></a>) – a logger used for messages from this executor</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <dl class="method">
 <dt id="more_executors.timeout.TimeoutExecutor.submit_timeout">
 <code class="descname">submit_timeout</code><span class="sig-paren">(</span><em>timeout</em>, <em>fn</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.timeout.TimeoutExecutor.submit_timeout" title="Permalink to this definition">¶</a></dt>
 <dd><p>Like <code class="code docutils literal notranslate"><span class="pre">submit(fn,</span> <span class="pre">*args,</span> <span class="pre">**kwargs)</span></code>, but uses the specified
 timeout rather than this executor’s default.</p>
 <div class="versionadded">
-<p><span class="versionmodified">New in version 1.19.0.</span></p>
+<p><span class="versionmodified added">New in version 1.19.0.</span></p>
 </div>
 </dd></dl>
 
@@ -116,19 +105,17 @@ timeout rather than this executor’s default.</p>
 <dl class="classmethod">
 <dt id="more_executors.Executors.with_timeout">
 <em class="property">classmethod </em><code class="descclassname">Executors.</code><code class="descname">with_timeout</code><span class="sig-paren">(</span><em>executor</em>, <em>timeout</em>, <em>logger=None</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.Executors.with_timeout" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a new executor which will attempt to cancel any futures if they’ve
-not completed within the given timeout.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#more_executors.timeout.TimeoutExecutor" title="more_executors.timeout.TimeoutExecutor">TimeoutExecutor</a></td>
-</tr>
-</tbody>
-</table>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>a new executor which will attempt to cancel any futures if they’ve
+not completed within the given timeout.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#more_executors.timeout.TimeoutExecutor" title="more_executors.timeout.TimeoutExecutor">TimeoutExecutor</a></p>
+</dd>
+</dl>
 <div class="versionadded">
-<p><span class="versionmodified">New in version 1.7.0.</span></p>
+<p><span class="versionmodified added">New in version 1.7.0.</span></p>
 </div>
 </dd></dl>
 
@@ -203,8 +190,6 @@ not completed within the given timeout.</td>
     <form class="search" action="../search.html" method="get">
       <input type="text" name="q" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>

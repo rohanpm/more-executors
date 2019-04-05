@@ -1,11 +1,9 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>Polling: PollExecutor &#8212; more-executors  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -42,20 +40,20 @@ custom poll function.</p>
 <span id="id1"></span><h2>Poll function<a class="headerlink" href="#poll-function" title="Permalink to this headline">¶</a></h2>
 <p>The poll function has the following semantics:</p>
 <ul class="simple">
-<li>It’s called with a single argument, a list of zero or more
-<a class="reference internal" href="#more_executors.poll.PollDescriptor" title="more_executors.poll.PollDescriptor"><code class="xref py py-class docutils literal notranslate"><span class="pre">PollDescriptor</span></code></a> objects.</li>
-<li>If the poll function can determine that a particular future should be
+<li><p>It’s called with a single argument, a list of zero or more
+<a class="reference internal" href="#more_executors.poll.PollDescriptor" title="more_executors.poll.PollDescriptor"><code class="xref py py-class docutils literal notranslate"><span class="pre">PollDescriptor</span></code></a> objects.</p></li>
+<li><p>If the poll function can determine that a particular future should be
 completed, either successfully or in error, it should call the
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">yield_result()</span></code> or <code class="xref py py-meth docutils literal notranslate"><span class="pre">yield_exception()</span></code> methods on the appropriate
-<a class="reference internal" href="#more_executors.poll.PollDescriptor" title="more_executors.poll.PollDescriptor"><code class="xref py py-class docutils literal notranslate"><span class="pre">PollDescriptor</span></code></a>.</li>
-<li>If the poll function raises an exception, all futures depending on that poll
-will fail with that exception.  The poll function will be retried later.</li>
-<li>If the poll function returns an int or float, it is used as the delay
-in seconds until the next poll.</li>
+<a class="reference internal" href="#more_executors.poll.PollDescriptor" title="more_executors.poll.PollDescriptor"><code class="xref py py-class docutils literal notranslate"><span class="pre">PollDescriptor</span></code></a>.</p></li>
+<li><p>If the poll function raises an exception, all futures depending on that poll
+will fail with that exception.  The poll function will be retried later.</p></li>
+<li><p>If the poll function returns an int or float, it is used as the delay
+in seconds until the next poll.</p></li>
 </ul>
 <div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">The poll function should avoid holding a reference to the corresponding
+<p class="admonition-title">Warning</p>
+<p>The poll function should avoid holding a reference to the corresponding
 <a class="reference internal" href="#more_executors.poll.PollExecutor" title="more_executors.poll.PollExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">PollExecutor</span></code></a>. If it holds a reference to the
 executor, invoking <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor.shutdown" title="(in Python v3.7)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">shutdown()</span></code></a> becomes
 mandatory in order to stop the polling thread.</p>
@@ -65,14 +63,14 @@ mandatory in order to stop the polling thread.</p>
 <span id="id2"></span><h2>Cancel function<a class="headerlink" href="#cancel-function" title="Permalink to this headline">¶</a></h2>
 <p>The cancel function has the following semantics:</p>
 <ul class="simple">
-<li>It’s called when cancel is requested on a future returned by this executor,
+<li><p>It’s called when cancel is requested on a future returned by this executor,
 if and only if the future is currently in the list of futures being polled,
-i.e. it will not be called if the delegate future has not yet completed.</li>
-<li>It’s called with a single argument: the value returned by the delegate
-future.</li>
-<li>It should return <cite>True</cite> if the future can be cancelled.</li>
-<li>If the cancel function raises an exception, the future’s cancel method will
-return <cite>False</cite> and a message will be logged.</li>
+i.e. it will not be called if the delegate future has not yet completed.</p></li>
+<li><p>It’s called with a single argument: the value returned by the delegate
+future.</p></li>
+<li><p>It should return <cite>True</cite> if the future can be cancelled.</p></li>
+<li><p>If the cancel function raises an exception, the future’s cancel method will
+return <cite>False</cite> and a message will be logged.</p></li>
 </ul>
 </div>
 <div class="section" id="example">
@@ -80,27 +78,26 @@ return <cite>False</cite> and a message will be logged.</li>
 <p>Consider a web service which executes tasks asynchronously, with an API like
 this:</p>
 <ul>
-<li><p class="first">To create a task: <cite>POST https://myservice/object/:id/publish</cite></p>
+<li><p>To create a task: <cite>POST https://myservice/object/:id/publish</cite></p>
 <blockquote>
 <div><ul class="simple">
-<li>Returns an identifier for a task, such as <cite>{“task_id”: 123}</cite></li>
+<li><p>Returns an identifier for a task, such as <cite>{“task_id”: 123}</cite></p></li>
 </ul>
 </div></blockquote>
 </li>
-<li><p class="first">To get status of a single task: <cite>GET https://myservice/tasks/:id</cite></p>
+<li><p>To get status of a single task: <cite>GET https://myservice/tasks/:id</cite></p>
 <blockquote>
 <div><ul class="simple">
-<li>Returns task status, such as <cite>{“task_id”: 123, “state”: “finished”}</cite></li>
+<li><p>Returns task status, such as <cite>{“task_id”: 123, “state”: “finished”}</cite></p></li>
 </ul>
 </div></blockquote>
 </li>
-<li><p class="first">To cancel a single task: <cite>DELETE https://myservice/tasks/:id</cite></p>
-</li>
-<li><p class="first">To search for status of multiple tasks:
+<li><p>To cancel a single task: <cite>DELETE https://myservice/tasks/:id</cite></p></li>
+<li><p>To search for status of multiple tasks:
 <cite>POST https://myservice/tasks/search {“task_id”: [123, 456, …]}</cite></p>
 <blockquote>
 <div><ul class="simple">
-<li>Returns array of task statuses, such as:</li>
+<li><p>Returns array of task statuses, such as:</p></li>
 </ul>
 <div class="highlight-JSON notranslate"><div class="highlight"><pre><span></span><span class="p">[{</span><span class="nt">&quot;task_id&quot;</span><span class="p">:</span> <span class="mi">123</span><span class="p">,</span> <span class="nt">&quot;state&quot;</span><span class="p">:</span> <span class="s2">&quot;finished&quot;</span><span class="p">},</span>
  <span class="p">{</span><span class="nt">&quot;task_id&quot;</span><span class="p">:</span> <span class="mi">456</span><span class="p">,</span> <span class="nt">&quot;state&quot;</span><span class="p">:</span> <span class="s2">&quot;error&quot;</span><span class="p">,</span> <span class="nt">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">}]</span>
@@ -112,22 +109,22 @@ this:</p>
 <p>Imagine we want to run many tasks concurrently and monitor their status.
 Two obvious approaches include:</p>
 <ul>
-<li><p class="first">We could make a function which starts a task and polls that task until
+<li><p>We could make a function which starts a task and polls that task until
 it completes, and have several threads run that function for different tasks.</p>
 <ul class="simple">
-<li>This could be easily encapsulated as a future using only the executors
+<li><p>This could be easily encapsulated as a future using only the executors
 from <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#module-concurrent.futures" title="(in Python v3.7)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">concurrent.futures</span></code></a>, but is very inefficient - each task in
-progress will consume a thread for polling.</li>
+progress will consume a thread for polling.</p></li>
 </ul>
 </li>
-<li><p class="first">We could maintain a list of all outstanding tasks and implement a
+<li><p>We could maintain a list of all outstanding tasks and implement a
 special-purpose function to wait for all of them to complete.</p>
 <blockquote>
 <div><ul class="simple">
-<li>This is efficient as only one request is needed per poll interval, but
+<li><p>This is efficient as only one request is needed per poll interval, but
 since tasks aren’t represented as futures, useful features from
 <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#module-concurrent.futures" title="(in Python v3.7)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">concurrent.futures</span></code></a> cannot be used and different types of
-asynchronous work will be handled inconsistently.</li>
+asynchronous work will be handled inconsistently.</p></li>
 </ul>
 </div></blockquote>
 </li>
@@ -205,38 +202,33 @@ like this:</p>
 and resolve the returned futures via a provided poll function.</p>
 <p>A cancel function may also be provided to perform additional processing
 when a returned future is cancelled.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>delegate</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor" title="(in Python v3.7)"><em>Executor</em></a>) – executor to which callables will be submitted</li>
-<li><strong>poll_fn</strong> (<em>callable</em>) – a <a class="reference internal" href="#poll-function">poll function</a> used to decide when futures should be resolved</li>
-<li><strong>cancel_fn</strong> (<em>callable</em>) – a <a class="reference internal" href="#cancel-function">cancel function</a> invoked when future cancel is required</li>
-<li><strong>default_interval</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – default interval between polls (in seconds)</li>
-<li><strong>logger</strong> (<a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.7)"><em>Logger</em></a>) – a logger used for messages from this executor</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>delegate</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor" title="(in Python v3.7)"><em>Executor</em></a>) – executor to which callables will be submitted</p></li>
+<li><p><strong>poll_fn</strong> (<em>callable</em>) – a <a class="reference internal" href="#poll-function">poll function</a> used to decide when futures should be resolved</p></li>
+<li><p><strong>cancel_fn</strong> (<em>callable</em>) – a <a class="reference internal" href="#cancel-function">cancel function</a> invoked when future cancel is required</p></li>
+<li><p><strong>default_interval</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – default interval between polls (in seconds)</p></li>
+<li><p><strong>logger</strong> (<a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.7)"><em>Logger</em></a>) – a logger used for messages from this executor</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="classmethod">
 <dt id="more_executors.Executors.with_poll">
 <em class="property">classmethod </em><code class="descclassname">Executors.</code><code class="descname">with_poll</code><span class="sig-paren">(</span><em>executor</em>, <em>poll_fn</em>, <em>cancel_fn=None</em>, <em>default_interval=5.0</em>, <em>logger=None</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.Executors.with_poll" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a new executor which produces polled futures.<p>Submitted callables will have their output passed into
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><p>a new executor which produces polled futures.</p>
+<p>Submitted callables will have their output passed into
 a poll function.</p>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#more_executors.poll.PollExecutor" title="more_executors.poll.PollExecutor">PollExecutor</a></td>
-</tr>
-</tbody>
-</table>
+</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#more_executors.poll.PollExecutor" title="more_executors.poll.PollExecutor">PollExecutor</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="class">
@@ -256,34 +248,27 @@ drive the poll.</p>
 <dt id="more_executors.poll.PollDescriptor.yield_exception">
 <code class="descname">yield_exception</code><span class="sig-paren">(</span><em>exception</em>, <em>traceback=None</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.poll.PollDescriptor.yield_exception" title="Permalink to this definition">¶</a></dt>
 <dd><p>The poll function can call this function to make the future raise the given exception.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>exception</strong> (<a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.7)"><em>Exception</em></a>) – An exception to be returned or raised by the future associated with this
-descriptor</li>
-<li><strong>traceback</strong> (<em>traceback</em>) – An optional associated traceback. This argument only has an effect on python 2.x,
-where exception objects do not include a traceback.</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>exception</strong> (<a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.7)"><em>Exception</em></a>) – An exception to be returned or raised by the future associated with this
+descriptor</p></li>
+<li><p><strong>traceback</strong> (<em>traceback</em>) – An optional associated traceback. This argument only has an effect on python 2.x,
+where exception objects do not include a traceback.</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="more_executors.poll.PollDescriptor.yield_result">
 <code class="descname">yield_result</code><span class="sig-paren">(</span><em>result</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.poll.PollDescriptor.yield_result" title="Permalink to this definition">¶</a></dt>
 <dd><p>The poll function can call this function to make the future yield the given result.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>result</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><em>object</em></a>) – a result to be returned by the future associated with this descriptor</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>result</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><em>object</em></a>) – a result to be returned by the future associated with this descriptor</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -359,8 +344,6 @@ where exception objects do not include a traceback.</li>
     <form class="search" action="../search.html" method="get">
       <input type="text" name="q" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>

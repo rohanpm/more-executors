@@ -1,11 +1,9 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>Retrying: RetryExecutor &#8212; more-executors  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -43,46 +41,39 @@
 <dd><p>An executor which delegates to another executor while adding
 implicit retry behavior.</p>
 <ul class="simple">
-<li>Callables are submitted to the delegate executor, and may be
-submitted more than once if retries are required.</li>
-<li>The callables may be submitted to that executor from a different
-thread than the calling thread.</li>
-<li>Cancelling is supported if the delegate executor allows it.</li>
-<li>Cancelling between retries is always supported.</li>
-<li>Attempting to cancel a future prevents any more retries, regardless
-of whether the cancel succeeds.</li>
-<li>The returned futures from this executor are only resolved or
+<li><p>Callables are submitted to the delegate executor, and may be
+submitted more than once if retries are required.</p></li>
+<li><p>The callables may be submitted to that executor from a different
+thread than the calling thread.</p></li>
+<li><p>Cancelling is supported if the delegate executor allows it.</p></li>
+<li><p>Cancelling between retries is always supported.</p></li>
+<li><p>Attempting to cancel a future prevents any more retries, regardless
+of whether the cancel succeeds.</p></li>
+<li><p>The returned futures from this executor are only resolved or
 failed once the callable either succeeded, or all retries
-were exhausted.  This includes activation of the done callback.</li>
-<li>This executor is thread-safe.</li>
+were exhausted.  This includes activation of the done callback.</p></li>
+<li><p>This executor is thread-safe.</p></li>
 </ul>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>delegate</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor" title="(in Python v3.7)"><em>Executor</em></a>) – executor to which callables will be submitted</li>
-<li><strong>retry_policy</strong> (<a class="reference internal" href="#more_executors.retry.RetryPolicy" title="more_executors.retry.RetryPolicy"><em>RetryPolicy</em></a>) – policy used to determine when futures shall be retried; if omitted,
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>delegate</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor" title="(in Python v3.7)"><em>Executor</em></a>) – executor to which callables will be submitted</p></li>
+<li><p><strong>retry_policy</strong> (<a class="reference internal" href="#more_executors.retry.RetryPolicy" title="more_executors.retry.RetryPolicy"><em>RetryPolicy</em></a>) – policy used to determine when futures shall be retried; if omitted,
 an <a class="reference internal" href="#more_executors.retry.ExceptionRetryPolicy" title="more_executors.retry.ExceptionRetryPolicy"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExceptionRetryPolicy</span></code></a> is used, supplied with keyword
-arguments to this constructor</li>
-<li><strong>logger</strong> (<a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.7)"><em>Logger</em></a>) – a logger used for messages from this executor</li>
+arguments to this constructor</p></li>
+<li><p><strong>logger</strong> (<a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.7)"><em>Logger</em></a>) – a logger used for messages from this executor</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <dl class="method">
 <dt id="more_executors.retry.RetryExecutor.submit_retry">
 <code class="descname">submit_retry</code><span class="sig-paren">(</span><em>retry_policy</em>, <em>fn</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.retry.RetryExecutor.submit_retry" title="Permalink to this definition">¶</a></dt>
 <dd><p>Submit a callable with a specific retry policy.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>retry_policy</strong> (<a class="reference internal" href="#more_executors.retry.RetryPolicy" title="more_executors.retry.RetryPolicy"><em>RetryPolicy</em></a>) – a policy which is used for this call only</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>retry_policy</strong> (<a class="reference internal" href="#more_executors.retry.RetryPolicy" title="more_executors.retry.RetryPolicy"><em>RetryPolicy</em></a>) – a policy which is used for this call only</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -90,16 +81,14 @@ arguments to this constructor</li>
 <dl class="classmethod">
 <dt id="more_executors.Executors.with_retry">
 <em class="property">classmethod </em><code class="descclassname">Executors.</code><code class="descname">with_retry</code><span class="sig-paren">(</span><em>executor</em>, <em>retry_policy=None</em>, <em>logger=None</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.Executors.with_retry" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a new executor which will retry callables on failure</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#more_executors.retry.RetryExecutor" title="more_executors.retry.RetryExecutor">RetryExecutor</a></td>
-</tr>
-</tbody>
-</table>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>a new executor which will retry callables on failure</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#more_executors.retry.RetryExecutor" title="more_executors.retry.RetryExecutor">RetryExecutor</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="class">
@@ -112,48 +101,40 @@ a general-purpose implementation.</p>
 <dl class="method">
 <dt id="more_executors.retry.RetryPolicy.should_retry">
 <code class="descname">should_retry</code><span class="sig-paren">(</span><em>attempt</em>, <em>future</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.retry.RetryPolicy.should_retry" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>attempt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – number of times the future has been attempted; starts counting at 1</li>
-<li><strong>future</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.7)"><em>Future</em></a>) – a completed future</li>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>attempt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – number of times the future has been attempted; starts counting at 1</p></li>
+<li><p><strong>future</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.7)"><em>Future</em></a>) – a completed future</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">True if and only if a future should be retried.</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if and only if a future should be retried.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="more_executors.retry.RetryPolicy.sleep_time">
 <code class="descname">sleep_time</code><span class="sig-paren">(</span><em>attempt</em>, <em>future</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.retry.RetryPolicy.sleep_time" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>attempt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – number of times the future has been attempted; starts counting at 1</li>
-<li><strong>future</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.7)"><em>Future</em></a>) – a completed future</li>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>attempt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – number of times the future has been attempted; starts counting at 1</p></li>
+<li><p><strong>future</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.7)"><em>Future</em></a>) – a completed future</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The amount of time (in seconds) to delay before the next
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The amount of time (in seconds) to delay before the next
 attempt at running a future.</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)">float</a></p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)">float</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -164,24 +145,20 @@ attempt at running a future.</p>
 <dd><p>Retries on any exceptions under the given base class(es),
 up to a fixed number of attempts, with an exponential
 backoff between each attempt.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>max_attempts</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – maximum number of times a callable should be attempted</li>
-<li><strong>exponent</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – exponent used for backoff, e.g. 2.0 will result in a delay
-which doubles between each attempt</li>
-<li><strong>sleep</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – base value for delay between attempts in seconds, e.g. 1.0
-will delay by one second between first two attempts</li>
-<li><strong>max_sleep</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – maximum delay between attempts, in seconds</li>
-<li><strong>exception_base</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.7)"><em>type</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>(</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.7)"><em>type</em></a><em>)</em>) – future will be retried if (and only if)
-it raises an exception inheriting from one of these classes</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>max_attempts</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – maximum number of times a callable should be attempted</p></li>
+<li><p><strong>exponent</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – exponent used for backoff, e.g. 2.0 will result in a delay
+which doubles between each attempt</p></li>
+<li><p><strong>sleep</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – base value for delay between attempts in seconds, e.g. 1.0
+will delay by one second between first two attempts</p></li>
+<li><p><strong>max_sleep</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – maximum delay between attempts, in seconds</p></li>
+<li><p><strong>exception_base</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.7)"><em>type</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>(</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.7)"><em>type</em></a><em>)</em>) – future will be retried if (and only if)
+it raises an exception inheriting from one of these classes</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <p>All parameters are optional; reasonable defaults apply when omitted.</p>
 </dd></dl>
 
@@ -255,8 +232,6 @@ it raises an exception inheriting from one of these classes</li>
     <form class="search" action="../search.html" method="get">
       <input type="text" name="q" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
