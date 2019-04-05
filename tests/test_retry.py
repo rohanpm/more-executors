@@ -113,7 +113,7 @@ def test_cancel_delegate():
     executor = RetryExecutor(inner)
 
     def never_called():
-        assert False, 'this should not have been called!'
+        raise AssertionError('this should not have been called!')
 
     f = executor.submit(never_called)
 

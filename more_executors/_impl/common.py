@@ -69,7 +69,7 @@ class _Future(Future):
         return out
 
     def _me_cancel(self):
-        assert False, 'BUG: override this method in subclasses!'  # pragma: no cover
+        raise NotImplementedError('BUG: override this method in subclasses!')  # pragma: no cover
 
 
 def copy_future_exception(f1, f2):
