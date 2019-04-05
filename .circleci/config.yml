@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  python: rohanpm/python@1.1.0
+  python: rohanpm/python@1.2.0
 
 workflows:
   version: 2
@@ -27,6 +27,12 @@ workflows:
         name: Python 3.6 tests
         toxenv: py36
         executor: python/python36
+        filters:
+          <<: *ci_filters
+    - python/tox:
+        name: Python 3.7 tests
+        toxenv: py37
+        executor: python/python37
         persist_coverage: true
         filters:
           <<: *ci_filters
@@ -54,7 +60,7 @@ workflows:
         test_reporter_id: d02a1b5b6e33a7225c7c9e39145d3e89dc984a56e465bac4f9d276bba6ee4b84
         requires:
         - Python 2.7 tests
-        - Python 3.6 tests
+        - Python 3.7 tests
         filters:
           <<: *ci_filters
     - python/release:
@@ -66,6 +72,7 @@ workflows:
         - Python 2.6 tests
         - Python 2.7 tests
         - Python 3.6 tests
+        - Python 3.7 tests
         - Static checks
         - Build docs
         filters:
