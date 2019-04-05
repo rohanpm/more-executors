@@ -48,8 +48,8 @@ def add_debug_logging(ex):
     logger = CollectionLogger(logs)
     logger.setLevel(logging.DEBUG)
 
-    setattr(ex, '__logs', logs)
-    setattr(ex, '_log', logger)
+    ex.__logs = logs
+    ex._log = logger
 
 
 def dump_executor(ex):
