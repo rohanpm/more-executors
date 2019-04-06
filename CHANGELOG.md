@@ -9,6 +9,11 @@ from version 1.20.0 onwards.
 
 - n/a
 
+## [2.0.1] - 2019-04-06
+
+### Fixed
+- Fixed deprecation warnings on Python 3.7
+
 ## [2.0.0] - 2019-03-17
 
 ### Removed
@@ -153,7 +158,8 @@ from version 1.20.0 onwards.
 - Minor improvements to logging
 
 
-[Unreleased]: https://github.com/rohanpm/more-executors/compare/v2.0.0...HEAD
+[Unreleased]: https://github.com/rohanpm/more-executors/compare/v2.0.1...HEAD
+[2.0.1]: https://github.com/rohanpm/more-executors/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/rohanpm/more-executors/compare/v1.20.2...v2.0.0
 [1.20.2]: https://github.com/rohanpm/more-executors/compare/v1.20.1...v1.20.2
 [1.20.1]: https://github.com/rohanpm/more-executors/compare/v1.20.0...v1.20.1
