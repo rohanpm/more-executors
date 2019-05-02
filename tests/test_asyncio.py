@@ -27,7 +27,7 @@ def test_run(asyncio):
         f = executor.submit(sleep_then_return, 0.01, 'abc')
 
         # The result should not be available yet
-        assert_that(calling(f.result), raises(asyncio.futures.InvalidStateError))
+        assert_that(calling(f.result), raises(asyncio.InvalidStateError))
 
         # Running in event loop should work
         result = asyncio.get_event_loop().run_until_complete(f)
