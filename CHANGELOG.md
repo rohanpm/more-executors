@@ -7,7 +7,8 @@ from version 1.20.0 onwards.
 
 ## [Unreleased]
 
-- n/a
+### Fixed
+- Fixed an import error from autotests on Python 3.8
 
 ## [2.0.1] - 2019-04-06
 
