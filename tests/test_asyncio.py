@@ -13,7 +13,6 @@ def asyncio():
     if sys.version_info[0:2] < (3, 5):
         pytest.skip("needs python >= 3.5")
     import asyncio
-    import asyncio.futures
     return asyncio
 
 
