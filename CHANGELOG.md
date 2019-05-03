@@ -7,6 +7,10 @@ from version 1.20.0 onwards.
 
 ## [Unreleased]
 
+- n/a
+
+## [2.0.2] - 2019-05-03
+
 ### Fixed
 - Fixed an import error from autotests on Python 3.8
 
@@ -159,7 +163,8 @@ from version 1.20.0 onwards.
 - Minor improvements to logging
 
 
-[Unreleased]: https://github.com/rohanpm/more-executors/compare/v2.0.1...HEAD
+[Unreleased]: https://github.com/rohanpm/more-executors/compare/v2.0.2...HEAD
+[2.0.2]: https://github.com/rohanpm/more-executors/compare/v2.0.1...v2.0.2
 [2.0.1]: https://github.com/rohanpm/more-executors/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/rohanpm/more-executors/compare/v1.20.2...v2.0.0
 [1.20.2]: https://github.com/rohanpm/more-executors/compare/v1.20.1...v1.20.2
