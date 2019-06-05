@@ -38,7 +38,7 @@
 <a class="reference external" href="https://docs.python.org/3/library/asyncio.html#module-asyncio" title="(in Python v3.7)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">asyncio</span></code></a> futures.</p>
 <dl class="class">
 <dt id="more_executors.asyncio.AsyncioExecutor">
-<em class="property">class </em><code class="descclassname">more_executors.asyncio.</code><code class="descname">AsyncioExecutor</code><span class="sig-paren">(</span><em>delegate</em>, <em>loop=None</em>, <em>logger=None</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.asyncio.AsyncioExecutor" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">more_executors.asyncio.</code><code class="sig-name descname">AsyncioExecutor</code><span class="sig-paren">(</span><em class="sig-param">delegate</em>, <em class="sig-param">loop=None</em>, <em class="sig-param">logger=None</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.asyncio.AsyncioExecutor" title="Permalink to this definition">¶</a></dt>
 <dd><p>An executor which delegates to another executor while converting
 returned futures into instances of <a class="reference external" href="https://docs.python.org/3/library/asyncio-future.html#asyncio.Future" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">asyncio.Future</span></code></a>.</p>
 <p>Note that since this class produces <a class="reference external" href="https://docs.python.org/3/library/asyncio.html#module-asyncio" title="(in Python v3.7)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">asyncio</span></code></a> rather than <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#module-concurrent.futures" title="(in Python v3.7)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">concurrent.futures</span></code></a>
@@ -59,9 +59,9 @@ event loop is used.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="classmethod">
+<dl class="method">
 <dt id="more_executors.Executors.with_asyncio">
-<em class="property">classmethod </em><code class="descclassname">Executors.</code><code class="descname">with_asyncio</code><span class="sig-paren">(</span><em>executor</em>, <em>loop=None</em>, <em>logger=None</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.Executors.with_asyncio" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-prename descclassname">Executors.</code><code class="sig-name descname">with_asyncio</code><span class="sig-paren">(</span><em class="sig-param">executor</em>, <em class="sig-param">loop=None</em>, <em class="sig-param">logger=None</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.Executors.with_asyncio" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>a new executor which returns <a class="reference external" href="https://docs.python.org/3/library/asyncio-future.html#asyncio.Future" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">asyncio.Future</span></code></a> instances
@@ -152,10 +152,10 @@ configured using chained <cite>with_*</cite> methods, this must be the last meth
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
     </form>
     </div>

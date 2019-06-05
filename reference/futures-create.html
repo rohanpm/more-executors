@@ -36,7 +36,7 @@
 <span id="creating-futures-from-values-f-return"></span><h1>Creating futures from values: <code class="docutils literal notranslate"><span class="pre">f_return*</span></code><a class="headerlink" href="#module-more_executors.futures" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="more_executors.futures.f_return">
-<code class="descclassname">more_executors.futures.</code><code class="descname">f_return</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.futures.f_return" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">more_executors.futures.</code><code class="sig-name descname">f_return</code><span class="sig-paren">(</span><em class="sig-param">x=None</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.futures.f_return" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a future which provides the value <cite>x</cite>.</p>
 <p>Signature: <code class="code docutils literal notranslate"><span class="pre">A</span> <span class="pre">⟶</span> <span class="pre">Future&lt;A&gt;</span></code></p>
 <dl class="field-list simple">
@@ -54,11 +54,14 @@
 <div class="versionadded">
 <p><span class="versionmodified added">New in version 1.19.0.</span></p>
 </div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.1.0: </span>value now defaults to <code class="code docutils literal notranslate"><span class="pre">None</span></code></p>
+</div>
 </dd></dl>
 
 <dl class="function">
 <dt id="more_executors.futures.f_return_error">
-<code class="descclassname">more_executors.futures.</code><code class="descname">f_return_error</code><span class="sig-paren">(</span><em>x</em>, <em>traceback=None</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.futures.f_return_error" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">more_executors.futures.</code><code class="sig-name descname">f_return_error</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">traceback=None</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.futures.f_return_error" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a future which returns/raises the exception <cite>x</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -87,7 +90,7 @@ which only exists on Python 2.</p>
 
 <dl class="function">
 <dt id="more_executors.futures.f_return_cancelled">
-<code class="descclassname">more_executors.futures.</code><code class="descname">f_return_cancelled</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.futures.f_return_cancelled" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">more_executors.futures.</code><code class="sig-name descname">f_return_cancelled</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.futures.f_return_cancelled" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p><dl class="simple">
@@ -167,10 +170,10 @@ which only exists on Python 2.</p>
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
     </form>
     </div>

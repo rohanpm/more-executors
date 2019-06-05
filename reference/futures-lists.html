@@ -35,7 +35,7 @@
 <span id="futures-and-sequences-f-traverse-f-sequence-f-zip"></span><h1>Futures and sequences: <code class="docutils literal notranslate"><span class="pre">f_traverse</span></code>, <code class="docutils literal notranslate"><span class="pre">f_sequence</span></code>, <code class="docutils literal notranslate"><span class="pre">f_zip</span></code><a class="headerlink" href="#module-more_executors.futures" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="more_executors.futures.f_zip">
-<code class="descclassname">more_executors.futures.</code><code class="descname">f_zip</code><span class="sig-paren">(</span><em>*fs</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.futures.f_zip" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">more_executors.futures.</code><code class="sig-name descname">f_zip</code><span class="sig-paren">(</span><em class="sig-param">*fs</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.futures.f_zip" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a new future holding the return values of any number of input futures.</p>
 <p>Signature: <code class="code docutils literal notranslate"><span class="pre">Future&lt;A&gt;[,</span> <span class="pre">Future&lt;B&gt;[,</span> <span class="pre">...]]</span> <span class="pre">⟶</span> <span class="pre">Future&lt;A[,</span> <span class="pre">B[,</span> <span class="pre">...]]&gt;</span></code></p>
 <dl class="field-list simple">
@@ -60,7 +60,7 @@ an exception.</p>
 
 <dl class="function">
 <dt id="more_executors.futures.f_sequence">
-<code class="descclassname">more_executors.futures.</code><code class="descname">f_sequence</code><span class="sig-paren">(</span><em>futures</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.futures.f_sequence" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">more_executors.futures.</code><code class="sig-name descname">f_sequence</code><span class="sig-paren">(</span><em class="sig-param">futures</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.futures.f_sequence" title="Permalink to this definition">¶</a></dt>
 <dd><p>Transform a list of futures into a future containing a list.</p>
 <p>Signature: <code class="code docutils literal notranslate"><span class="pre">list&lt;Future&lt;X&gt;&gt;</span> <span class="pre">⟶</span> <span class="pre">Future&lt;list&lt;X&gt;&gt;</span></code></p>
 <dl class="field-list simple">
@@ -86,7 +86,7 @@ an exception.</p>
 
 <dl class="function">
 <dt id="more_executors.futures.f_traverse">
-<code class="descclassname">more_executors.futures.</code><code class="descname">f_traverse</code><span class="sig-paren">(</span><em>fn</em>, <em>xs</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.futures.f_traverse" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">more_executors.futures.</code><code class="sig-name descname">f_traverse</code><span class="sig-paren">(</span><em class="sig-param">fn</em>, <em class="sig-param">xs</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.futures.f_traverse" title="Permalink to this definition">¶</a></dt>
 <dd><p>Traverse over an iterable calling a future-returning function,
 and return a future holding the returned values as a list.</p>
 <p>Signature: <code class="code docutils literal notranslate"><span class="pre">fn&lt;A⟶Future&lt;B&gt;&gt;,</span> <span class="pre">iterable&lt;A&gt;</span> <span class="pre">⟶</span> <span class="pre">Future&lt;list&lt;B&gt;&gt;</span></code></p>
@@ -178,10 +178,10 @@ and return a future holding the returned values as a list.</p>
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
     </form>
     </div>

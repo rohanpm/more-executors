@@ -38,7 +38,7 @@
 <span id="futures-api"></span><h2>Futures API<a class="headerlink" href="#module-more_executors.futures" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="more_executors.futures.f_nocancel">
-<code class="descclassname">more_executors.futures.</code><code class="descname">f_nocancel</code><span class="sig-paren">(</span><em>future</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.futures.f_nocancel" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">more_executors.futures.</code><code class="sig-name descname">f_nocancel</code><span class="sig-paren">(</span><em class="sig-param">future</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.futures.f_nocancel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wrap a future to block cancellation.</p>
 <p>Signature: <code class="code docutils literal notranslate"><span class="pre">Future&lt;X&gt;</span> <span class="pre">⟶</span> <span class="pre">Future&lt;X&gt;</span></code></p>
 <dl class="field-list simple">
@@ -63,7 +63,7 @@
 <h2>Executors API<a class="headerlink" href="#executors-api" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="more_executors.cancel_on_shutdown.CancelOnShutdownExecutor">
-<em class="property">class </em><code class="descclassname">more_executors.cancel_on_shutdown.</code><code class="descname">CancelOnShutdownExecutor</code><span class="sig-paren">(</span><em>delegate</em>, <em>logger=None</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.cancel_on_shutdown.CancelOnShutdownExecutor" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">more_executors.cancel_on_shutdown.</code><code class="sig-name descname">CancelOnShutdownExecutor</code><span class="sig-paren">(</span><em class="sig-param">delegate</em>, <em class="sig-param">logger=None</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.cancel_on_shutdown.CancelOnShutdownExecutor" title="Permalink to this definition">¶</a></dt>
 <dd><p>An executor which delegates to another executor and cancels all
 futures when the executor is shut down.</p>
 <p>This class is useful in conjunction with executors having custom cancel
@@ -78,7 +78,7 @@ behavior, such as <a class="reference internal" href="poll.html#more_executors.p
 </dl>
 <dl class="method">
 <dt id="more_executors.cancel_on_shutdown.CancelOnShutdownExecutor.shutdown">
-<code class="descname">shutdown</code><span class="sig-paren">(</span><em>wait=True</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.cancel_on_shutdown.CancelOnShutdownExecutor.shutdown" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">shutdown</code><span class="sig-paren">(</span><em class="sig-param">wait=True</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.cancel_on_shutdown.CancelOnShutdownExecutor.shutdown" title="Permalink to this definition">¶</a></dt>
 <dd><p>Shut down the executor.</p>
 <p>All futures created by this executor which have not yet been completed
 will have <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future.cancel" title="(in Python v3.7)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">cancel()</span></code></a> invoked.</p>
@@ -88,9 +88,9 @@ attempt is made to cancel any future.</p>
 
 </dd></dl>
 
-<dl class="classmethod">
+<dl class="method">
 <dt id="more_executors.Executors.with_cancel_on_shutdown">
-<em class="property">classmethod </em><code class="descclassname">Executors.</code><code class="descname">with_cancel_on_shutdown</code><span class="sig-paren">(</span><em>executor</em>, <em>logger=None</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.Executors.with_cancel_on_shutdown" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-prename descclassname">Executors.</code><code class="sig-name descname">with_cancel_on_shutdown</code><span class="sig-paren">(</span><em class="sig-param">executor</em>, <em class="sig-param">logger=None</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.Executors.with_cancel_on_shutdown" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>a new executor which attempts to cancel any pending futures when
@@ -168,10 +168,10 @@ the executor is shut down.</p>
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
     </form>
     </div>

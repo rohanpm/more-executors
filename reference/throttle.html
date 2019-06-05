@@ -37,7 +37,7 @@
 <p>ThrottleExecutor limits the number of concurrently executing futures.</p>
 <dl class="class">
 <dt id="more_executors.throttle.ThrottleExecutor">
-<em class="property">class </em><code class="descclassname">more_executors.throttle.</code><code class="descname">ThrottleExecutor</code><span class="sig-paren">(</span><em>delegate</em>, <em>count</em>, <em>logger=None</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.throttle.ThrottleExecutor" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">more_executors.throttle.</code><code class="sig-name descname">ThrottleExecutor</code><span class="sig-paren">(</span><em class="sig-param">delegate</em>, <em class="sig-param">count</em>, <em class="sig-param">logger=None</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.throttle.ThrottleExecutor" title="Permalink to this definition">¶</a></dt>
 <dd><p>An executor which delegates to another executor while enforcing
 a limit on the number of futures running concurrently.</p>
 <ul class="simple">
@@ -63,9 +63,9 @@ less than <cite>count</cite> futures in progress.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="classmethod">
+<dl class="method">
 <dt id="more_executors.Executors.with_throttle">
-<em class="property">classmethod </em><code class="descclassname">Executors.</code><code class="descname">with_throttle</code><span class="sig-paren">(</span><em>executor</em>, <em>count</em>, <em>logger=None</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.Executors.with_throttle" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-prename descclassname">Executors.</code><code class="sig-name descname">with_throttle</code><span class="sig-paren">(</span><em class="sig-param">executor</em>, <em class="sig-param">count</em>, <em class="sig-param">logger=None</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.Executors.with_throttle" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>a new executor which enforces a limit on the number of concurrently
@@ -145,10 +145,10 @@ pending futures.</p>
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
     </form>
     </div>

@@ -38,7 +38,7 @@
 <span id="futures-api"></span><h2>Futures API<a class="headerlink" href="#module-more_executors.futures" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="more_executors.futures.f_timeout">
-<code class="descclassname">more_executors.futures.</code><code class="descname">f_timeout</code><span class="sig-paren">(</span><em>future</em>, <em>timeout</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.futures.f_timeout" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">more_executors.futures.</code><code class="sig-name descname">f_timeout</code><span class="sig-paren">(</span><em class="sig-param">future</em>, <em class="sig-param">timeout</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.futures.f_timeout" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wrap a future to cancel it after a timeout is reached.</p>
 <p>Signature: <code class="code docutils literal notranslate"><span class="pre">Future&lt;X&gt;,</span> <span class="pre">float</span> <span class="pre">⟶</span> <span class="pre">Future&lt;X&gt;</span></code></p>
 <dl class="field-list simple">
@@ -69,7 +69,7 @@ is no guarantee that the cancel will succeed.</p>
 <h2>Executors API<a class="headerlink" href="#executors-api" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="more_executors.timeout.TimeoutExecutor">
-<em class="property">class </em><code class="descclassname">more_executors.timeout.</code><code class="descname">TimeoutExecutor</code><span class="sig-paren">(</span><em>delegate</em>, <em>timeout</em>, <em>logger=None</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.timeout.TimeoutExecutor" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">more_executors.timeout.</code><code class="sig-name descname">TimeoutExecutor</code><span class="sig-paren">(</span><em class="sig-param">delegate</em>, <em class="sig-param">timeout</em>, <em class="sig-param">logger=None</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.timeout.TimeoutExecutor" title="Permalink to this definition">¶</a></dt>
 <dd><p>An executor which delegates to another executor while applying
 a timeout to each returned future.</p>
 <p>For any futures returned by this executor, if the future hasn’t
@@ -92,7 +92,7 @@ will be invoked on any generated future which has not completed</p></li>
 </dl>
 <dl class="method">
 <dt id="more_executors.timeout.TimeoutExecutor.submit_timeout">
-<code class="descname">submit_timeout</code><span class="sig-paren">(</span><em>timeout</em>, <em>fn</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.timeout.TimeoutExecutor.submit_timeout" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">submit_timeout</code><span class="sig-paren">(</span><em class="sig-param">timeout</em>, <em class="sig-param">fn</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.timeout.TimeoutExecutor.submit_timeout" title="Permalink to this definition">¶</a></dt>
 <dd><p>Like <code class="code docutils literal notranslate"><span class="pre">submit(fn,</span> <span class="pre">*args,</span> <span class="pre">**kwargs)</span></code>, but uses the specified
 timeout rather than this executor’s default.</p>
 <div class="versionadded">
@@ -102,9 +102,9 @@ timeout rather than this executor’s default.</p>
 
 </dd></dl>
 
-<dl class="classmethod">
+<dl class="method">
 <dt id="more_executors.Executors.with_timeout">
-<em class="property">classmethod </em><code class="descclassname">Executors.</code><code class="descname">with_timeout</code><span class="sig-paren">(</span><em>executor</em>, <em>timeout</em>, <em>logger=None</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.Executors.with_timeout" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-prename descclassname">Executors.</code><code class="sig-name descname">with_timeout</code><span class="sig-paren">(</span><em class="sig-param">executor</em>, <em class="sig-param">timeout</em>, <em class="sig-param">logger=None</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.Executors.with_timeout" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>a new executor which will attempt to cancel any futures if they’ve
@@ -185,10 +185,10 @@ not completed within the given timeout.</p>
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
     </form>
     </div>

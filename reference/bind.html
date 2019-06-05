@@ -67,9 +67,9 @@ to follow.</p>
 <p><a class="reference internal" href="#more_executors.Executors.flat_bind" title="more_executors.Executors.flat_bind"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flat_bind()</span></code></a> is also provided for use with
 callables returning a future. It behaves in the same way as <code class="xref py py-meth docutils literal notranslate"><span class="pre">bind()</span></code>,
 but avoids returning a nested future.</p>
-<dl class="classmethod">
+<dl class="method">
 <dt id="more_executors.Executors.bind">
-<em class="property">classmethod </em><code class="descclassname">Executors.</code><code class="descname">bind</code><span class="sig-paren">(</span><em>executor</em>, <em>fn</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.Executors.bind" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-prename descclassname">Executors.</code><code class="sig-name descname">bind</code><span class="sig-paren">(</span><em class="sig-param">executor</em>, <em class="sig-param">fn</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.Executors.bind" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bind a synchronous callable to an executor.</p>
 <p>If the callable returns a future, consider using <a class="reference internal" href="#more_executors.Executors.flat_bind" title="more_executors.Executors.flat_bind"><code class="xref py py-meth docutils literal notranslate"><span class="pre">flat_bind()</span></code></a> instead.</p>
 <dl class="field-list simple">
@@ -95,9 +95,9 @@ chained to further customize the behavior of the callable.</p>
 </div>
 </dd></dl>
 
-<dl class="classmethod">
+<dl class="method">
 <dt id="more_executors.Executors.flat_bind">
-<em class="property">classmethod </em><code class="descclassname">Executors.</code><code class="descname">flat_bind</code><span class="sig-paren">(</span><em>executor</em>, <em>fn</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.Executors.flat_bind" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-prename descclassname">Executors.</code><code class="sig-name descname">flat_bind</code><span class="sig-paren">(</span><em class="sig-param">executor</em>, <em class="sig-param">fn</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.Executors.flat_bind" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bind an asynchronous callable to an executor.</p>
 <p>This convenience method should be used in preference to <a class="reference internal" href="#more_executors.Executors.bind" title="more_executors.Executors.bind"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bind()</span></code></a>
 when the bound callable returns a future, in order to avoid a nested
@@ -193,10 +193,10 @@ chained to further customize the behavior of the callable.</p>
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
     </form>
     </div>

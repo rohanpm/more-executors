@@ -197,7 +197,7 @@ like this:</p>
 </div>
 <dl class="class">
 <dt id="more_executors.poll.PollExecutor">
-<em class="property">class </em><code class="descclassname">more_executors.poll.</code><code class="descname">PollExecutor</code><span class="sig-paren">(</span><em>delegate</em>, <em>poll_fn</em>, <em>cancel_fn=None</em>, <em>default_interval=5.0</em>, <em>logger=None</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.poll.PollExecutor" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">more_executors.poll.</code><code class="sig-name descname">PollExecutor</code><span class="sig-paren">(</span><em class="sig-param">delegate</em>, <em class="sig-param">poll_fn</em>, <em class="sig-param">cancel_fn=None</em>, <em class="sig-param">default_interval=5.0</em>, <em class="sig-param">logger=None</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.poll.PollExecutor" title="Permalink to this definition">¶</a></dt>
 <dd><p>Instances of <cite>PollExecutor</cite> submit callables to a delegate executor
 and resolve the returned futures via a provided poll function.</p>
 <p>A cancel function may also be provided to perform additional processing
@@ -215,9 +215,9 @@ when a returned future is cancelled.</p>
 </dl>
 </dd></dl>
 
-<dl class="classmethod">
+<dl class="method">
 <dt id="more_executors.Executors.with_poll">
-<em class="property">classmethod </em><code class="descclassname">Executors.</code><code class="descname">with_poll</code><span class="sig-paren">(</span><em>executor</em>, <em>poll_fn</em>, <em>cancel_fn=None</em>, <em>default_interval=5.0</em>, <em>logger=None</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.Executors.with_poll" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-prename descclassname">Executors.</code><code class="sig-name descname">with_poll</code><span class="sig-paren">(</span><em class="sig-param">executor</em>, <em class="sig-param">poll_fn</em>, <em class="sig-param">cancel_fn=None</em>, <em class="sig-param">default_interval=5.0</em>, <em class="sig-param">logger=None</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.Executors.with_poll" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p><p>a new executor which produces polled futures.</p>
@@ -233,20 +233,20 @@ a poll function.</p>
 
 <dl class="class">
 <dt id="more_executors.poll.PollDescriptor">
-<em class="property">class </em><code class="descclassname">more_executors.poll.</code><code class="descname">PollDescriptor</code><a class="headerlink" href="#more_executors.poll.PollDescriptor" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">more_executors.poll.</code><code class="sig-name descname">PollDescriptor</code><a class="headerlink" href="#more_executors.poll.PollDescriptor" title="Permalink to this definition">¶</a></dt>
 <dd><p>Represents an unresolved <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a>.</p>
 <p>The poll function used by <a class="reference internal" href="#more_executors.poll.PollExecutor" title="more_executors.poll.PollExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">PollExecutor</span></code></a> will be
 invoked with a list of PollDescriptor objects.</p>
-<dl class="attribute">
+<dl class="method">
 <dt id="more_executors.poll.PollDescriptor.result">
-<code class="descname">result</code><a class="headerlink" href="#more_executors.poll.PollDescriptor.result" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">result</code><a class="headerlink" href="#more_executors.poll.PollDescriptor.result" title="Permalink to this definition">¶</a></dt>
 <dd><p>The result from the delegate executor’s future, which should be used to
 drive the poll.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="more_executors.poll.PollDescriptor.yield_exception">
-<code class="descname">yield_exception</code><span class="sig-paren">(</span><em>exception</em>, <em>traceback=None</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.poll.PollDescriptor.yield_exception" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">yield_exception</code><span class="sig-paren">(</span><em class="sig-param">exception</em>, <em class="sig-param">traceback=None</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.poll.PollDescriptor.yield_exception" title="Permalink to this definition">¶</a></dt>
 <dd><p>The poll function can call this function to make the future raise the given exception.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -262,7 +262,7 @@ where exception objects do not include a traceback.</p></li>
 
 <dl class="method">
 <dt id="more_executors.poll.PollDescriptor.yield_result">
-<code class="descname">yield_result</code><span class="sig-paren">(</span><em>result</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.poll.PollDescriptor.yield_result" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">yield_result</code><span class="sig-paren">(</span><em class="sig-param">result</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.poll.PollDescriptor.yield_result" title="Permalink to this definition">¶</a></dt>
 <dd><p>The poll function can call this function to make the future yield the given result.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -339,10 +339,10 @@ where exception objects do not include a traceback.</p></li>
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
     </form>
     </div>
