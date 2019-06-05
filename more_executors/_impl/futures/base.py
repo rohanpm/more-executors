@@ -6,7 +6,7 @@ from ..executors import Executors
 from ..common import copy_exception
 
 
-def f_return(x):
+def f_return(x=None):
     """Return a future which provides the value `x`.
 
     Signature: :code:`A ⟶ Future<A>`
@@ -20,6 +20,8 @@ def f_return(x):
             A future immediately resolved with the value :obj:`x`.
 
     .. versionadded:: 1.19.0
+    .. versionchanged:: 2.1.0
+        value now defaults to :code:`None`
     """
     return Executors.sync().submit(lambda: x)
 
