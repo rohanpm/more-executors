@@ -7,7 +7,9 @@ from version 1.20.0 onwards.
 
 ## [Unreleased]
 
-- n/a
+### Changed
+- It is now possible to call `f_return` with no arguments. This produces a future
+  with a return value of `None`.
 
 ## [2.0.2] - 2019-05-03
 
