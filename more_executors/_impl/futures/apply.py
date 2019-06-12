@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from .base import wrap
+from .check import ensure_futures
 
 
 # for wrapping arguments.
@@ -8,6 +9,7 @@ from .base import wrap
 ARGS = object()
 
 
+@ensure_futures
 def f_apply(future_fn, *future_args, **future_kwargs):
     """Call a function, where the function, its arguments and return value
     are all provided by futures.

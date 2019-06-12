@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from ..map import MapFuture
+from .check import ensure_future
 
 
 class NoCancelFuture(MapFuture):
@@ -8,6 +9,7 @@ class NoCancelFuture(MapFuture):
         return False
 
 
+@ensure_future
 def f_nocancel(future):
     """Wrap a future to block cancellation.
 

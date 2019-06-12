@@ -7,6 +7,7 @@ from concurrent.futures import Future
 
 from .base import chain_cancel
 from ..common import copy_future_exception
+from .check import ensure_futures
 
 
 LOG = logging.getLogger("more_executors.futures")
@@ -142,6 +143,7 @@ class AndCallback(BoolCallback):
         return (set_result, set_exception, cancel_future)
 
 
+@ensure_futures
 def f_or(f, *fs):
     """Boolean ``OR`` over a number of futures.
 
@@ -179,6 +181,7 @@ def f_or(f, *fs):
     return out
 
 
+@ensure_futures
 def f_and(f, *fs):
     """Boolean ``AND`` over a number of futures.
 

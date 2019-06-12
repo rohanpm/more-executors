@@ -5,11 +5,13 @@ from threading import Lock
 
 from more_executors import Executors
 
+from .check import ensure_future
 
 LOCK = Lock()
 EXECUTOR_REF = None
 
 
+@ensure_future
 def f_timeout(future, timeout):
     """Wrap a future to cancel it after a timeout is reached.
 
