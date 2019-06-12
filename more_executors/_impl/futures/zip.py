@@ -2,8 +2,10 @@
 
 from .base import f_return, chain_cancel
 from .map import f_map, f_flat_map
+from .check import ensure_futures
 
 
+@ensure_futures
 def f_zip(*fs):
     """Create a new future holding the return values of any number of input futures.
 

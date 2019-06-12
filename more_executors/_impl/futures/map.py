@@ -2,8 +2,10 @@
 
 from .base import wrap, f_return
 from .apply import f_apply
+from .check import ensure_future
 
 
+@ensure_future
 def f_map(future, fn):
     """Map the output value of a future using the given function.
 
@@ -26,6 +28,7 @@ def f_map(future, fn):
     return f_apply(future_fn, future)
 
 
+@ensure_future
 def f_flat_map(future, fn):
     """Map the output value of a future using the given future-returning function.
 

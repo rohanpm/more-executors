@@ -7,7 +7,10 @@ from version 1.20.0 onwards.
 
 ## [Unreleased]
 
-- n/a
+### Changed
+- Most functions in `more_executors.futures` will now immediately raise a
+ `TypeError` if invoked with a non-future value where a future is expected.
+ ([#146](https://github.com/rohanpm/more-executors/issues/146))
 
 ## [2.1.0] - 2019-06-05
 
