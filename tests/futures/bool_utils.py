@@ -7,23 +7,23 @@ CANCELLED = object()
 
 
 FALSEY = {
-    'False': False,
-    'None': None,
-    'emptystr': '',
-    'emptylist': [],
-    'emptydict': {},
-    'zero': 0,
-    'error': RuntimeError('simulated error'),
-    'cancelled': CANCELLED,
+    "False": False,
+    "None": None,
+    "emptystr": "",
+    "emptylist": [],
+    "emptydict": {},
+    "zero": 0,
+    "error": RuntimeError("simulated error"),
+    "cancelled": CANCELLED,
 }
 
 TRUTHY = {
-    'True': True,
-    'object': object(),
-    'num': 123,
-    'str': 'testing',
-    'list': ['foo'],
-    'dict': {'key': 'val'},
+    "True": True,
+    "object": object(),
+    "num": 123,
+    "str": "testing",
+    "list": ["foo"],
+    "dict": {"key": "val"},
 }
 
 

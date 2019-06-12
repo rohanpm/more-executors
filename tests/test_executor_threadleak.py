@@ -31,6 +31,7 @@ def ctor_with_retry():
 def ctor_with_poll():
     def fn():
         return Executors.sync().with_poll(poll_noop)
+
     return fn
 
 
@@ -38,6 +39,7 @@ def ctor_with_poll():
 def ctor_with_throttle():
     def fn():
         return Executors.sync().with_throttle(2)
+
     return fn
 
 
@@ -45,6 +47,7 @@ def ctor_with_throttle():
 def ctor_with_timeout():
     def fn():
         return Executors.sync().with_timeout(30.0)
+
     return fn
 
 
@@ -52,13 +55,23 @@ def ctor_with_timeout():
 def ctor_with_poll_throttle():
     def fn():
         return Executors.sync().with_poll(poll_noop).with_throttle(2)
+
     return fn
 
 
-@fixture(params=['sync', 'thread_pool', 'with_retry', 'with_poll',
-                 'with_throttle', 'with_poll_throttle', 'with_timeout'])
+@fixture(
+    params=[
+        "sync",
+        "thread_pool",
+        "with_retry",
+        "with_poll",
+        "with_throttle",
+        "with_poll_throttle",
+        "with_timeout",
+    ]
+)
 def executor_ctor(request):
-    return request.getfixturevalue('ctor_' + request.param)
+    return request.getfixturevalue("ctor_" + request.param)
 
 
 def test_no_leak_on_noop(executor_ctor):
@@ -71,7 +84,7 @@ def test_no_leak_on_noop(executor_ctor):
 
 
 def mult2(x):
-    return x*2
+    return x * 2
 
 
 def test_no_leak_on_discarded_futures(executor_ctor):

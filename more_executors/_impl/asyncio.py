@@ -12,6 +12,7 @@ class AsyncioExecutor(Executor):
 
     .. versionadded:: 1.7.0
     """
+
     def __init__(self, delegate, loop=None, logger=None):
         """
         Parameters:

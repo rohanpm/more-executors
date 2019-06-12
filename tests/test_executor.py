@@ -10,8 +10,16 @@ from concurrent.futures import CancelledError, wait, FIRST_COMPLETED
 
 from six.moves.queue import Queue
 from monotonic import monotonic
-from hamcrest import assert_that, equal_to, calling, raises, instance_of, has_length, is_, \
-                     contains_string
+from hamcrest import (
+    assert_that,
+    equal_to,
+    calling,
+    raises,
+    instance_of,
+    has_length,
+    is_,
+    contains_string,
+)
 from pytest import fixture, skip
 
 from more_executors.retry import RetryPolicy
@@ -70,7 +78,10 @@ def map_executor_ctor(threadpool_executor_ctor):
 def flat_map_executor_ctor(threadpool_executor_ctor):
     def out():
         threadpool_executor = threadpool_executor_ctor()
-        return threadpool_executor.with_flat_map(partial(flat_map_noop, threadpool_executor))
+        return threadpool_executor.with_flat_map(
+            partial(flat_map_noop, threadpool_executor)
+        )
+
     return out
 
 
@@ -86,12 +97,16 @@ def cancel_on_shutdown_executor_ctor(threadpool_executor_ctor):
 
 @fixture
 def map_retry_executor_ctor(threadpool_executor_ctor):
-    return lambda: threadpool_executor_ctor().with_retry(RetryPolicy()).with_map(map_noop)
+    return (
+        lambda: threadpool_executor_ctor().with_retry(RetryPolicy()).with_map(map_noop)
+    )
 
 
 @fixture
 def retry_map_executor_ctor(threadpool_executor_ctor):
-    return lambda: threadpool_executor_ctor().with_map(map_noop).with_retry(RetryPolicy())
+    return (
+        lambda: threadpool_executor_ctor().with_map(map_noop).with_retry(RetryPolicy())
+    )
 
 
 @fixture
@@ -101,28 +116,34 @@ def timeout_executor_ctor(threadpool_executor_ctor):
 
 @fixture
 def cancel_poll_map_retry_executor_ctor(threadpool_executor_ctor):
-    return lambda: threadpool_executor_ctor().\
-        with_retry(RetryPolicy()).\
-        with_map(map_noop).\
-        with_poll(poll_noop).\
-        with_cancel_on_shutdown()
+    return (
+        lambda: threadpool_executor_ctor()
+        .with_retry(RetryPolicy())
+        .with_map(map_noop)
+        .with_poll(poll_noop)
+        .with_cancel_on_shutdown()
+    )
 
 
 @fixture
 def cancel_retry_map_poll_executor_ctor(threadpool_executor_ctor):
-    return lambda: threadpool_executor_ctor().\
-        with_poll(poll_noop).\
-        with_map(map_noop).\
-        with_retry(RetryPolicy()).\
-        with_cancel_on_shutdown()
+    return (
+        lambda: threadpool_executor_ctor()
+        .with_poll(poll_noop)
+        .with_map(map_noop)
+        .with_retry(RetryPolicy())
+        .with_cancel_on_shutdown()
+    )
 
 
 @fixture
 def retry_map_poll_executor_ctor(threadpool_executor_ctor):
-    return lambda: threadpool_executor_ctor().\
-        with_poll(poll_noop).\
-        with_map(map_noop).\
-        with_retry(RetryPolicy())
+    return (
+        lambda: threadpool_executor_ctor()
+        .with_poll(poll_noop)
+        .with_map(map_noop)
+        .with_retry(RetryPolicy())
+    )
 
 
 def random_cancel(_value):
@@ -135,37 +156,36 @@ def random_cancel(_value):
         return True
     if select < 200:
         return False
-    raise RuntimeError('simulated error from cancel')
+    raise RuntimeError("simulated error from cancel")
 
 
 @fixture
 def poll_executor_ctor(threadpool_executor_ctor):
-    return lambda: threadpool_executor_ctor().\
-        with_poll(poll_noop,
-                  random_cancel)
+    return lambda: threadpool_executor_ctor().with_poll(poll_noop, random_cancel)
 
 
 def everything_executor(base_executor):
     # Get ready to go *nuts*
-    return base_executor.\
-        with_poll(poll_noop).\
-        with_map(map_noop).\
-        with_retry(RetryPolicy()).\
-        with_cancel_on_shutdown().\
-        with_retry(max_attempts=1, max_sleep=0.1).\
-        with_retry(RetryPolicy()).\
-        with_throttle(10).\
-        with_flat_map(partial(flat_map_noop, base_executor)).\
-        with_timeout(120.0).\
-        with_poll(poll_noop).\
-        with_poll(poll_noop).\
-        with_cancel_on_shutdown().\
-        with_throttle(16).\
-        with_flat_map(partial(flat_map_noop, base_executor)).\
-        with_map(map_noop).\
-        with_timeout(180.0).\
-        with_map(map_noop).\
-        with_retry(RetryPolicy())
+    return (
+        base_executor.with_poll(poll_noop)
+        .with_map(map_noop)
+        .with_retry(RetryPolicy())
+        .with_cancel_on_shutdown()
+        .with_retry(max_attempts=1, max_sleep=0.1)
+        .with_retry(RetryPolicy())
+        .with_throttle(10)
+        .with_flat_map(partial(flat_map_noop, base_executor))
+        .with_timeout(120.0)
+        .with_poll(poll_noop)
+        .with_poll(poll_noop)
+        .with_cancel_on_shutdown()
+        .with_throttle(16)
+        .with_flat_map(partial(flat_map_noop, base_executor))
+        .with_map(map_noop)
+        .with_timeout(180.0)
+        .with_map(map_noop)
+        .with_retry(RetryPolicy())
+    )
 
 
 @fixture
@@ -178,15 +198,28 @@ def everything_threadpool_executor_ctor(threadpool_executor_ctor):
     return lambda: everything_executor(threadpool_executor_ctor())
 
 
-EXECUTOR_TYPES = ['threadpool', 'retry', 'map', 'retry_map', 'map_retry', 'poll', 'retry_map_poll',
-                  'sync', 'timeout', 'throttle', 'cancel_poll_map_retry', 'cancel_retry_map_poll',
-                  'flat_map',
-                  'everything_sync', 'everything_threadpool']
+EXECUTOR_TYPES = [
+    "threadpool",
+    "retry",
+    "map",
+    "retry_map",
+    "map_retry",
+    "poll",
+    "retry_map_poll",
+    "sync",
+    "timeout",
+    "throttle",
+    "cancel_poll_map_retry",
+    "cancel_retry_map_poll",
+    "flat_map",
+    "everything_sync",
+    "everything_threadpool",
+]
 
 
 @fixture(params=EXECUTOR_TYPES)
 def any_executor(request):
-    ctor = request.getfixturevalue(request.param + '_executor_ctor')
+    ctor = request.getfixturevalue(request.param + "_executor_ctor")
     ex = ctor()
 
     # Capture log messages onto the executor itself,
@@ -219,15 +252,15 @@ def any_executor(request):
 
 @fixture(params=EXECUTOR_TYPES)
 def any_executor_ctor(request):
-    return request.getfixturevalue(request.param + '_executor_ctor')
+    return request.getfixturevalue(request.param + "_executor_ctor")
 
 
 def test_submit_results(any_executor):
     values = range(0, 1000)
-    expected_results = [v*2 for v in values]
+    expected_results = [v * 2 for v in values]
 
     def fn(x):
-        return x*2
+        return x * 2
 
     futures = [any_executor.submit(fn, x) for x in values]
 
@@ -240,8 +273,7 @@ def test_submit_results(any_executor):
 
 def test_future_outlive_executor(any_executor_ctor):
     def make_futures(executor):
-        return [executor.submit(lambda x: x*2, y)
-                for y in [1, 2, 3, 4]]
+        return [executor.submit(lambda x: x * 2, y) for y in [1, 2, 3, 4]]
 
     futures = make_futures(any_executor_ctor())
     results = [f.result(TIMEOUT) for f in futures]
@@ -251,15 +283,15 @@ def test_future_outlive_executor(any_executor_ctor):
 
 def test_broken_callback(any_executor):
     values = range(0, 1000)
-    expected_results = [v*2 for v in values]
+    expected_results = [v * 2 for v in values]
     callback_calls = []
 
     def fn(x):
-        return x*2
+        return x * 2
 
     def broken_callback(f):
         callback_calls.append(f)
-        raise RuntimeError('simulated broken callback')
+        raise RuntimeError("simulated broken callback")
 
     futures = [any_executor.submit(fn, x) for x in values]
     for f in futures:
@@ -285,8 +317,8 @@ def test_broken_callback(any_executor):
 
 
 def test_submit_delayed_results(any_executor, request):
-    if 'sync' in request.node.name:
-        skip('test not applicable with sync executor')
+    if "sync" in request.node.name:
+        skip("test not applicable with sync executor")
 
     values = [1, 2, 3]
     expected_results = [2, 4, 6]
@@ -295,7 +327,7 @@ def test_submit_delayed_results(any_executor, request):
 
     def fn(value):
         queue.get(True)
-        return value*2
+        return value * 2
 
     futures = [any_executor.submit(fn, x) for x in values]
 
@@ -325,7 +357,7 @@ def test_cancel(any_executor):
         expected_results = set([2, 4, 6])
 
         def fn(x):
-            return x*2
+            return x * 2
 
         futures = [any_executor.submit(fn, x) for x in values]
 
@@ -346,7 +378,9 @@ def test_cancel(any_executor):
 
         for f in futures:
             if f in cancelled:
-                assert_that(calling(f.result).with_args(TIMEOUT), raises(CancelledError), str(f))
+                assert_that(
+                    calling(f.result).with_args(TIMEOUT), raises(CancelledError), str(f)
+                )
             else:
                 result = f.result(TIMEOUT)
                 assert_that(result in expected_results)
@@ -354,8 +388,8 @@ def test_cancel(any_executor):
 
 
 def test_blocked_cancel(any_executor, request):
-    if 'sync' in request.node.name:
-        skip('test not applicable with sync executor')
+    if "sync" in request.node.name:
+        skip("test not applicable with sync executor")
 
     to_fn = Queue(1)
     from_fn = Queue(1)
@@ -391,7 +425,7 @@ def test_blocked_cancel(any_executor, request):
 
 def get_traceback(future):
     exception = future.exception()
-    if '__traceback__' in dir(exception):
+    if "__traceback__" in dir(exception):
         return exception.__traceback__
     return future.exception_info()[1]
 
@@ -402,7 +436,7 @@ def test_submit_mixed(any_executor):
     def crash_on_even(x):
         if (x % 2) == 0:
             raise SimulatedError("Simulated error on %s" % x)
-        return x*2
+        return x * 2
 
     futures = [any_executor.submit(crash_on_even, x) for x in values]
 
@@ -415,20 +449,23 @@ def test_submit_mixed(any_executor):
     # Crash, via exception
     assert_that(futures[1].exception(TIMEOUT), instance_of(SimulatedError))
     assert_that(
-        ''.join(traceback.format_tb(get_traceback(futures[1]))),
-        contains_string('crash_on_even'))
+        "".join(traceback.format_tb(get_traceback(futures[1]))),
+        contains_string("crash_on_even"),
+    )
 
     # Success
     assert_that(futures[2].result(TIMEOUT), equal_to(6))
 
     # Crash, via result
-    assert_that(calling(futures[3].result).with_args(TIMEOUT),
-                raises(SimulatedError, "Simulated error on 4"))
+    assert_that(
+        calling(futures[3].result).with_args(TIMEOUT),
+        raises(SimulatedError, "Simulated error on 4"),
+    )
 
 
 def test_submit_staggered(any_executor, request):
-    if 'sync' in request.node.name:
-        skip('test not applicable with sync executor')
+    if "sync" in request.node.name:
+        skip("test not applicable with sync executor")
 
     for _ in range(0, 100):
         do_test_submit_staggered(any_executor)
@@ -444,7 +481,7 @@ def do_test_submit_staggered(executor):
     def fn(value):
         q1.get(True)
         q2.get(True)
-        return value*2
+        return value * 2
 
     futures = [executor.submit(fn, x) for x in values]
 
@@ -473,8 +510,9 @@ def do_test_submit_staggered(executor):
 
     # Might have received 1, or 2
     if len(done) == 1:
-        (more_done, _more_not_done) = wait(not_done, return_when=FIRST_COMPLETED,
-                                           timeout=TIMEOUT)
+        (more_done, _more_not_done) = wait(
+            not_done, return_when=FIRST_COMPLETED, timeout=TIMEOUT
+        )
         done = done | more_done
 
     assert_that(done, has_length(2))
@@ -504,7 +542,7 @@ class StressTester(object):
     def next_ident(self, msg):
         with self.lock:
             self.idents = self.idents + 1
-            return '%s %d' % (msg, self.idents)
+            return "%s %d" % (msg, self.idents)
 
     def cancel_something(self):
         # Try to pick and cancel some future
@@ -519,7 +557,7 @@ class StressTester(object):
         sub_future = None
 
         if len(self.futures) < self.FUTURES_LIMIT:
-            sub_ident = self.next_ident('submit from [%s]' % ident)
+            sub_ident = self.next_ident("submit from [%s]" % ident)
             sub_future = self.executor.submit(self.stress_fn, sub_ident, randint(0, 3))
             self.add_future(sub_future, sub_ident)
 
@@ -541,20 +579,23 @@ class StressTester(object):
         # Submit again from callback
         if behavior == 2 and sub_future:
             sub_future.add_done_callback(
-                lambda f: self.stress_fn(self.next_ident('case2 from [%s]' % sub_ident), 2))
+                lambda f: self.stress_fn(
+                    self.next_ident("case2 from [%s]" % sub_ident), 2
+                )
+            )
             with self.lock:
                 assert ident not in self.expected_results
-                self.expected_results[ident] = ident*3
-            return ident*3
+                self.expected_results[ident] = ident * 3
+            return ident * 3
 
         if behavior == 3:
             self.cancel_something()
             with self.lock:
-                self.expected_results[ident] = ident*4
-            return ident*4
+                self.expected_results[ident] = ident * 4
+            return ident * 4
 
-        self.expected_results[ident] = ident*5
-        return ident*5
+        self.expected_results[ident] = ident * 5
+        return ident * 5
 
     def add_future(self, future, ident):
         with self.lock:
@@ -568,14 +609,16 @@ class StressTester(object):
     def start(self):
         for _ in range(0, 100):
             value = randint(0, 3)
-            ident = self.next_ident('init')
+            ident = self.next_ident("init")
             future = self.executor.submit(self.stress_fn, ident, value)
             if not self.add_future(future, ident):
                 break
 
     def verify(self):
         # Wait until all the expected futures have been created
-        assert_soon(lambda: assert_that(len(self.futures), equal_to(self.FUTURES_LIMIT)))
+        assert_soon(
+            lambda: assert_that(len(self.futures), equal_to(self.FUTURES_LIMIT))
+        )
 
         # The timeout here is so that the test fails rather than hangs forever,
         # if something goes wrong.
@@ -588,7 +631,10 @@ class StressTester(object):
     def verify_future(self, f):
         assert f.done(), str(f)
         ident = self.future_idents[f]
-        assert ident in self.expected_results, "missing entry %s for future %s" % (ident, f)
+        assert ident in self.expected_results, "missing entry %s for future %s" % (
+            ident,
+            f,
+        )
         expected_result = self.expected_results[ident]
 
         if expected_result is self.CANCELLED:
@@ -600,9 +646,9 @@ class StressTester(object):
 
 
 def test_stress(any_executor, request):
-    if 'sync' in request.node.name:
+    if "sync" in request.node.name:
         # The test as written currently will blow the stack on sync executor
-        skip('test not applicable with sync executor')
+        skip("test not applicable with sync executor")
 
     tester = StressTester(any_executor)
     tester.start()

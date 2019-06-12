@@ -10,9 +10,9 @@ from .map import MapFuture
 from .common import MAX_TIMEOUT
 from .wrap import CanCustomizeBind
 
-LOG = logging.getLogger('TimeoutExecutor')
+LOG = logging.getLogger("TimeoutExecutor")
 
-Job = namedtuple('Job', ['future', 'delegate_future', 'deadline'])
+Job = namedtuple("Job", ["future", "delegate_future", "deadline"])
 
 
 class TimeoutFuture(MapFuture):
@@ -33,6 +33,7 @@ class TimeoutExecutor(CanCustomizeBind, Executor):
 
     .. versionadded:: 1.7.0
     """
+
     def __init__(self, delegate, timeout, logger=None):
         """
         Parameters:
@@ -59,7 +60,8 @@ class TimeoutExecutor(CanCustomizeBind, Executor):
         self_ref = weakref.ref(self, lambda _: event.set())
 
         self._job_thread = Thread(
-            name='TimeoutExecutor', target=self._job_loop, args=(self_ref,))
+            name="TimeoutExecutor", target=self._job_loop, args=(self_ref,)
+        )
         self._job_thread.daemon = True
         self._job_thread.start()
 

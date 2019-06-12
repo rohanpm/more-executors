@@ -13,11 +13,12 @@ class FlatMapFuture(MapFuture):
         # Result *must* be a future.
         # We'd crash in set_delegate if not.
         # Let's raise this more helpful exception prior to that.
-        if not callable(getattr(result, 'add_done_callback', None)):
+        if not callable(getattr(result, "add_done_callback", None)):
             raise TypeError(
                 "FlatMapExecutor's function did not return a Future!\n"
                 "  Function: %s\n"
-                "  Returned: %s" % (repr(self._map_fn), repr(result)))
+                "  Returned: %s" % (repr(self._map_fn), repr(result))
+            )
 
         self.__flattened = True
         self._map_fn = lambda x: x

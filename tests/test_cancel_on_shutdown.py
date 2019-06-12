@@ -1,8 +1,15 @@
 from threading import Event
 import time
 
-from hamcrest import assert_that, equal_to, is_in, calling, raises, \
-                     less_than_or_equal_to, greater_than_or_equal_to
+from hamcrest import (
+    assert_that,
+    equal_to,
+    is_in,
+    calling,
+    raises,
+    less_than_or_equal_to,
+    greater_than_or_equal_to,
+)
 
 from more_executors import Executors
 from more_executors.cancel_on_shutdown import CancelOnShutdownExecutor
@@ -19,8 +26,7 @@ def test_cancels():
     futures = []
 
     executor = Executors.thread_pool(max_workers=2).with_cancel_on_shutdown()
-    futures = [executor.submit(proceed.wait)
-               for _ in range(0, count)]
+    futures = [executor.submit(proceed.wait) for _ in range(0, count)]
 
     # I'm using wait=False here since otherwise it could block on the 2 threads
     # currently in progress to finish their work items.  I can't see a way to
@@ -52,7 +58,7 @@ def test_cancels():
 
     # All others should have been cancelled
     assert_that(canceled_count, less_than_or_equal_to(count))
-    assert_that(canceled_count, greater_than_or_equal_to(count-2))
+    assert_that(canceled_count, greater_than_or_equal_to(count - 2))
 
     # Harmless to call shutdown again
     executor.shutdown()
@@ -64,13 +70,14 @@ def test_submit_during_shutdown():
     submit_more_done = [False]
 
     executor = Executors.thread_pool(max_workers=2).with_cancel_on_shutdown()
-    futures = [executor.submit(proceed.wait)
-               for _ in (1, 2, 3)]
+    futures = [executor.submit(proceed.wait) for _ in (1, 2, 3)]
 
     def submit_more(f):
         assert_that(f, equal_to(futures[2]))
-        assert_that(calling(executor.submit).with_args(lambda: None),
-                    raises(RuntimeError, 'Cannot submit after shutdown'))
+        assert_that(
+            calling(executor.submit).with_args(lambda: None),
+            raises(RuntimeError, "Cannot submit after shutdown"),
+        )
         submit_more_done[0] = True
 
     futures[2].add_done_callback(submit_more)
@@ -94,12 +101,13 @@ def test_submit_during_shutdown_no_deadlock():
 
     def submit_more():
         proceed.wait()
-        assert_that(calling(executor.submit).with_args(lambda: None),
-                    raises(RuntimeError, 'Cannot submit after shutdown'))
+        assert_that(
+            calling(executor.submit).with_args(lambda: None),
+            raises(RuntimeError, "Cannot submit after shutdown"),
+        )
         submit_more_done[0] = True
 
-    futures = [executor.submit(submit_more)
-               for _ in (1, 2, 3)]
+    futures = [executor.submit(submit_more) for _ in (1, 2, 3)]
 
     # Let threads proceed only after shutdown has already started...
     def set_soon():

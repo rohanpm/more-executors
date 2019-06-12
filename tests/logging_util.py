@@ -23,7 +23,7 @@ class CollectionLogger(logging.Logger, object):
     def callHandlers(self, record):
         now = monotonic()
         record_msg = record.msg % record.args
-        msg = '%s: %s' % (now, record_msg)
+        msg = "%s: %s" % (now, record_msg)
         with self.lock:
             self.collection.append(msg)
 
@@ -37,11 +37,11 @@ def add_debug_logging(ex):
 
     Note that it hijacks the usual logging, so e.g. pytest's log capturing
     won't work any more."""
-    delegate = getattr(ex, '_delegate', None)
+    delegate = getattr(ex, "_delegate", None)
     if delegate:
         add_debug_logging(delegate)
 
-    if not getattr(ex, '_log', None):
+    if not getattr(ex, "_log", None):
         return
 
     logs = collections.deque(maxlen=1000)
@@ -59,19 +59,19 @@ def dump_executor(ex):
     # Don't worry about the with_* stuff from Executors
     dump_vars = {}
     for key, val in all_vars.items():
-        if key.startswith('with_'):
+        if key.startswith("with_"):
             continue
         dump_vars[key] = val
 
-    if '__logs' in dump_vars:
-        lock = dump_vars['_log'].lock
+    if "__logs" in dump_vars:
+        lock = dump_vars["_log"].lock
     else:
         lock = Lock()
 
     with lock:
         pprint.pprint(dump_vars, indent=2, width=400)
 
-    delegate = getattr(ex, '_delegate', None)
+    delegate = getattr(ex, "_delegate", None)
     if delegate:
         print("")
         dump_executor(delegate)

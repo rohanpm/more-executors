@@ -16,8 +16,10 @@ class PollFuture(_Future):
         self.add_done_callback(self._clear_executor)
 
     def _delegate_resolved(self, delegate):
-        assert delegate is self._delegate, \
-            "BUG: called with %s, expected %s" % (delegate, self._delegate)
+        assert delegate is self._delegate, "BUG: called with %s, expected %s" % (
+            delegate,
+            self._delegate,
+        )
 
         if delegate.cancelled():
             return
@@ -125,7 +127,9 @@ class PollExecutor(CanCustomizeBind, Executor):
     when a returned future is cancelled.
     """
 
-    def __init__(self, delegate, poll_fn, cancel_fn=None, default_interval=5.0, logger=None):
+    def __init__(
+        self, delegate, poll_fn, cancel_fn=None, default_interval=5.0, logger=None
+    ):
         """
         Parameters:
 
@@ -144,7 +148,7 @@ class PollExecutor(CanCustomizeBind, Executor):
             logger (~logging.Logger):
                 a logger used for messages from this executor
         """
-        self._log = logger if logger else logging.getLogger('PollExecutor')
+        self._log = logger if logger else logging.getLogger("PollExecutor")
         self._delegate = delegate
         self._default_interval = default_interval
         self._poll_fn = poll_fn
@@ -155,7 +159,9 @@ class PollExecutor(CanCustomizeBind, Executor):
         poll_event = self._poll_event
         self_ref = weakref.ref(self, lambda _: poll_event.set())
 
-        self._poll_thread = Thread(name='PollExecutor', target=_poll_loop, args=(self_ref,))
+        self._poll_thread = Thread(
+            name="PollExecutor", target=_poll_loop, args=(self_ref,)
+        )
         self._poll_thread.daemon = True
         self._shutdown = False
         self._lock = RLock()
@@ -175,18 +181,16 @@ class PollExecutor(CanCustomizeBind, Executor):
 
     def _deregister_poll(self, future):
         with self._lock:
-            self._poll_descriptors = [(f, d)
-                                      for (f, d) in self._poll_descriptors
-                                      if f is not future]
+            self._poll_descriptors = [
+                (f, d) for (f, d) in self._poll_descriptors if f is not future
+            ]
 
     def _run_cancel_fn(self, future):
         if not self._cancel_fn:
             # no cancel function => no veto of cancel
             return True
 
-        descriptor = [d
-                      for (f, d) in self._poll_descriptors
-                      if f is future]
+        descriptor = [d for (f, d) in self._poll_descriptors if f is future]
         if not descriptor:
             # no record of this future => no veto of cancel.
             # we can get here if the future is already done
@@ -200,7 +204,9 @@ class PollExecutor(CanCustomizeBind, Executor):
         try:
             return self._cancel_fn(descriptor.result)
         except Exception:
-            self._log.exception("Exception during cancel on %s/%s", future, descriptor.result)
+            self._log.exception(
+                "Exception during cancel on %s/%s", future, descriptor.result
+            )
             return False
 
     def _run_poll_fn(self):

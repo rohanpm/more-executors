@@ -24,19 +24,23 @@ def _run_or_record_exception(exception_list, retval_list, fn, *args, **kwargs):
 
 
 def run_or_timeout(fn, *args, **kwargs):
-    timeout = kwargs.pop('timeout', 20.0)
+    timeout = kwargs.pop("timeout", 20.0)
     exception = []
     retval = []
     safe_fn = partial(_run_or_record_exception, exception, retval, fn)
 
-    thread = threading.Thread(target=safe_fn, args=args, kwargs=kwargs, name='run_or_timeout')
+    thread = threading.Thread(
+        target=safe_fn, args=args, kwargs=kwargs, name="run_or_timeout"
+    )
     thread.daemon = True
     thread.start()
 
     thread.join(timeout)
     if thread.is_alive():
         # Failed - did not complete within timeout
-        raise AssertionError("Function %s did not complete within %s seconds" % (fn, timeout))
+        raise AssertionError(
+            "Function %s did not complete within %s seconds" % (fn, timeout)
+        )
     elif exception:
         # Failed - function raised
         raise exception[0]
@@ -58,12 +62,12 @@ def assert_no_extra_threads(threads_before):
 
 def get_traceback(future):
     exception = future.exception()
-    if '__traceback__' in dir(exception):
+    if "__traceback__" in dir(exception):
         return exception.__traceback__
     return future.exception_info()[1]
 
 
 def assert_in_traceback(future, needle):
     tb = get_traceback(future)
-    tb_str = ''.join(traceback.format_tb(tb))
+    tb_str = "".join(traceback.format_tb(tb))
     assert needle in tb_str

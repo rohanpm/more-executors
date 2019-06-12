@@ -3,8 +3,18 @@
 from concurrent.futures import ThreadPoolExecutor, Future
 from six.moves.queue import Queue
 
-from hamcrest import assert_that, equal_to, is_, calling, raises, all_of, instance_of, has_string
+from hamcrest import (
+    assert_that,
+    equal_to,
+    is_,
+    calling,
+    raises,
+    all_of,
+    instance_of,
+    has_string,
+)
 from pytest import fixture
+
 try:
     from unittest.mock import MagicMock, call
 except ImportError:
@@ -42,19 +52,19 @@ def test_basic_retry(executor):
 def do_test_basic_retry(executor):
     fn = MagicMock()
     fn.side_effect = [
-        ValueError('error 1'),
-        ValueError('error 2'),
-        ValueError('error 3'),
-        'result',
+        ValueError("error 1"),
+        ValueError("error 2"),
+        ValueError("error 3"),
+        "result",
     ]
 
     done_callback = MagicMock()
 
-    future = executor.submit(fn, 'a1', 'a2', kw1=1, kw2=2)
+    future = executor.submit(fn, "a1", "a2", kw1=1, kw2=2)
     future.add_done_callback(done_callback)
 
     # It should give the correct result
-    assert_that(future.result(10), equal_to('result'))
+    assert_that(future.result(10), equal_to("result"))
 
     # It should not have any exception
     assert_that(future.exception(), is_(None))
@@ -65,12 +75,14 @@ def do_test_basic_retry(executor):
 
     # It should have called the function 4 times with
     # exactly the submitted args
-    fn.assert_has_calls([
-        call('a1', 'a2', kw1=1, kw2=2),
-        call('a1', 'a2', kw1=1, kw2=2),
-        call('a1', 'a2', kw1=1, kw2=2),
-        call('a1', 'a2', kw1=1, kw2=2),
-    ])
+    fn.assert_has_calls(
+        [
+            call("a1", "a2", kw1=1, kw2=2),
+            call("a1", "a2", kw1=1, kw2=2),
+            call("a1", "a2", kw1=1, kw2=2),
+            call("a1", "a2", kw1=1, kw2=2),
+        ]
+    )
 
 
 def test_fail(executor):
@@ -87,10 +99,12 @@ def test_fail(executor):
     future.add_done_callback(done_callback)
 
     # It should raise the exception from result()
-    assert_that(calling(future.result), raises(ValueError, 'error 10'))
+    assert_that(calling(future.result), raises(ValueError, "error 10"))
 
     # exception() should be the same
-    assert_that(future.exception(), all_of(instance_of(ValueError), has_string('error 10')))
+    assert_that(
+        future.exception(), all_of(instance_of(ValueError), has_string("error 10"))
+    )
 
     # It should have called the done callback exactly once
     # (It could still be queued for call from another thread)
@@ -113,7 +127,7 @@ def test_cancel_delegate():
     executor = RetryExecutor(inner)
 
     def never_called():
-        raise AssertionError('this should not have been called!')
+        raise AssertionError("this should not have been called!")
 
     f = executor.submit(never_called)
 
@@ -162,18 +176,18 @@ def test_order(executor):
         attempt = f2_attempt[0] + 1
         f2_attempt[0] = attempt
 
-        calls.append('f2 %s' % attempt)
+        calls.append("f2 %s" % attempt)
 
         if attempt < 6:
             raise ValueError("Simulated error %s" % attempt)
 
-        return 'f2 success'
+        return "f2 success"
 
     def f1():
         attempt = f1_attempt[0] + 1
         f1_attempt[0] = attempt
 
-        calls.append('f1 %s' % attempt)
+        calls.append("f1 %s" % attempt)
 
         if attempt == 3:
             futures.append(executor.submit_retry(policy, f2))
@@ -181,36 +195,42 @@ def test_order(executor):
         if attempt < 6:
             raise ValueError("Simulated error %s" % attempt)
 
-        return 'f1 success'
+        return "f1 success"
 
     futures.append(executor.submit_retry(policy, f1))
 
     # Both should eventually succeed
-    assert_that(futures[0].result(), equal_to('f1 success'))
-    assert_that(futures[1].result(), equal_to('f2 success'))
+    assert_that(futures[0].result(), equal_to("f1 success"))
+    assert_that(futures[1].result(), equal_to("f2 success"))
 
-    assert_that(calls, equal_to([
-        # The calls should occur in this order.
-        # Comments list the number of time units expected until
-        # a function's next call.
-        'f1 1',  # f1: +1
-        'f1 2',  # f1: +2
-        'f1 3',  # f1: +4,  f2: +0
-        'f2 1',  # f1: +4,  f2: +1
-        'f2 2',  # f1: +3,  f2: +2
-        'f2 3',  # f1: +1,  f2: +4
-        'f1 4',  # f1: +8,  f2: +3
-        'f2 4',  # f1: +5,  f2: +8
-        # note: f1 hits max sleep time after next attempt
-        'f1 5',  # f1: +10, f2: +3
-        'f2 5',  # f1: +7,  f2: +10
-        'f1 6',  # f1: fin, f2: +3
-        'f2 6',  # f1: fin, f2: fin
-    ]))
+    assert_that(
+        calls,
+        equal_to(
+            [
+                # The calls should occur in this order.
+                # Comments list the number of time units expected until
+                # a function's next call.
+                "f1 1",  # f1: +1
+                "f1 2",  # f1: +2
+                "f1 3",  # f1: +4,  f2: +0
+                "f2 1",  # f1: +4,  f2: +1
+                "f2 2",  # f1: +3,  f2: +2
+                "f2 3",  # f1: +1,  f2: +4
+                "f1 4",  # f1: +8,  f2: +3
+                "f2 4",  # f1: +5,  f2: +8
+                # note: f1 hits max sleep time after next attempt
+                "f1 5",  # f1: +10, f2: +3
+                "f2 5",  # f1: +7,  f2: +10
+                "f1 6",  # f1: fin, f2: +3
+                "f2 6",  # f1: fin, f2: fin
+            ]
+        ),
+    )
 
 
 def test_override_policy(executor):
     """Should be able to provide a custom policy by subclassing RetryPolicy."""
+
     class SubRetryPolicy(RetryPolicy):
         def should_retry(self, attempt, future):
             return future.result() < 3
@@ -229,9 +249,10 @@ def test_only_retry_exception_type(executor):
     policy = ExceptionRetryPolicy(
         exception_base=[RuntimeError, ValueError, ArithmeticError],
         max_attempts=10,
-        max_sleep=0.01)
+        max_sleep=0.01,
+    )
 
-    errors = [ValueError('error 1'), RuntimeError('error 2'), Exception('error 3')]
+    errors = [ValueError("error 1"), RuntimeError("error 2"), Exception("error 3")]
 
     fn = MagicMock()
     fn.side_effect = errors
