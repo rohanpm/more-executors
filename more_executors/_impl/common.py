@@ -4,7 +4,7 @@ from threading import RLock
 import logging
 
 
-LOG = logging.getLogger('more_executors._Future')
+LOG = logging.getLogger("more_executors._Future")
 
 # This value should be used for any blocking waits likely to be invoked
 # from the main thread, where blocking forever is technically appropriate.
@@ -18,7 +18,7 @@ LOG = logging.getLogger('more_executors._Future')
 # become interruptible, which is desirable.
 #
 # This value is an arbitrary choice.  100 years ought to be enough for anyone :)
-MAX_TIMEOUT = 60*60*24*365*100
+MAX_TIMEOUT = 60 * 60 * 24 * 365 * 100
 
 
 class _Future(Future):
@@ -37,7 +37,7 @@ class _Future(Future):
             try:
                 callback(self)
             except Exception:
-                LOG.exception('exception calling callback for %r', self)
+                LOG.exception("exception calling callback for %r", self)
 
         # Drop references to the callbacks once no longer required,
         # so that futures don't keep other objects alive longer than needed
@@ -69,11 +69,13 @@ class _Future(Future):
         return out
 
     def _me_cancel(self):
-        raise NotImplementedError('BUG: override this method in subclasses!')  # pragma: no cover
+        raise NotImplementedError(
+            "BUG: override this method in subclasses!"
+        )  # pragma: no cover
 
 
 def copy_future_exception(f1, f2):
-    if 'exception_info' in dir(f1):
+    if "exception_info" in dir(f1):
         (exception, traceback) = f1.exception_info()
     else:
         (exception, traceback) = (f1.exception(), None)

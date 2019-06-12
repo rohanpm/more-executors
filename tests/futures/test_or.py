@@ -5,11 +5,17 @@ import pytest
 
 from more_executors import Executors
 from more_executors.futures import f_or, f_nocancel
-from .bool_utils import falsey, truthy, as_future, assert_future_equal, \
-                        resolve_inputs, resolve_value
+from .bool_utils import (
+    falsey,
+    truthy,
+    as_future,
+    assert_future_equal,
+    resolve_inputs,
+    resolve_value,
+)
 from ..util import assert_in_traceback
 
-LOG = logging.getLogger('test_or')
+LOG = logging.getLogger("test_or")
 
 
 cases = [
@@ -30,7 +36,7 @@ cases = [
 ]
 
 
-@pytest.mark.parametrize('inputs, expected_result', cases)
+@pytest.mark.parametrize("inputs, expected_result", cases)
 def test_or(inputs, expected_result, falsey, truthy):
     inputs = resolve_inputs(inputs, falsey, truthy)
     expected_result = resolve_value(expected_result, falsey, truthy)
@@ -41,8 +47,7 @@ def test_or(inputs, expected_result, falsey, truthy):
 
 
 def test_or_order_sync(falsey):
-    f_inputs = [as_future(x)
-                for x in [falsey, 123, 456, falsey]]
+    f_inputs = [as_future(x) for x in [falsey, 123, 456, falsey]]
 
     future = f_or(*f_inputs)
     assert_future_equal(future, 123)
@@ -76,8 +81,7 @@ def test_or_cancels():
 
     executor = Executors.thread_pool(max_workers=2)
     with executor:
-        futures = [executor.submit(delayed_call, x)
-                   for x in (0.5, 0.1, 0.2, 2.0, 3.0)]
+        futures = [executor.submit(delayed_call, x) for x in (0.5, 0.1, 0.2, 2.0, 3.0)]
 
         future = f_or(*futures)
 
@@ -113,8 +117,7 @@ def test_or_with_nocancel():
 
     executor = Executors.thread_pool(max_workers=2)
 
-    futures = [executor.submit(delayed_call, x)
-               for x in (0.5, 0.1, 0.2, 1.0, 1.1)]
+    futures = [executor.submit(delayed_call, x) for x in (0.5, 0.1, 0.2, 1.0, 1.1)]
 
     futures = [f_nocancel(f) for f in futures]
 
@@ -137,7 +140,7 @@ def test_or_with_nocancel():
 
 def test_or_propagate_traceback():
     def inner_test_fn():
-        raise RuntimeError('oops')
+        raise RuntimeError("oops")
 
     def my_test_fn(inner_fn):
         inner_fn()
@@ -148,4 +151,4 @@ def test_or_propagate_traceback():
         executor.submit(my_test_fn),
         executor.submit(my_test_fn, inner_test_fn),
     )
-    assert_in_traceback(future, 'inner_test_fn')
+    assert_in_traceback(future, "inner_test_fn")

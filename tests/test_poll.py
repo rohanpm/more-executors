@@ -6,8 +6,16 @@ import logging
 from six.moves.queue import Queue
 
 from pytest import fixture
-from hamcrest import assert_that, equal_to, calling, raises, has_length, has_item, contains, \
-                     matches_regexp
+from hamcrest import (
+    assert_that,
+    equal_to,
+    calling,
+    raises,
+    has_length,
+    has_item,
+    contains,
+    matches_regexp,
+)
 
 from more_executors.poll import PollExecutor
 
@@ -31,10 +39,10 @@ def poll_tasks(tasks, poll_descriptors):
     for descriptor in poll_descriptors:
         task_id = descriptor.result
         status = tasks.get(task_id)
-        if status == 'done':
-            descriptor.yield_result('done')
-        elif status == 'error':
-            descriptor.yield_exception(RuntimeError('task failed: %s' % task_id))
+        if status == "done":
+            descriptor.yield_result("done")
+        elif status == "error":
+            descriptor.yield_exception(RuntimeError("task failed: %s" % task_id))
 
 
 def test_basic_poll(executor):
@@ -44,35 +52,37 @@ def test_basic_poll(executor):
     poll_executor = PollExecutor(executor, poll_fn, default_interval=0.01)
 
     def make_task(x):
-        return '%s-%s' % (x, task_id_queue.get(True))
+        return "%s-%s" % (x, task_id_queue.get(True))
 
-    inputs = ['a', 'b', 'c']
+    inputs = ["a", "b", "c"]
     futures = [poll_executor.submit(make_task, x) for x in inputs]
 
     # The futures should not currently be able to progress.
     assert_that(not any([f.done() for f in futures]))
 
     # Allow tasks to be created.
-    task_id_queue.put('x')
-    task_id_queue.put('y')
-    task_id_queue.put('z')
+    task_id_queue.put("x")
+    task_id_queue.put("y")
+    task_id_queue.put("z")
 
     # Insert some task statuses for the poll function to detect.
     # Note that we can't guess which thread got which queue item,
     # so let's just spam with every combination
-    tasks['a-x'] = 'done'
-    tasks['a-y'] = 'done'
-    tasks['a-z'] = 'done'
-    tasks['b-x'] = 'error'
-    tasks['b-y'] = 'error'
-    tasks['b-z'] = 'error'
+    tasks["a-x"] = "done"
+    tasks["a-y"] = "done"
+    tasks["a-z"] = "done"
+    tasks["b-x"] = "error"
+    tasks["b-y"] = "error"
+    tasks["b-z"] = "error"
     # Leave c with no result
 
     # Future a should become resolved
-    assert_that(futures[0].result(10), equal_to('done'))
+    assert_that(futures[0].result(10), equal_to("done"))
 
     # Future b should raise an exception
-    assert_that(calling(futures[1].result).with_args(10), raises(RuntimeError, 'task failed'))
+    assert_that(
+        calling(futures[1].result).with_args(10), raises(RuntimeError, "task failed")
+    )
 
     # Future c should still be waiting
     assert_that(not futures[2].done())
@@ -84,29 +94,29 @@ def test_cancel_fn(executor, caplog):
     poll_fn = partial(poll_tasks, tasks)
 
     def cancel_fn(task):
-        if task.startswith('cancel-true-'):
+        if task.startswith("cancel-true-"):
             return True
-        if task.startswith('cancel-false-'):
+        if task.startswith("cancel-false-"):
             return False
-        raise RuntimeError('simulated cancel error')
+        raise RuntimeError("simulated cancel error")
 
     poll_executor = PollExecutor(executor, poll_fn, cancel_fn, default_interval=0.01)
 
     def make_task(x):
         got = task_id_queue.get(True)
         task_id_queue.task_done()
-        return '%s-%s' % (x, got)
+        return "%s-%s" % (x, got)
 
-    inputs = ['cancel-true', 'cancel-false', 'cancel-error']
+    inputs = ["cancel-true", "cancel-false", "cancel-error"]
     futures = [poll_executor.submit(make_task, x) for x in inputs]
 
     # The futures should not currently be able to progress.
     assert_that(not any([f.done() for f in futures]))
 
     # Allow tasks to be created.
-    task_id_queue.put('x')
-    task_id_queue.put('y')
-    task_id_queue.put('z')
+    task_id_queue.put("x")
+    task_id_queue.put("y")
+    task_id_queue.put("z")
 
     # Wait until all tasks were created and futures moved
     # into poll mode
@@ -139,10 +149,16 @@ def test_cancel_fn(executor, caplog):
 
     # An error should have been logged due to the cancel function raising.
     if caplog:
-        assert_that(caplog.record_tuples, has_item(
-            contains('PollExecutor',
-                     logging.ERROR,
-                     matches_regexp(r'Exception during cancel .*/cancel-error'))))
+        assert_that(
+            caplog.record_tuples,
+            has_item(
+                contains(
+                    "PollExecutor",
+                    logging.ERROR,
+                    matches_regexp(r"Exception during cancel .*/cancel-error"),
+                )
+            ),
+        )
 
 
 def test_cancel_during_poll(executor):
@@ -209,13 +225,13 @@ def test_cancel_during_poll_fn(executor):
         should_process = queue.get(True)
         if should_process:
             for descriptor in descriptors:
-                if descriptor.result == 'pass':
-                    descriptor.yield_result('pass')
+                if descriptor.result == "pass":
+                    descriptor.yield_result("pass")
                 else:
-                    descriptor.yield_exception(RuntimeError('fail'))
+                    descriptor.yield_exception(RuntimeError("fail"))
 
     poll_executor = PollExecutor(executor, poll_fn, default_interval=0.01)
-    futures = [poll_executor.submit(lambda x: x, x) for x in ('pass', 'fail')]
+    futures = [poll_executor.submit(lambda x: x, x) for x in ("pass", "fail")]
 
     # Wait until both futures move to polling mode.
     def wait_two_futures():
@@ -268,26 +284,26 @@ def test_poll_fail(executor):
     poll_executor = PollExecutor(executor, poll_fn, default_interval=0.01)
 
     def make_task(x):
-        return '%s-%s' % (x, task_id_queue.get(True))
+        return "%s-%s" % (x, task_id_queue.get(True))
 
-    inputs = ['a', 'b', 'c']
+    inputs = ["a", "b", "c"]
     futures = [poll_executor.submit(make_task, x) for x in inputs]
 
     # The futures should not currently be able to progress.
     assert_that(not any([f.done() for f in futures]))
 
     # Allow tasks to be created.
-    task_id_queue.put('x')
-    task_id_queue.put('y')
-    task_id_queue.put('z')
+    task_id_queue.put("x")
+    task_id_queue.put("y")
+    task_id_queue.put("z")
 
     # Let one of the tasks complete
-    tasks['a-x'] = 'done'
-    tasks['a-y'] = 'done'
-    tasks['a-z'] = 'done'
+    tasks["a-x"] = "done"
+    tasks["a-y"] = "done"
+    tasks["a-z"] = "done"
 
     # Future a should become resolved
-    assert_that(futures[0].result(10), equal_to('done'))
+    assert_that(futures[0].result(10), equal_to("done"))
 
     # Now set up the poll function to fail
     poll_should_fail[0] = True
@@ -295,11 +311,13 @@ def test_poll_fail(executor):
     # That should make both remaining futures fail
     assert_that(
         calling(futures[1].result).with_args(10),
-        raises(RuntimeError, 'simulated poll error'))
+        raises(RuntimeError, "simulated poll error"),
+    )
 
     assert_that(
         calling(futures[2].result).with_args(10),
-        raises(RuntimeError, 'simulated poll error'))
+        raises(RuntimeError, "simulated poll error"),
+    )
 
     # Wait for the next poll
     poll_ran.clear()

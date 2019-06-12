@@ -12,8 +12,7 @@ def test_timeout():
 
     with Executors.thread_pool(max_workers=2) as executor:
         futures = [
-            executor.submit(sleep_then_return, x)
-            for x in [.5, .5, .5, .5, .5]
+            executor.submit(sleep_then_return, x) for x in [0.5, 0.5, 0.5, 0.5, 0.5]
         ]
         futures[3] = f_nocancel(futures[3])
         futures = [f_timeout(f, 0.02) for f in futures]
@@ -25,8 +24,8 @@ def test_timeout():
             # expected
             pass
 
-        assert futures[0].result() == .5
-        assert futures[1].result() == .5
+        assert futures[0].result() == 0.5
+        assert futures[1].result() == 0.5
         assert futures[2].cancelled()
-        assert futures[3].result() == .5
+        assert futures[3].result() == 0.5
         assert futures[4].cancelled()

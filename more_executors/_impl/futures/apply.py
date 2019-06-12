@@ -60,6 +60,7 @@ def _wrapped_f_apply(future_fn, future_args):
             else:
                 kwargs[key] = x
             return fn(*args, **kwargs)
+
         return out
 
     next_future_fn = wrap(future_x).with_flat_map(

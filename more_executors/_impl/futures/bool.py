@@ -9,7 +9,7 @@ from .base import chain_cancel
 from ..common import copy_future_exception
 
 
-LOG = logging.getLogger('more_executors.futures')
+LOG = logging.getLogger("more_executors.futures")
 
 
 class BoolCallback(object):
@@ -51,7 +51,9 @@ class BoolCallback(object):
             have_result = True
 
         with self.lock:
-            (set_result, set_exception, cancel_future) = self.update_state(future, have_result)
+            (set_result, set_exception, cancel_future) = self.update_state(
+                future, have_result
+            )
 
         if set_result:
             self.output.set_result(result)
@@ -59,7 +61,9 @@ class BoolCallback(object):
             copy_future_exception(future, self.output)
         if cancel_future:
             cancelled = cancel_future.cancel()
-            LOG.debug("cancel %s in callback for %s: %s", cancel_future, future, cancelled)
+            LOG.debug(
+                "cancel %s in callback for %s: %s", cancel_future, future, cancelled
+            )
 
 
 class OrCallback(BoolCallback):
@@ -73,8 +77,12 @@ class OrCallback(BoolCallback):
                 self.state = self.STOP
                 set_result = True
                 cancel_future = self.get_cancel_future(future)
-                LOG.debug("f_or: set result on %s to %s from left=%s",
-                          self.output, future.result(), future)
+                LOG.debug(
+                    "f_or: set result on %s to %s from left=%s",
+                    self.output,
+                    future.result(),
+                    future,
+                )
             else:
                 self.state = self.AWAITING_SECOND
         elif self.state == self.AWAITING_SECOND:
@@ -83,8 +91,12 @@ class OrCallback(BoolCallback):
                 cancel_future = self.output
             elif have_result:
                 set_result = True
-                LOG.debug("f_or: set result on %s to %s from right=%s",
-                          self.output, future.result(), future)
+                LOG.debug(
+                    "f_or: set result on %s to %s from right=%s",
+                    self.output,
+                    future.result(),
+                    future,
+                )
             else:
                 set_exception = True
 
@@ -105,8 +117,12 @@ class AndCallback(BoolCallback):
                 set_exception = True
             else:
                 set_result = True
-                LOG.info("f_and: set %s result %s due completion of %s",
-                         self.output, future.result(), future)
+                LOG.info(
+                    "f_and: set %s result %s due completion of %s",
+                    self.output,
+                    future.result(),
+                    future,
+                )
         elif self.state == self.AWAITING_FIRST:
             if future.cancelled():
                 cancel_future = self.output

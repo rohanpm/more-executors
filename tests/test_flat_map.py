@@ -23,23 +23,19 @@ def div10by(x):
 
 
 def test_basic_flat_map(executor):
-    flat_map_executor = FlatMapExecutor(
-        executor,
-        lambda x: executor.submit(mult10, x))
+    flat_map_executor = FlatMapExecutor(executor, lambda x: executor.submit(mult10, x))
 
     inputs = [1, 2, 3]
     expected_result = [20, 40, 60]
 
-    futures = [flat_map_executor.submit(lambda x: x*2, x) for x in inputs]
+    futures = [flat_map_executor.submit(lambda x: x * 2, x) for x in inputs]
     results = [f.result() for f in futures]
 
     assert_that(results, equal_to(expected_result))
 
 
 def test_flat_map_exception(executor):
-    flat_map_executor = FlatMapExecutor(
-        executor,
-        lambda x: executor.submit(div10by, x))
+    flat_map_executor = FlatMapExecutor(executor, lambda x: executor.submit(div10by, x))
 
     inputs = [1, 2, 0]
 
@@ -58,8 +54,8 @@ def test_flat_map_nofuture(executor):
     """Executor raises TypeError if map function does not produce a Future."""
 
     flat_map_executor = FlatMapExecutor(
-        executor,
-        lambda x: executor.submit(mult10, x) if x == 2 else mult10(x))
+        executor, lambda x: executor.submit(mult10, x) if x == 2 else mult10(x)
+    )
 
     inputs = [1, 2, 3]
 
@@ -76,9 +72,9 @@ def test_flat_map_nofuture(executor):
 def test_chained_flat_map(executor):
     """Chaining multiple flatmaps pass through values as expected."""
 
-    flat_map_executor = executor.\
-        with_flat_map(lambda x: executor.submit(mult10, x)).\
-        with_flat_map(lambda x: executor.submit(add1, x))
+    flat_map_executor = executor.with_flat_map(
+        lambda x: executor.submit(mult10, x)
+    ).with_flat_map(lambda x: executor.submit(add1, x))
 
     inputs = [1, 2]
 
@@ -92,7 +88,7 @@ def test_chained_flat_map(executor):
 def test_chained_flat_map_exception(executor):
     """Executor propagates innermost exception in the case of chained flatmaps."""
 
-    my_exception = RuntimeError('testing')
+    my_exception = RuntimeError("testing")
     fn2_called = []
 
     def fn1(x):
@@ -102,9 +98,7 @@ def test_chained_flat_map_exception(executor):
         fn2_called.append(0)
         raise AssertionError("Can't get here!")  # pragma: no cover
 
-    flat_map_executor = executor.\
-        with_flat_map(fn1).\
-        with_flat_map(fn2)
+    flat_map_executor = executor.with_flat_map(fn1).with_flat_map(fn2)
 
     inputs = [1, 2]
 

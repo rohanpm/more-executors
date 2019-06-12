@@ -33,16 +33,20 @@ def test_f_apply_multi_arg():
 
 def test_f_apply_kwargs():
     applied = f_apply(f_return(dump_args), key1=f_return(42), key2=f_return(12))
-    assert applied.result() == ((), {'key1': 42, 'key2': 12})
+    assert applied.result() == ((), {"key1": 42, "key2": 12})
 
 
 def test_f_apply_mixed():
     applied = f_apply(
         f_return(dump_args),
-        f_return('a'), f_return('b'), f_return('c'),
-        key1=f_return('val1'), key2=f_return('val2'), key3=f_return('val3'),
+        f_return("a"),
+        f_return("b"),
+        f_return("c"),
+        key1=f_return("val1"),
+        key2=f_return("val2"),
+        key3=f_return("val3"),
     )
     assert applied.result() == (
-        ('a', 'b', 'c'),
-        {'key1': 'val1', 'key2': 'val2', 'key3': 'val3'},
+        ("a", "b", "c"),
+        {"key1": "val1", "key2": "val2", "key3": "val3"},
     )

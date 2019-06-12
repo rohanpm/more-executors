@@ -11,8 +11,7 @@ def delay_then(x, delay=0.01):
 def test_nocancel():
     executor = Executors.thread_pool(max_workers=2)
 
-    futures = [f_nocancel(executor.submit(delay_then, x))
-               for x in [1, 2, 3, 4, 5]]
+    futures = [f_nocancel(executor.submit(delay_then, x)) for x in [1, 2, 3, 4, 5]]
 
     for f in futures:
         # Should not be able to cancel it even though most

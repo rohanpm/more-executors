@@ -27,7 +27,7 @@ class ThrottleFuture(MapFuture):
         future._executor = None
 
 
-ThrottleJob = namedtuple('ThrottleJob', ['future', 'fn', 'args', 'kwargs'])
+ThrottleJob = namedtuple("ThrottleJob", ["future", "fn", "args", "kwargs"])
 
 
 class ThrottleExecutor(CanCustomizeBind, Executor):
@@ -45,6 +45,7 @@ class ThrottleExecutor(CanCustomizeBind, Executor):
 
     .. versionadded:: 1.9.0
     """
+
     def __init__(self, delegate, count, logger=None):
         """
         Parameters:
@@ -57,7 +58,7 @@ class ThrottleExecutor(CanCustomizeBind, Executor):
             logger (~logging.Logger):
                 a logger used for messages from this executor
         """
-        self._log = logger if logger else logging.getLogger('ThrottleExecutor')
+        self._log = logger if logger else logging.getLogger("ThrottleExecutor")
         self._delegate = delegate
         self._to_submit = deque()
         self._lock = Lock()
@@ -68,7 +69,9 @@ class ThrottleExecutor(CanCustomizeBind, Executor):
         event = self._event
         self_ref = weakref.ref(self, lambda _: event.set())
 
-        self._thread = Thread(name='ThrottleExecutor', target=_submit_loop, args=(self_ref,))
+        self._thread = Thread(
+            name="ThrottleExecutor", target=_submit_loop, args=(self_ref,)
+        )
         self._thread.daemon = True
         self._thread.start()
 
@@ -94,7 +97,8 @@ class ThrottleExecutor(CanCustomizeBind, Executor):
         self._log.debug("Submitted %s yielding %s", job, delegate_future)
 
         delegate_future.add_done_callback(
-            partial(self._delegate_future_done, self._log, self._sem, self._event))
+            partial(self._delegate_future_done, self._log, self._sem, self._event)
+        )
         job.future._set_delegate(delegate_future)
 
     def _do_cancel(self, future):
@@ -134,8 +138,9 @@ def _submit_loop_iter(executor):
             executor._log.debug("Will submit: %s", job)
             to_submit.append(job)
 
-        executor._log.debug("Submitting %s, throttling %s",
-                            len(to_submit), len(executor._to_submit))
+        executor._log.debug(
+            "Submitting %s, throttling %s", len(to_submit), len(executor._to_submit)
+        )
 
     for job in to_submit:
         executor._do_submit(job)

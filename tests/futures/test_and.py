@@ -3,8 +3,14 @@ import pytest
 
 from more_executors import Executors
 from more_executors.futures import f_and, f_nocancel
-from .bool_utils import falsey, truthy, as_future, assert_future_equal, \
-                        resolve_inputs, resolve_value
+from .bool_utils import (
+    falsey,
+    truthy,
+    as_future,
+    assert_future_equal,
+    resolve_inputs,
+    resolve_value,
+)
 from ..util import assert_in_traceback
 
 cases = [
@@ -26,7 +32,7 @@ cases = [
 ]
 
 
-@pytest.mark.parametrize('inputs, expected_result', cases)
+@pytest.mark.parametrize("inputs, expected_result", cases)
 def test_and(inputs, expected_result, falsey, truthy):
     inputs = resolve_inputs(inputs, falsey, truthy)
     expected_result = resolve_value(expected_result, falsey, truthy)
@@ -37,8 +43,7 @@ def test_and(inputs, expected_result, falsey, truthy):
 
 
 def test_and_order_sync():
-    f_inputs = [as_future(x)
-                for x in [1, 2, 3]]
+    f_inputs = [as_future(x) for x in [1, 2, 3]]
 
     future = f_and(*f_inputs)
     assert_future_equal(future, 3)
@@ -62,7 +67,7 @@ def test_and_order_async():
 
 def test_and_cancels():
     calls = set()
-    error = RuntimeError('simulated error')
+    error = RuntimeError("simulated error")
 
     def delayed_call(delay):
         if delay is error:
@@ -73,8 +78,9 @@ def test_and_cancels():
 
     executor = Executors.thread_pool(max_workers=2)
     with executor:
-        futures = [executor.submit(delayed_call, x)
-                   for x in (0.5, error, 0.2, 2.0, 3.0)]
+        futures = [
+            executor.submit(delayed_call, x) for x in (0.5, error, 0.2, 2.0, 3.0)
+        ]
 
         future = f_and(*futures)
 
@@ -107,7 +113,7 @@ def test_and_cancels():
 
 def test_and_with_nocancel():
     calls = set()
-    error = RuntimeError('simulated error')
+    error = RuntimeError("simulated error")
 
     def delayed_call(delay):
         if delay is error:
@@ -118,8 +124,7 @@ def test_and_with_nocancel():
 
     executor = Executors.thread_pool(max_workers=2)
 
-    futures = [executor.submit(delayed_call, x)
-               for x in (0.5, error, 0.2, 1.1, 1.2)]
+    futures = [executor.submit(delayed_call, x) for x in (0.5, error, 0.2, 1.1, 1.2)]
 
     futures = [f_nocancel(f) for f in futures]
 
@@ -142,7 +147,7 @@ def test_and_with_nocancel():
 
 def test_and_propagate_traceback():
     def inner_test_fn():
-        raise RuntimeError('oops')
+        raise RuntimeError("oops")
 
     def my_test_fn(inner_fn=None):
         if inner_fn:
@@ -157,4 +162,4 @@ def test_and_propagate_traceback():
         executor.submit(my_test_fn),
     ]
     future = f_and(*futures)
-    assert_in_traceback(future, 'inner_test_fn')
+    assert_in_traceback(future, "inner_test_fn")

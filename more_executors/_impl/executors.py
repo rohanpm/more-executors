@@ -1,6 +1,4 @@
-from .wrapped import \
-    CustomizableThreadPoolExecutor, \
-    CustomizableProcessPoolExecutor
+from .wrapped import CustomizableThreadPoolExecutor, CustomizableProcessPoolExecutor
 from .bind import BoundCallable
 from .map import MapExecutor
 from .flat_map import FlatMapExecutor

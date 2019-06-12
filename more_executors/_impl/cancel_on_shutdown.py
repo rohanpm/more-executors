@@ -23,7 +23,7 @@ class CancelOnShutdownExecutor(CanCustomizeBind, Executor):
             logger (~logging.Logger):
                 a logger used for messages from this executor
         """
-        self._log = logger if logger else logging.getLogger('CancelOnShutdownExecutor')
+        self._log = logger if logger else logging.getLogger("CancelOnShutdownExecutor")
         self._delegate = delegate
         self._futures = set()
         self._lock = RLock()
@@ -53,7 +53,7 @@ class CancelOnShutdownExecutor(CanCustomizeBind, Executor):
     def submit(self, fn, *args, **kwargs):
         with self._lock:
             if self._shutdown:
-                raise RuntimeError('Cannot submit after shutdown')
+                raise RuntimeError("Cannot submit after shutdown")
             future = self._delegate.submit(fn, *args, **kwargs)
             self._futures.add(future)
             future.add_done_callback(self._futures.discard)

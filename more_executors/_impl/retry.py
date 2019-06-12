@@ -61,11 +61,11 @@ class ExceptionRetryPolicy(RetryPolicy):
 
         All parameters are optional; reasonable defaults apply when omitted.
         """
-        self._max_attempts = kwargs.get('max_attempts', 3)
-        self._exponent = kwargs.get('exponent', 2.0)
-        self._sleep = kwargs.get('sleep', 1.0)
-        self._max_sleep = kwargs.get('max_sleep', 120)
-        self._exception_base = kwargs.get('exception_base', Exception)
+        self._max_attempts = kwargs.get("max_attempts", 3)
+        self._exponent = kwargs.get("exponent", 2.0)
+        self._sleep = kwargs.get("sleep", 1.0)
+        self._max_sleep = kwargs.get("max_sleep", 120)
+        self._exception_base = kwargs.get("exception_base", Exception)
         if isinstance(self._exception_base, type):
             self._exception_base = [self._exception_base]
 
@@ -85,8 +85,9 @@ class ExceptionRetryPolicy(RetryPolicy):
 
 
 class RetryJob(object):
-    def __init__(self, policy, delegate_future, future,
-                 attempt, when, fn, args, kwargs):
+    def __init__(
+        self, policy, delegate_future, future, attempt, when, fn, args, kwargs
+    ):
         self.policy = policy
         self.delegate_future = delegate_future
         self.future = future
@@ -99,7 +100,6 @@ class RetryJob(object):
 
 
 class RetryFuture(_Future):
-
     def __init__(self, executor):
         super(RetryFuture, self).__init__()
         self.delegate_future = None
@@ -143,8 +143,8 @@ class RetryFuture(_Future):
         # For python2 compat.
         # pylint: disable=no-member
         self.__terminate_via(
-            super(RetryFuture, self).set_exception_info,
-            exception, traceback)
+            super(RetryFuture, self).set_exception_info, exception, traceback
+        )
 
     def _me_cancel(self):
         executor = self._executor
@@ -190,7 +190,7 @@ class RetryExecutor(CanCustomizeBind, Executor):
             logger (~logging.Logger):
                 a logger used for messages from this executor
         """
-        self._log = logger if logger else logging.getLogger('RetryExecutor')
+        self._log = logger if logger else logging.getLogger("RetryExecutor")
         self._delegate = delegate
         self._default_retry_policy = retry_policy or ExceptionRetryPolicy(**kwargs)
         self._jobs = []
@@ -199,7 +199,8 @@ class RetryExecutor(CanCustomizeBind, Executor):
         event = self._submit_event
         self_ref = weakref.ref(self, lambda _: event.set())
         self._submit_thread = Thread(
-            name='RetryExecutor', target=_submit_loop, args=(self_ref,))
+            name="RetryExecutor", target=_submit_loop, args=(self_ref,)
+        )
         self._submit_thread.daemon = True
 
         self._shutdown = False
@@ -218,8 +219,7 @@ class RetryExecutor(CanCustomizeBind, Executor):
         self._log.debug("Shutdown complete")
 
     def submit(self, fn, *args, **kwargs):
-        return self.submit_retry(
-            self._default_retry_policy, fn, *args, **kwargs)
+        return self.submit_retry(self._default_retry_policy, fn, *args, **kwargs)
 
     def submit_retry(self, retry_policy, fn, *args, **kwargs):
         """Submit a callable with a specific retry policy.
@@ -229,8 +229,7 @@ class RetryExecutor(CanCustomizeBind, Executor):
         """
         future = RetryFuture(self)
 
-        job = RetryJob(retry_policy, None, future, 0,
-                       monotonic(), fn, args, kwargs)
+        job = RetryJob(retry_policy, None, future, 0, monotonic(), fn, args, kwargs)
         self._append_job(job)
 
         # Let the submit thread know it should wake up to check for new jobs
@@ -273,12 +272,11 @@ class RetryExecutor(CanCustomizeBind, Executor):
                 # call cancel after this check and before we submit.
                 if job.future.done():
                     self._log.debug(
-                        "future done %s - not submitting to delegate",
-                        job.future)
+                        "future done %s - not submitting to delegate", job.future
+                    )
                     return
 
-                delegate_future = self._delegate.submit(
-                    job.fn, *job.args, **job.kwargs)
+                delegate_future = self._delegate.submit(job.fn, *job.args, **job.kwargs)
                 job.future.delegate_future = delegate_future
 
                 new_job = RetryJob(
@@ -287,7 +285,9 @@ class RetryExecutor(CanCustomizeBind, Executor):
                     job.future,
                     job.attempt + 1,
                     None,
-                    job.fn, job.args, job.kwargs
+                    job.fn,
+                    job.args,
+                    job.kwargs,
                 )
                 self._append_job(new_job)
                 self._log.debug("Submitted: %s", new_job)
@@ -318,7 +318,7 @@ class RetryExecutor(CanCustomizeBind, Executor):
                 monotonic() + sleep_time,
                 job.fn,
                 job.args,
-                job.kwargs
+                job.kwargs,
             )
             self._append_job(new_job)
 
@@ -365,8 +365,7 @@ class RetryExecutor(CanCustomizeBind, Executor):
         return False
 
     def _delegate_callback(self, delegate_future):
-        assert delegate_future.done(), \
-            "BUG: callback invoked while future not done!"
+        assert delegate_future.done(), "BUG: callback invoked while future not done!"
 
         self._log.debug("Callback activated for %s", delegate_future)
 
@@ -379,7 +378,7 @@ class RetryExecutor(CanCustomizeBind, Executor):
         # Callbacks are only installed after a job is added, and this is
         # the only place a job with a delegate associated will be removed,
         # thus it should not be possible for a job to be missing.
-        assert found_job, ("BUG: no job associated with delegate %s" % delegate_future)
+        assert found_job, "BUG: no job associated with delegate %s" % delegate_future
 
         if delegate_future.cancelled():
             # nothing to do, retrying on cancel is not allowed
@@ -389,7 +388,9 @@ class RetryExecutor(CanCustomizeBind, Executor):
         if found_job.stop_retry:
             should_retry = False
         else:
-            should_retry = found_job.policy.should_retry(found_job.attempt, delegate_future)
+            should_retry = found_job.policy.should_retry(
+                found_job.attempt, delegate_future
+            )
 
         if should_retry:
             sleep_time = found_job.policy.sleep_time(found_job.attempt, delegate_future)

@@ -10,21 +10,13 @@ def div100by_async(x):
 
 
 def test_sequence():
-    f = f_sequence([
-        f_return('a'),
-        f_return('b'),
-        f_return('c')
-    ])
-    assert f.result() == ['a', 'b', 'c']
+    f = f_sequence([f_return("a"), f_return("b"), f_return("c")])
+    assert f.result() == ["a", "b", "c"]
 
 
 def test_sequence_error():
-    error = ValueError('simulated error')
-    f = f_sequence([
-        f_return('a'),
-        f_return_error(error),
-        f_return('c')
-    ])
+    error = ValueError("simulated error")
+    f = f_sequence([f_return("a"), f_return_error(error), f_return("c")])
     assert f.exception() is error
 
 
@@ -35,7 +27,7 @@ def test_traverse():
 
 def test_traverse_generator():
     future = f_traverse(div100by_async, range(10, 26, 5))
-    assert future.result() == [10, 100/15., 5, 4]
+    assert future.result() == [10, 100 / 15.0, 5, 4]
 
 
 def test_traverse_error():
@@ -44,4 +36,4 @@ def test_traverse_error():
 
     assert isinstance(exception, ZeroDivisionError)
 
-    assert 'div100by_async' in ''.join(traceback.format_tb(get_traceback(future)))
+    assert "div100by_async" in "".join(traceback.format_tb(get_traceback(future)))

@@ -18,8 +18,10 @@ class MapFuture(_Future):
             self._delegate.add_done_callback(self._delegate_resolved)
 
     def _delegate_resolved(self, delegate):
-        assert delegate is self._delegate, \
-            "BUG: called with %s, expected %s" % (delegate, self._delegate)
+        assert delegate is self._delegate, "BUG: called with %s, expected %s" % (
+            delegate,
+            self._delegate,
+        )
 
         if delegate.cancelled():
             return
@@ -65,7 +67,9 @@ class MapFuture(_Future):
         with self._me_lock:
             if self.done():
                 return False
-            return self._delegate and (self._delegate.running() or self._delegate.done())
+            return self._delegate and (
+                self._delegate.running() or self._delegate.done()
+            )
 
     def _me_cancel(self):
         return self._delegate.cancel()

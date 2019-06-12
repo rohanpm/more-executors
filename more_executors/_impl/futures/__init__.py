@@ -7,7 +7,18 @@ from .sequence import f_traverse, f_sequence
 from .nocancel import f_nocancel
 from .timeout import f_timeout
 
-__all__ = ['f_apply', 'f_or', 'f_and',
-           'f_return', 'f_return_error', 'f_return_cancelled',
-           'f_zip', 'f_map', 'f_flat_map',
-           'f_traverse', 'f_sequence', 'f_nocancel', 'f_timeout']
+__all__ = [
+    "f_apply",
+    "f_or",
+    "f_and",
+    "f_return",
+    "f_return_error",
+    "f_return_cancelled",
+    "f_zip",
+    "f_map",
+    "f_flat_map",
+    "f_traverse",
+    "f_sequence",
+    "f_nocancel",
+    "f_timeout",
+]
