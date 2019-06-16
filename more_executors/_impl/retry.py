@@ -7,6 +7,7 @@ from monotonic import monotonic
 
 from .common import _Future, MAX_TIMEOUT, copy_future_exception
 from .wrap import CanCustomizeBind
+from .helpers import executor_loop
 
 
 class RetryPolicy(object):
@@ -416,6 +417,7 @@ class RetryExecutor(CanCustomizeBind, Executor):
         self._log.debug("Finalized %s", found_job)
 
 
+@executor_loop
 def _submit_loop(executor_ref):
     # Runs in a separate thread continuously submitting to the delegate
     # executor until no jobs are ready, or waiting until next job is ready

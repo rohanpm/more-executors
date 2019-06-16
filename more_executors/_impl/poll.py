@@ -5,6 +5,7 @@ import logging
 
 from .common import _Future, MAX_TIMEOUT, copy_exception, copy_future_exception
 from .wrap import CanCustomizeBind
+from .helpers import executor_loop
 
 
 class PollFuture(_Future):
@@ -231,6 +232,7 @@ class PollExecutor(CanCustomizeBind, Executor):
             self._log.debug("Joined poll thread.")
 
 
+@executor_loop
 def _poll_loop(executor_ref):
     while True:
         executor = executor_ref()
