@@ -9,6 +9,7 @@ from monotonic import monotonic
 from .map import MapFuture
 from .common import MAX_TIMEOUT
 from .wrap import CanCustomizeBind
+from .helpers import executor_loop
 
 LOG = logging.getLogger("TimeoutExecutor")
 
@@ -114,6 +115,7 @@ class TimeoutExecutor(CanCustomizeBind, Executor):
         self._log.debug("Cancel of %s resulted in %s", job, cancel_result)
 
     @classmethod
+    @executor_loop
     def _job_loop(cls, executor_ref):
         while True:
             (event, wait_time) = cls._job_loop_iter(executor_ref())

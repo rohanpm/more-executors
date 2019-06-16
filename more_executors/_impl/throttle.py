@@ -8,6 +8,7 @@ import weakref
 from .common import MAX_TIMEOUT
 from .wrap import CanCustomizeBind
 from .map import MapFuture
+from .helpers import executor_loop
 
 
 class ThrottleFuture(MapFuture):
@@ -148,6 +149,7 @@ def _submit_loop_iter(executor):
     return executor._event
 
 
+@executor_loop
 def _submit_loop(executor_ref):
     while True:
         event = _submit_loop_iter(executor_ref())

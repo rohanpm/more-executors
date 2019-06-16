@@ -7,6 +7,10 @@ from version 1.20.0 onwards.
 
 ## [Unreleased]
 
+### Fixed
+- Avoid spurious "cannot schedule new futures after interpreter shutdown" tracebacks
+  ([#144](https://github.com/rohanpm/more-executors/issues/144))
+
 ### Changed
 - Most functions in `more_executors.futures` will now immediately raise a
  `TypeError` if invoked with a non-future value where a future is expected.
