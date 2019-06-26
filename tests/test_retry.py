@@ -1,6 +1,7 @@
 """Tests of the retry behavior in RetryExecutor."""
 
 from concurrent.futures import ThreadPoolExecutor, Future
+from threading import Event
 from six.moves.queue import Queue
 
 from hamcrest import (
@@ -292,3 +293,51 @@ def test_cancel_stops_retry(executor, max_attempts):
     # The call to cancel() failed, but it stopped any further retries.
     assert cancelled[1] is False
     assert calls[1] == 2
+
+
+def test_cancel_stops_retry_race():
+    """cancel will stop retries even if called during critical section of callback.
+
+    See issue #150.
+    """
+
+    in_should_retry = Event()
+    can_leave_should_retry = Event()
+
+    class TestRetryPolicy(RetryPolicy):
+        def should_retry(self, attempt, future):
+            in_should_retry.set()
+            can_leave_should_retry.wait(timeout=5.0)
+            return True
+
+    executor = RetryExecutor(ThreadPoolExecutor(), retry_policy=TestRetryPolicy())
+
+    calls = [0]
+    error = RuntimeError("Simulated error")
+
+    def fn():
+        calls[0] += 1
+        raise error
+
+    # Start the callable
+    future = executor.submit(fn)
+
+    # It'll fail; wait until we're in the "critical section" of the failure
+    # callback, where it's checking if job should be retried
+    in_should_retry.wait(timeout=5.0)
+
+    # Now it's in should_retry().
+    # Cancel it:
+    cancelled = future.cancel()
+
+    # The cancel result should be False since the future was in progress
+    assert not cancelled
+
+    # Now let should_retry() proceed
+    can_leave_should_retry.set()
+
+    # The future should fail
+    assert future.exception(timeout=5.0) is error
+
+    # And it should have called the function exactly once
+    assert calls[0] == 1

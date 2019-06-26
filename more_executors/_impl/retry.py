@@ -87,7 +87,16 @@ class ExceptionRetryPolicy(RetryPolicy):
 
 class RetryJob(object):
     def __init__(
-        self, policy, delegate_future, future, attempt, when, fn, args, kwargs
+        self,
+        policy,
+        delegate_future,
+        future,
+        attempt,
+        when,
+        fn,
+        args,
+        kwargs,
+        old_delegate=None,
     ):
         self.policy = policy
         self.delegate_future = delegate_future
@@ -98,6 +107,7 @@ class RetryJob(object):
         self.args = args
         self.kwargs = kwargs
         self.stop_retry = False
+        self.old_delegate = old_delegate
 
 
 class RetryFuture(_Future):
@@ -243,15 +253,19 @@ class RetryExecutor(CanCustomizeBind, Executor):
         self._submit_event.set()
 
     def _get_next_job(self):
-        # Find and return the next job to be executed, if any.
-        # This means a job with when < now, or if there's none,
-        # then the job with the minimum value of when.
+        # Find and return the next job to be handled, if any.
+        # This means a job with when < now, or with stop_retry == True,
+        # or if there's none, then the job with the minimum value of when.
         min_job = None
         now = monotonic()
         for job in self._jobs:
             if job.delegate_future:
                 # It's already running, skip
                 continue
+            if job.stop_retry:
+                # We've been requested to stop retrying this job,
+                # and we can handle that immediately
+                return job
             if job.when <= now:
                 # job is overdue, just do it
                 return job
@@ -320,7 +334,11 @@ class RetryExecutor(CanCustomizeBind, Executor):
                 job.fn,
                 job.args,
                 job.kwargs,
+                # The old delegate future is retained in case we need
+                # to propagate its exception later
+                old_delegate=job.delegate_future,
             )
+            new_job.stop_retry = job.stop_retry
             self._append_job(new_job)
 
         self._wake_thread()
@@ -339,6 +357,11 @@ class RetryExecutor(CanCustomizeBind, Executor):
                         return True
 
                     found_job = job
+
+                    # Whether or not we can successfully cancel, the request to cancel
+                    # means that we don't want to retry any more.
+                    found_job.stop_retry = True
+
                     break
 
         # This shouldn't be possible.
@@ -347,10 +370,6 @@ class RetryExecutor(CanCustomizeBind, Executor):
         #   job is only removed *after* set_result/set_exception which would wait
         #   for the future's lock.
         assert found_job, "Cancel called on orphan %s" % future
-
-        # Whether or not we can successfully cancel, the request to cancel
-        # means that we don't want to retry any more.
-        found_job.stop_retry = True
 
         self._log.debug("Try cancel delegate: %s", found_job)
 
@@ -363,6 +382,10 @@ class RetryExecutor(CanCustomizeBind, Executor):
             return True
 
         self._log.debug("Could not cancel: %s", found_job)
+
+        # Let the submit thread wake up and find that we've set stop_retry
+        self._wake_thread()
+
         return False
 
     def _delegate_callback(self, delegate_future):
@@ -400,21 +423,26 @@ class RetryExecutor(CanCustomizeBind, Executor):
 
         self._log.debug("Finalizing %s", found_job)
 
-        exception = delegate_future.exception()
-        if exception:
-            result = None
-        else:
-            result = delegate_future.result()
-
         # OK, it won't be retried.  Resolve the future.
-        if exception:
-            copy_future_exception(delegate_future, found_job.future)
-        else:
-            found_job.future.set_result(result)
+        copy_future(delegate_future, found_job.future)
 
         self._pop_job(found_job)
 
         self._log.debug("Finalized %s", found_job)
+
+
+def copy_future(f1, f2):
+    exception = f1.exception()
+    if exception:
+        result = None
+    else:
+        result = f1.result()
+
+    # OK, it won't be retried.  Resolve the future.
+    if exception:
+        copy_future_exception(f1, f2)
+    else:
+        f2.set_result(result)
 
 
 @executor_loop
@@ -439,6 +467,12 @@ def _submit_loop(executor_ref):
             event = executor._submit_event
             del executor
             _submit_wait(event)
+            continue
+
+        if job.stop_retry:
+            executor._log.debug("Discarding job due to cancel: %s", job)
+            executor._pop_job(job)
+            copy_future(job.old_delegate, job.future)
             continue
 
         now = monotonic()

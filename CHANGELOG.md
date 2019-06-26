@@ -7,7 +7,10 @@ from version 1.20.0 onwards.
 
 ## [Unreleased]
 
-- n/a
+### Fixed
+- Fixed a race condition with RetryExecutor which could occasionally result in a future
+  being retried after a request to cancel
+  ([#150](https://github.com/rohanpm/more-executors/issues/150))
 
 ## [2.1.1] - 2019-06-16
 
