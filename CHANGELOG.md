@@ -7,6 +7,10 @@ from version 1.20.0 onwards.
 
 ## [Unreleased]
 
+- n/a
+
+## [2.1.2] - 2019-06-26
+
 ### Fixed
 - Fixed a race condition with RetryExecutor which could occasionally result in a future
   being retried after a request to cancel
@@ -183,7 +187,8 @@ from version 1.20.0 onwards.
 - Minor improvements to logging
 
 
-[Unreleased]: https://github.com/rohanpm/more-executors/compare/v2.1.1...HEAD
+[Unreleased]: https://github.com/rohanpm/more-executors/compare/v2.1.2...HEAD
+[2.1.2]: https://github.com/rohanpm/more-executors/compare/v2.1.1...v2.1.2
 [2.1.1]: https://github.com/rohanpm/more-executors/compare/v2.1.0...v2.1.1
 [2.1.0]: https://github.com/rohanpm/more-executors/compare/v2.0.2...v2.1.0
 [2.0.2]: https://github.com/rohanpm/more-executors/compare/v2.0.1...v2.0.2
