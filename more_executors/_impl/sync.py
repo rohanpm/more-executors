@@ -15,7 +15,7 @@ class SyncExecutor(CanCustomizeBind, Executor):
         """
         super(SyncExecutor, self).__init__()
 
-    def submit(self, fn, *args, **kwargs):
+    def submit(self, fn, *args, **kwargs):  # pylint: disable=arguments-differ
         """Immediately invokes `fn(*args, **kwargs)` and returns a future
         with the result (or exception)."""
         future = Future()

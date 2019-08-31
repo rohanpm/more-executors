@@ -76,7 +76,7 @@ class ThrottleExecutor(CanCustomizeBind, Executor):
         self._thread.daemon = True
         self._thread.start()
 
-    def submit(self, fn, *args, **kwargs):
+    def submit(self, fn, *args, **kwargs):  # pylint: disable=arguments-differ
         out = ThrottleFuture(self)
         job = ThrottleJob(out, fn, args, kwargs)
         with self._lock:

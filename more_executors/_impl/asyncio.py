@@ -30,8 +30,8 @@ class AsyncioExecutor(Executor):
         self._delegate = delegate
         self._loop = loop
 
-    def submit(self, fn, *args, **kwargs):
-        return self.submit_with_loop(self._loop, fn, *args, **kwargs)
+    def submit(self, *args, **kwargs):  # pylint: disable=arguments-differ
+        return self.submit_with_loop(self._loop, *args, **kwargs)
 
     def submit_with_loop(self, loop, fn, *args, **kwargs):
         """Submit a callable with the specified event loop.

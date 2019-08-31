@@ -229,8 +229,8 @@ class RetryExecutor(CanCustomizeBind, Executor):
             self._submit_thread.join(MAX_TIMEOUT)
         self._log.debug("Shutdown complete")
 
-    def submit(self, fn, *args, **kwargs):
-        return self.submit_retry(self._default_retry_policy, fn, *args, **kwargs)
+    def submit(self, *args, **kwargs):  # pylint: disable=arguments-differ
+        return self.submit_retry(self._default_retry_policy, *args, **kwargs)
 
     def submit_retry(self, retry_policy, fn, *args, **kwargs):
         """Submit a callable with a specific retry policy.

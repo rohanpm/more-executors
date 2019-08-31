@@ -136,6 +136,6 @@ class MapExecutor(CanCustomizeBind, Executor):
     def shutdown(self, wait=True):
         self._delegate.shutdown(wait)
 
-    def submit(self, fn, *args, **kwargs):
-        inner_f = self._delegate.submit(fn, *args, **kwargs)
+    def submit(self, *args, **kwargs):  # pylint: disable=arguments-differ
+        inner_f = self._delegate.submit(*args, **kwargs)
         return self._FUTURE_CLASS(inner_f, self._fn, self._error_fn)

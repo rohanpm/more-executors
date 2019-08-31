@@ -61,8 +61,8 @@ class TimeoutExecutor(CanCustomizeBind, Executor):
         self._job_thread.daemon = True
         self._job_thread.start()
 
-    def submit(self, fn, *args, **kwargs):
-        return self.submit_timeout(self._timeout, fn, *args, **kwargs)
+    def submit(self, *args, **kwargs):  # pylint: disable=arguments-differ
+        return self.submit_timeout(self._timeout, *args, **kwargs)
 
     def submit_timeout(self, timeout, fn, *args, **kwargs):
         """Like :code:`submit(fn, *args, **kwargs)`, but uses the specified
