@@ -37,6 +37,18 @@ workflows:
         filters:
           <<: *ci_filters
     - python/tox:
+        name: "Reverse dependency tests: pubtools-pulplib"
+        toxenv: revdep-pulplib
+        executor: python/python37
+        filters:
+          <<: *ci_filters
+    - python/tox:
+        name: "Reverse dependency tests: python-fastpurge"
+        toxenv: revdep-fastpurge
+        executor: python/python37
+        filters:
+          <<: *ci_filters
+    - python/tox:
         name: API compatibility check
         toxenv: pidiff
         filters:
@@ -77,6 +89,8 @@ workflows:
         - Python 2.7 tests
         - Python 3.6 tests
         - Python 3.7 tests
+        - "Reverse dependency tests: python-fastpurge"
+        - "Reverse dependency tests: pubtools-pulplib"
         - Static checks
         - Build docs
         filters:
