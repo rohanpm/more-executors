@@ -10,6 +10,8 @@ from version 1.20.0 onwards.
 ### Added
 - map/flat_map now accept an `error_fn` to transform the result of an
   unsuccessful future ([#153](https://github.com/rohanpm/more-executors/issues/153)).
+- Introduced `PollExecutor.notify` to wake up a `PollExecutor` early
+  ([#152](https://github.com/rohanpm/more-executors/issues/152)).
 
 ## [2.1.2] - 2019-06-26
 
