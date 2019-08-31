@@ -169,8 +169,8 @@ class PollExecutor(CanCustomizeBind, Executor):
 
         self._poll_thread.start()
 
-    def submit(self, fn, *args, **kwargs):
-        delegate_future = self._delegate.submit(fn, *args, **kwargs)
+    def submit(self, *args, **kwargs):  # pylint: disable=arguments-differ
+        delegate_future = self._delegate.submit(*args, **kwargs)
         return PollFuture(delegate_future, self)
 
     def _register_poll(self, future, delegate_future):

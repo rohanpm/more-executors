@@ -50,11 +50,11 @@ class CancelOnShutdownExecutor(CanCustomizeBind, Executor):
 
         self._delegate.shutdown(wait)
 
-    def submit(self, fn, *args, **kwargs):
+    def submit(self, *args, **kwargs):  # pylint: disable=arguments-differ
         with self._lock:
             if self._shutdown:
                 raise RuntimeError("Cannot submit after shutdown")
-            future = self._delegate.submit(fn, *args, **kwargs)
+            future = self._delegate.submit(*args, **kwargs)
             self._futures.add(future)
             future.add_done_callback(self._futures.discard)
         return future
