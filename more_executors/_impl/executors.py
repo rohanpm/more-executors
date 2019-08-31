@@ -154,6 +154,10 @@ class Executors(object):
         return cls._customize(executor, PollExecutor, *args, **kwargs)
 
     @classmethod
+    def with_missing_test(cls, *args, **kwargs):
+        raise NotImplementedError()
+
+    @classmethod
     def with_timeout(cls, executor, *args, **kwargs):
         """
         Returns:
