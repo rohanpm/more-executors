@@ -1,0 +1,26 @@
+#!/bin/sh
+# Reverse dependency tester.
+#
+# This script is intended to be run within a virtualenv with latest
+# version of more-executors installed. It'll run autotests from
+# some *other* project which depends on more-executors.
+URL="$1"
+
+CLONE_DIR=$(mktemp -d -t --suffix=revdep)
+
+clean(){
+  rm -rf $CLONE_DIR
+}
+trap clean EXIT
+
+set -xe
+
+git clone "$URL" "$CLONE_DIR"
+cd "$CLONE_DIR"
+
+pip install --editable .
+if test -e test-requirements.txt; then
+  pip install -rtest-requirements.txt
+fi
+
+py.test -v
