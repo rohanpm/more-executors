@@ -7,6 +7,10 @@ from version 1.20.0 onwards.
 
 ## [Unreleased]
 
+- n/a
+
+## [2.2.0] - 2019-08-31
+
 ### Added
 - map/flat_map now accept an `error_fn` to transform the result of an
   unsuccessful future ([#153](https://github.com/rohanpm/more-executors/issues/153)).
@@ -191,7 +195,8 @@ from version 1.20.0 onwards.
 - Minor improvements to logging
 
 
-[Unreleased]: https://github.com/rohanpm/more-executors/compare/v2.1.2...HEAD
+[Unreleased]: https://github.com/rohanpm/more-executors/compare/v2.2.0...HEAD
+[2.2.0]: https://github.com/rohanpm/more-executors/compare/v2.1.2...v2.2.0
 [2.1.2]: https://github.com/rohanpm/more-executors/compare/v2.1.1...v2.1.2
 [2.1.1]: https://github.com/rohanpm/more-executors/compare/v2.1.0...v2.1.1
 [2.1.0]: https://github.com/rohanpm/more-executors/compare/v2.0.2...v2.1.0
