@@ -213,6 +213,19 @@ when a returned future is cancelled.</p>
 </ul>
 </dd>
 </dl>
+<dl class="method">
+<dt id="more_executors.poll.PollExecutor.notify">
+<code class="sig-name descname">notify</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.poll.PollExecutor.notify" title="Permalink to this definition">¶</a></dt>
+<dd><p>Request the executor to re-run the polling function as soon as possible.</p>
+<p>This method may be used to perform the next poll earlier than it would
+otherwise run.</p>
+<p>This is useful for cases where futures may be resolved via a mixture of
+polling and external events.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.2.0.</span></p>
+</div>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="method">
