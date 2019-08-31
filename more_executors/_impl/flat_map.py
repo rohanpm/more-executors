@@ -1,10 +1,16 @@
 from .map import MapFuture, MapExecutor
+from .sync import SyncExecutor
+
+
+def f_return(x):
+    return SyncExecutor().submit(lambda: x)
 
 
 class FlatMapFuture(MapFuture):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, delegate, map_fn=None, error_fn=None):
         self.__flattened = False
-        super(FlatMapFuture, self).__init__(*args, **kwargs)
+        map_fn = map_fn or f_return
+        super(FlatMapFuture, self).__init__(delegate, map_fn, error_fn)
 
     def _on_mapped(self, result):
         if self.__flattened:
@@ -27,21 +33,21 @@ class FlatMapFuture(MapFuture):
 
 class FlatMapExecutor(MapExecutor):
     """An executor which delegates to another executor while mapping
-    output values through a given future-producing function.
+    output values through given future-producing functions.
 
     This executor behaves like :class:`~more_executors.map.MapExecutor`,
-    except that the given mapping function must return instances of
+    except that the given mapping/error functions must return instances of
     :class:`~concurrent.futures.Future`, and the mapped future is
     flattened into the future returned from this executor.
     This allows chaining multiple future-producing functions into a single
     future.
 
-    - If the map function returns a :class:`~concurrent.futures.Future`, the
+    - If the map/error function returns a :class:`~concurrent.futures.Future`, the
       result/exception of that future will be propagated to the future returned
       by this executor.
-    - If the map function returns any other type, the returned future will fail
+    - If the map/error function returns any other type, the returned future will fail
       with a :class:`TypeError`.
-    - If the map function raises an exception, the returned future will fail
+    - If the map/error function raises an exception, the returned future will fail
       with that exception.
 
     .. versionadded: 1.12.0
