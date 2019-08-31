@@ -173,6 +173,19 @@ class PollExecutor(CanCustomizeBind, Executor):
         delegate_future = self._delegate.submit(*args, **kwargs)
         return PollFuture(delegate_future, self)
 
+    def notify(self):
+        """Request the executor to re-run the polling function as soon as possible.
+
+        This method may be used to perform the next poll earlier than it would
+        otherwise run.
+
+        This is useful for cases where futures may be resolved via a mixture of
+        polling and external events.
+
+        .. versionadded:: 2.2.0
+        """
+        self._poll_event.set()
+
     def _register_poll(self, future, delegate_future):
         descriptor = PollDescriptor(future, delegate_future.result())
         with self._lock:

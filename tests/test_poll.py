@@ -1,4 +1,7 @@
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import (  # pylint: disable=redefined-builtin
+    ThreadPoolExecutor,
+    TimeoutError,
+)
 from functools import partial
 from threading import Event
 import sys
@@ -80,6 +83,62 @@ def test_basic_poll(executor):
     assert_that(futures[0].result(10), equal_to("done"))
 
     # Future b should raise an exception
+    assert_that(
+        calling(futures[1].result).with_args(10), raises(RuntimeError, "task failed")
+    )
+
+    # Future c should still be waiting
+    assert_that(not futures[2].done())
+
+
+def test_poll_notify(executor):
+    task_id_queue = Queue()
+    tasks = {}
+    poll_fn = partial(poll_tasks, tasks)
+
+    # Make the default interval unreasonably large, so notify() is the only
+    # way we'll really poll
+    poll_executor = PollExecutor(executor, poll_fn, default_interval=60.0)
+
+    def make_task(x):
+        return "%s-%s" % (x, task_id_queue.get(True))
+
+    inputs = ["a", "b", "c"]
+    futures = [poll_executor.submit(make_task, x) for x in inputs]
+
+    # Futures should not be able to resolve yet
+    assert_that(calling(futures[0].result).with_args(0.1), raises(TimeoutError))
+    assert_that(calling(futures[1].result).with_args(0.1), raises(TimeoutError))
+
+    # Allow tasks to be created.
+    task_id_queue.put("x")
+    task_id_queue.put("y")
+    task_id_queue.put("z")
+
+    # Futures should not be able to resolve yet
+    assert_that(calling(futures[0].result).with_args(0.1), raises(TimeoutError))
+    assert_that(calling(futures[1].result).with_args(0.1), raises(TimeoutError))
+
+    # Insert some task statuses for the poll function to detect.
+    # Note that we can't guess which thread got which queue item,
+    # so let's just spam with every combination
+    tasks["a-x"] = "done"
+    tasks["a-y"] = "done"
+    tasks["a-z"] = "done"
+    tasks["b-x"] = "error"
+    tasks["b-y"] = "error"
+    tasks["b-z"] = "error"
+    # Leave c with no result
+
+    # Futures should still not be able to resolve (between polls)
+    assert_that(calling(futures[0].result).with_args(0.1), raises(TimeoutError))
+    assert_that(calling(futures[1].result).with_args(0.1), raises(TimeoutError))
+
+    # But if we notify...
+    poll_executor.notify()
+
+    # Now they should be able to resolve
+    assert_that(futures[0].result(10), equal_to("done"))
     assert_that(
         calling(futures[1].result).with_args(10), raises(RuntimeError, "task failed")
     )
