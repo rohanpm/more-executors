@@ -16,11 +16,6 @@ LOG = logging.getLogger("TimeoutExecutor")
 Job = namedtuple("Job", ["future", "delegate_future", "deadline"])
 
 
-class TimeoutFuture(MapFuture):
-    def __init__(self, delegate):
-        super(TimeoutFuture, self).__init__(delegate, lambda x: x)
-
-
 class TimeoutExecutor(CanCustomizeBind, Executor):
     """An executor which delegates to another executor while applying
     a timeout to each returned future.
@@ -76,7 +71,7 @@ class TimeoutExecutor(CanCustomizeBind, Executor):
         .. versionadded:: 1.19.0
         """
         delegate_future = self._delegate.submit(fn, *args, **kwargs)
-        future = TimeoutFuture(delegate_future)
+        future = MapFuture(delegate_future)
         future.add_done_callback(self._on_future_done)
         job = Job(future, delegate_future, monotonic() + timeout)
         with self._jobs_lock:

@@ -38,6 +38,72 @@ def get_traceback(future):
     return future.exception_info()[1]
 
 
+def test_map_error_fn(executor):
+    map_executor = MapExecutor(executor, error_fn=lambda ex: "<error: %s>" % ex)
+
+    inputs = [1, 2, 0]
+
+    futures = [map_executor.submit(lambda x: 10 / x, x) for x in inputs]
+
+    # All futures should succeed, the last having been made successful
+    # via the error_fn
+    assert_that(futures[0].result(), equal_to(10))
+    assert_that(futures[1].result(), equal_to(5))
+    fail_result = futures[2].result()
+    assert fail_result.startswith("<error: ")
+    assert "division" in fail_result
+
+
+def test_map_error_fn_raised(executor):
+    error = ValueError("I don't like the number 4!")
+
+    def mult2(x):
+        if x == 4:
+            raise error
+        return x * 2
+
+    def raise_(ex):
+        raise RuntimeError("Oops, some error! %s" % ex)
+
+    map_executor = MapExecutor(executor, error_fn=raise_)
+
+    inputs = [1, 2, 4]
+
+    futures = [map_executor.submit(mult2, x) for x in inputs]
+
+    # First two should succeed
+    assert_that(futures[0].result(), equal_to(2))
+    assert_that(futures[1].result(), equal_to(4))
+
+    # Last should fail and should have the error raised from error_fn
+    assert "Oops, some error" in str(futures[2].exception())
+
+
+def test_map_error_fn_propagate(executor):
+    error = ValueError("I don't like the number 4!")
+
+    def mult2(x):
+        if x == 4:
+            raise error
+        return x * 2
+
+    def raise_(ex):
+        raise ex
+
+    map_executor = MapExecutor(executor, error_fn=raise_)
+
+    inputs = [1, 2, 4]
+
+    futures = [map_executor.submit(mult2, x) for x in inputs]
+
+    # First two should succeed
+    assert_that(futures[0].result(), equal_to(2))
+    assert_that(futures[1].result(), equal_to(4))
+
+    # Last should fail, and should have *exactly* the raised error passed through
+    assert futures[2].exception() is error
+
+
 def test_map_exception(executor):
     map_executor = MapExecutor(executor, div10)
 
