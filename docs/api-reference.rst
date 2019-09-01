@@ -15,6 +15,7 @@ Reference
    reference/bind
    reference/futures-create
    reference/futures-map
+   reference/futures-proxy
    reference/futures-apply
    reference/futures-bool
    reference/futures-lists

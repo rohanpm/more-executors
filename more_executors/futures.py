@@ -12,6 +12,7 @@ from ._impl.futures import (
     f_sequence,
     f_nocancel,
     f_timeout,
+    f_proxy,
 )
 
 
@@ -29,4 +30,5 @@ __all__ = [
     "f_sequence",
     "f_nocancel",
     "f_timeout",
+    "f_proxy",
 ]
