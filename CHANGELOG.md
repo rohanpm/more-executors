@@ -7,6 +7,9 @@ from version 1.20.0 onwards.
 
 ## [Unreleased]
 
+### Added
+- Introduced proxy futures via `f_proxy`
+
 ### Fixed
 - `more_executors.futures.*` can now be referenced after an `import more_executors`;
   there is no need to explicitly `import more_executors.futures

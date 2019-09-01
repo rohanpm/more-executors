@@ -6,6 +6,7 @@ from .map import f_map, f_flat_map
 from .sequence import f_traverse, f_sequence
 from .nocancel import f_nocancel
 from .timeout import f_timeout
+from .proxy import f_proxy
 
 __all__ = [
     "f_apply",
@@ -21,4 +22,5 @@ __all__ = [
     "f_sequence",
     "f_nocancel",
     "f_timeout",
+    "f_proxy",
 ]

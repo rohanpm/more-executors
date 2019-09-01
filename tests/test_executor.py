@@ -6,7 +6,7 @@ from functools import partial
 from random import randint
 import traceback
 from threading import RLock
-from concurrent.futures import CancelledError, wait, FIRST_COMPLETED
+from concurrent.futures import Executor, CancelledError, wait, FIRST_COMPLETED
 
 from six.moves.queue import Queue
 from monotonic import monotonic
@@ -24,6 +24,7 @@ from pytest import fixture, skip
 
 from more_executors.retry import RetryPolicy
 from more_executors import Executors
+from more_executors.futures import f_proxy, f_return
 
 from .util import assert_soon, run_or_timeout
 from .logging_util import dump_executor, add_debug_logging
@@ -54,6 +55,20 @@ def poll_noop(ds):
     return 0.0001
 
 
+# Don't want to make this public API now, but do want to test if
+# an executor returning everything as a proxy would work
+class ProxyExecutor(Executor):
+    # pylint: disable=arguments-differ
+    def __init__(self, delegate):
+        self.__delegate = delegate
+
+    def submit(self, *args, **kwargs):
+        return f_proxy(self.__delegate.submit(*args, **kwargs))
+
+    def shutdown(self, *args, **kwargs):
+        return self.__delegate.shutdown(*args, **kwargs)
+
+
 @fixture
 def retry_executor_ctor():
     return lambda: Executors.thread_pool().with_retry(max_attempts=1)
@@ -81,6 +96,15 @@ def flat_map_executor_ctor(threadpool_executor_ctor):
         return threadpool_executor.with_flat_map(
             partial(flat_map_noop, threadpool_executor)
         )
+
+    return out
+
+
+@fixture
+def proxy_executor_ctor(threadpool_executor_ctor):
+    def out():
+        threadpool_executor = threadpool_executor_ctor()
+        return ProxyExecutor(threadpool_executor)
 
     return out
 
@@ -179,6 +203,7 @@ def everything_executor(base_executor):
         .with_poll(poll_noop)
         .with_poll(poll_noop)
         .with_cancel_on_shutdown()
+        .with_flat_map(lambda x: f_proxy(f_return(x)))
         .with_throttle(16)
         .with_flat_map(partial(flat_map_noop, base_executor))
         .with_map(map_noop)
@@ -212,6 +237,7 @@ EXECUTOR_TYPES = [
     "cancel_poll_map_retry",
     "cancel_retry_map_poll",
     "flat_map",
+    "proxy",
     "everything_sync",
     "everything_threadpool",
 ]

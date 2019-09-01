@@ -137,6 +137,9 @@ implementations in ``more-executors``.
 | :meth:`~more_executors.futures.f_nocancel`         | Future<X>                                                            | make a future unable to be cancelled |
 |                                                    |   ⟶ Future<X>                                                        |                                      |
 +----------------------------------------------------+----------------------------------------------------------------------+--------------------------------------+
+| :meth:`~more_executors.futures.f_proxy`            | Future<X>                                                            | make a future proxy calls to the     |
+|                                                    |   ⟶ Future<X>                                                        | future's result                      |
++----------------------------------------------------+----------------------------------------------------------------------+--------------------------------------+
 | :meth:`~more_executors.futures.f_timeout`          | Future<X>, float                                                     | make a future cancel itself after a  |
 |                                                    |   ⟶ Future<X>                                                        | timeout has elapsed                  |
 +----------------------------------------------------+----------------------------------------------------------------------+--------------------------------------+
