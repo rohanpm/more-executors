@@ -1,0 +1,236 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Proxy futures: f_proxy &#8212; more-executors  documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Applying functions: f_apply" href="futures-apply.html" />
+    <link rel="prev" title="Transforming futures: f_map, f_flat_map, MapExecutor, FlatMapExecutor" href="futures-map.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="proxy-futures-f-proxy">
+<h1>Proxy futures: <code class="docutils literal notranslate"><span class="pre">f_proxy</span></code><a class="headerlink" href="#proxy-futures-f-proxy" title="Permalink to this headline">¶</a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">f_proxy</span></code> function allows wrapping a future with a proxy which will
+pass attribute lookups and method calls through to the underlying result,
+blocking as needed.</p>
+<p>The primary goal of <code class="docutils literal notranslate"><span class="pre">f_proxy</span></code> is to make it possible to define APIs
+which support both blocking and non-blocking coding styles.</p>
+<div class="section" id="example">
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
+<p>Imagine we have defined some classes as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">DatabaseService</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">get_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Obtain a connection to this application&#39;s database.</span>
+<span class="sd">        Returns a Future[DatabaseConnection].&quot;&quot;&quot;</span>
+        <span class="o">...</span>
+
+<span class="k">class</span> <span class="nc">DatabaseConnection</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sql</span><span class="p">,</span> <span class="o">*</span><span class="n">params</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Perform an SQL query using this connection.</span>
+<span class="sd">        Returns a Future[DatabaseCursor].&quot;&quot;&quot;</span>
+        <span class="o">...</span>
+
+<span class="k">class</span> <span class="nc">DatabaseCursor</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Iterate over all results referenced by this cursor.&quot;&quot;&quot;</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+<p>This API could be used with a non-blocking coding style by composing
+futures:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">process_results</span><span class="p">(</span><span class="n">cursor</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
+       <span class="c1"># assume it does something useful with each row</span>
+       <span class="o">...</span>
+
+<span class="n">connection</span> <span class="o">=</span> <span class="n">db_service</span><span class="o">.</span><span class="n">get_connection</span><span class="p">()</span>
+<span class="n">cursor</span> <span class="o">=</span> <span class="n">f_flat_map</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">some_sql</span><span class="p">))</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">f_map</span><span class="p">(</span><span class="n">cursor</span><span class="p">,</span> <span class="n">process_results</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Or it could be used in a blocking coding style by adding calls to
+<code class="docutils literal notranslate"><span class="pre">.result()</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">connection</span> <span class="o">=</span> <span class="n">db_service</span><span class="o">.</span><span class="n">get_connection</span><span class="p">()</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+<span class="n">cursor</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">some_sql</span><span class="p">)</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">process_results</span><span class="p">(</span><span class="n">cursor</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If we define the API as returning proxy futures (i.e. wrap each returned
+future using <code class="docutils literal notranslate"><span class="pre">f_proxy</span></code>), the above two code snippets will continue to
+work, and the below example also becomes possible: using the API in a
+blocking coding style without requiring explicit calls to <code class="docutils literal notranslate"><span class="pre">.result()</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">connection</span> <span class="o">=</span> <span class="n">db_service</span><span class="o">.</span><span class="n">get_connection</span><span class="p">()</span>
+<span class="n">cursor</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">some_sql</span><span class="p">)</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">process_results</span><span class="p">(</span><span class="n">cursor</span><span class="p">)</span>
+</pre></div>
+</div>
+<span class="target" id="module-more_executors.futures"></span><dl class="function">
+<dt id="more_executors.futures.f_proxy">
+<code class="sig-prename descclassname">more_executors.futures.</code><code class="sig-name descname">f_proxy</code><span class="sig-paren">(</span><em class="sig-param">f</em>, <em class="sig-param">timeout=None</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.futures.f_proxy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Proxy calls on a future through to the future’s result.</p>
+<p>The value returned by this function is a future resolved with the
+same result (or exception) as the input future <code class="docutils literal notranslate"><span class="pre">f</span></code>.  It will also
+proxy most attribute lookups and method calls through to the
+underlying result, awaiting the result when needed.</p>
+<p>Note that since the returned value is intended to remain usable as
+a <code class="docutils literal notranslate"><span class="pre">Future</span></code>, this proxy is relatively conservative and avoids
+proxying functionality which would clash with the <code class="docutils literal notranslate"><span class="pre">Future</span></code>
+interface.</p>
+<p>Functionality which is not proxied includes:</p>
+<ul class="simple">
+<li><p>conversion to boolean (<code class="docutils literal notranslate"><span class="pre">__bool__</span></code>)</p></li>
+<li><p>conversion to string (<code class="docutils literal notranslate"><span class="pre">__str__</span></code>, <code class="docutils literal notranslate"><span class="pre">__repr__</span></code>)</p></li>
+<li><p>methods relating to object identity (<code class="docutils literal notranslate"><span class="pre">__eq__</span></code>, <code class="docutils literal notranslate"><span class="pre">__hash__</span></code>)</p></li>
+</ul>
+<p>Signature: <code class="code docutils literal notranslate"><span class="pre">Future&lt;X&gt;</span> <span class="pre">⟶</span> <span class="pre">Future&lt;X&gt;</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>f</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.7)"><em>Future</em></a>) – Any future.</p></li>
+<li><p><strong>timeout</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – Timeout applied when awaiting the future’s result
+during proxied calls.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a></dt><dd><p>a Future which proxies calls through to the
+future’s result as needed.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.3.0.</span></p>
+</div>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">more-executors</a></h1>
+
+
+
+<p class="blurb">A library of composable Python executors and futures</p>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user-guide.html">User Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api-reference.html">Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="base-executors.html">Base executors: <code class="docutils literal notranslate"><span class="pre">thread_pool</span></code>, <code class="docutils literal notranslate"><span class="pre">process_pool</span></code>, <code class="docutils literal notranslate"><span class="pre">sync</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="retry.html">Retrying: <code class="docutils literal notranslate"><span class="pre">RetryExecutor</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="throttle.html">Throttling: <code class="docutils literal notranslate"><span class="pre">ThrottleExecutor</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeout.html">Timing out futures: <code class="docutils literal notranslate"><span class="pre">f_timeout</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeoutExecutor</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cancel.html">Cancellation of futures: <code class="docutils literal notranslate"><span class="pre">f_nocancel</span></code>, <code class="docutils literal notranslate"><span class="pre">CancelOnShutdownExecutor</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="poll.html">Polling: <code class="docutils literal notranslate"><span class="pre">PollExecutor</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="asyncio.html">asyncio bridge: <code class="docutils literal notranslate"><span class="pre">AsyncioExecutor</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="bind.html">Binding callables to executors: <code class="docutils literal notranslate"><span class="pre">bind</span></code>, <code class="docutils literal notranslate"><span class="pre">flat_bind</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="futures-create.html">Creating futures from values: <code class="docutils literal notranslate"><span class="pre">f_return*</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="futures-map.html">Transforming futures: <code class="docutils literal notranslate"><span class="pre">f_map</span></code>, <code class="docutils literal notranslate"><span class="pre">f_flat_map</span></code>, <code class="docutils literal notranslate"><span class="pre">MapExecutor</span></code>, <code class="docutils literal notranslate"><span class="pre">FlatMapExecutor</span></code></a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Proxy futures: <code class="docutils literal notranslate"><span class="pre">f_proxy</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="futures-apply.html">Applying functions: <code class="docutils literal notranslate"><span class="pre">f_apply</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="futures-bool.html">Boolean operations: <code class="docutils literal notranslate"><span class="pre">f_or</span></code>, <code class="docutils literal notranslate"><span class="pre">f_and</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="futures-lists.html">Futures and sequences: <code class="docutils literal notranslate"><span class="pre">f_traverse</span></code>, <code class="docutils literal notranslate"><span class="pre">f_sequence</span></code>, <code class="docutils literal notranslate"><span class="pre">f_zip</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+
+<hr />
+<ul>
+    
+    <li class="toctree-l1"><a href="https://github.com/rohanpm/more-executors">Source</a></li>
+    
+    <li class="toctree-l1"><a href="https://pypi.python.org/pypi/more-executors">PyPI</a></li>
+    
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../api-reference.html">Reference</a><ul>
+      <li>Previous: <a href="futures-map.html" title="previous chapter">Transforming futures: <code class="docutils literal notranslate"><span class="pre">f_map</span></code>, <code class="docutils literal notranslate"><span class="pre">f_flat_map</span></code>, <code class="docutils literal notranslate"><span class="pre">MapExecutor</span></code>, <code class="docutils literal notranslate"><span class="pre">FlatMapExecutor</span></code></a></li>
+      <li>Next: <a href="futures-apply.html" title="next chapter">Applying functions: <code class="docutils literal notranslate"><span class="pre">f_apply</span></code></a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Rohan McGovern.
+      
+      |
+      <a href="../_sources/reference/futures-proxy.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/rohanpm/more-executors" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>
