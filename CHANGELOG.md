@@ -7,6 +7,10 @@ from version 1.20.0 onwards.
 
 ## [Unreleased]
 
+- n/a
+
+## [2.3.0] - 2019-09-07
+
 ### Added
 - Introduced proxy futures via `f_proxy`
 
@@ -200,7 +204,8 @@ from version 1.20.0 onwards.
 - Minor improvements to logging
 
 
-[Unreleased]: https://github.com/rohanpm/more-executors/compare/v2.2.0...HEAD
+[Unreleased]: https://github.com/rohanpm/more-executors/compare/v2.3.0...HEAD
+[2.3.0]: https://github.com/rohanpm/more-executors/compare/v2.2.0...v2.3.0
 [2.2.0]: https://github.com/rohanpm/more-executors/compare/v2.1.2...v2.2.0
 [2.1.2]: https://github.com/rohanpm/more-executors/compare/v2.1.1...v2.1.2
 [2.1.1]: https://github.com/rohanpm/more-executors/compare/v2.1.0...v2.1.1
