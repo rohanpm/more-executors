@@ -49,7 +49,7 @@ Methods for composition are provided for all implemented executors:
     :meth:`~more_executors.Executors.with_retry`
         retry failing futures
     :meth:`~more_executors.Executors.with_poll`
-        resolve failing futures via a custom poll function
+        resolve futures via a custom poll function
     :meth:`~more_executors.Executors.with_timeout`
         cancel unresolved futures after a timeout
     :meth:`~more_executors.Executors.with_throttle`
