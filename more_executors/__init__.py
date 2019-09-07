@@ -14,5 +14,6 @@ Compatible with Python 2.6, 2.7 and 3.x.
 This documentation was built from an unknown revision.
 """
 from ._impl.executors import Executors
+from . import futures
 
-__all__ = ["Executors"]
+__all__ = ["Executors", "futures"]
