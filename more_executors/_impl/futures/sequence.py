@@ -24,6 +24,10 @@ def f_sequence(futures):
             - a list holding the output value of each input future
             - or an exception, if any input future raised an exception
 
+    .. note::
+        This function is tested with up to 100,000 input futures.
+        Exceeding this limit may result in performance issues.
+
     .. versionadded:: 1.19.0
     """
     return f_traverse(lambda x: x, futures)

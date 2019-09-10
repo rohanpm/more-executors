@@ -20,6 +20,12 @@ def test_sequence_error():
     assert f.exception() is error
 
 
+def test_sequence_large():
+    limit = 100000
+    f = f_sequence([f_return(i) for i in range(0, limit)])
+    assert f.result() == list(range(0, limit))
+
+
 def test_traverse():
     future = f_traverse(div100by_async, [10, 25, 50])
     assert future.result() == [10, 4, 2]

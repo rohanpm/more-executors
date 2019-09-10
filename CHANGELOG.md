@@ -7,7 +7,11 @@ from version 1.20.0 onwards.
 
 ## [Unreleased]
 
-- n/a
+### Fixed
+- Fixed some scaling/performance issues with functions dealing with collections
+  of futures (`f_or`, `f_and`, `f_sequence`, `f_zip`). These functions now support
+  up to 100,000 input futures. In earlier versions of the library, these would
+  break with approximately ~1,000 inputs.
 
 ## [2.3.0] - 2019-09-07
 

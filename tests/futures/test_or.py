@@ -1,10 +1,12 @@
 import time
 import logging
+import weakref
+import gc
 
 import pytest
 
 from more_executors import Executors
-from more_executors.futures import f_or, f_nocancel
+from more_executors.futures import f_or, f_nocancel, f_return
 from .bool_utils import (
     falsey,
     truthy,
@@ -152,3 +154,28 @@ def test_or_propagate_traceback():
         executor.submit(my_test_fn, inner_test_fn),
     )
     assert_in_traceback(future, "inner_test_fn")
+
+
+def test_or_gc():
+    """Inputs to f_or can be garbage collected if only output is held."""
+
+    inputs = [f_return(True), f_return(False)]
+    weak_input = weakref.ref(inputs[0])
+
+    out = f_or(*inputs)
+    assert out.result() is True
+
+    # the input future is still live since inputs is still live
+    gc.collect()
+    assert weak_input()
+
+    # But if we wipe out inputs, then it should be collected
+    inputs[:] = []
+    gc.collect()
+    assert not weak_input()
+
+
+def test_or_large():
+    inputs = [f_return(0) for _ in range(0, 100000)]
+
+    assert f_or(*inputs).result() == 0
