@@ -92,5 +92,8 @@ def copy_exception(future, exception=None, traceback=None):
 
     try:
         future.set_exception_info(exception, traceback)
+        return
     except AttributeError:
-        future.set_exception(exception)
+        pass
+
+    future.set_exception(exception)
