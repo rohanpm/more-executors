@@ -2,7 +2,7 @@ import time
 import pytest
 
 from more_executors import Executors
-from more_executors.futures import f_and, f_nocancel
+from more_executors.futures import f_return, f_and, f_nocancel
 from .bool_utils import (
     falsey,
     truthy,
@@ -163,3 +163,9 @@ def test_and_propagate_traceback():
     ]
     future = f_and(*futures)
     assert_in_traceback(future, "inner_test_fn")
+
+
+def test_and_large():
+    inputs = [f_return(True) for _ in range(0, 100000)]
+
+    assert f_and(*inputs).result() is True

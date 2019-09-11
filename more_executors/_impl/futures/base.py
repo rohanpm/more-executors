@@ -68,9 +68,31 @@ def f_return_cancelled():
     return f
 
 
+class WeakCallback(object):
+    # A wrapper for a single-call callback which breaks the reference
+    # to the callback at time of call.
+    #
+    # The point is to avoid futures holding references to each other
+    # unnecessarily.  Our own future base class already throws away
+    # callbacks as they're called, but the standard concurrent.futures.Future
+    # does not.
+    def __init__(self, delegate):
+        self.__delegate = delegate
+
+    def __call__(self, *args, **kwargs):
+        delegate = self.__delegate
+        del self.__delegate
+        return delegate(*args, **kwargs)
+
+
+weak_callback = WeakCallback
+
+
 def chain_cancel(f_outer, f_inner):
     # attempt to cancel f_inner when f_outer is cancelled
-    f_outer.add_done_callback(lambda f: f_inner.cancel() if f.cancelled() else False)
+    f_outer.add_done_callback(
+        weak_callback(lambda f: f_inner.cancel() if f.cancelled() else False)
+    )
 
 
 def wrap(f):

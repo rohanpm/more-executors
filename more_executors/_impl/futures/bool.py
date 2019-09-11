@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 
-import weakref
 from threading import Lock
 import logging
 from concurrent.futures import Future
 
-from .base import chain_cancel
+from .base import chain_cancel, weak_callback
 from ..common import copy_future_exception
 from .check import ensure_futures
 
@@ -13,134 +12,66 @@ from .check import ensure_futures
 LOG = logging.getLogger("more_executors.futures")
 
 
-class BoolCallback(object):
-    AWAITING_FIRST = 1
-    AWAITING_SECOND = 2
-    STOP = 3
+class BoolOperation(object):
+    def __init__(self, fs):
+        self.fs = {}
+        for f in fs:
+            self.fs[f] = True
 
-    def __init__(self, output, f1, f2):
-        self.state = self.AWAITING_FIRST
-        self.output = output
+        self.done = False
         self.lock = Lock()
-        self.f1 = weakref.ref(f1)
-        self.f2 = weakref.ref(f2)
+        self.out = Future()
 
-    def get_cancel_future(self, completed_future):
-        f1 = self.f1()
-        f2 = self.f2()
+        for f in fs:
+            chain_cancel(self.out, f)
+            f.add_done_callback(weak_callback(self.handle_done))
 
-        if f1 and completed_future is f1 and f2:
-            return f2
-        if f2 and completed_future is f2 and f1:
-            return f1
-
-    def update_state(self, future, have_result):
+    def get_state_update(self, f):
         raise NotImplementedError()  # pragma: no cover
 
-    def __call__(self, future):
-        if self.output.cancelled():
-            return
-
-        exception = future.exception() if not future.cancelled() else None
-        result = None
-        set_result = None
-        have_result = False
-        set_exception = None
-        cancel_future = None
-        if not exception and not future.cancelled():
-            result = future.result()
-            have_result = True
+    def handle_done(self, f):
+        set_result = False
+        set_exception = False
+        cancel_futures = set()
 
         with self.lock:
-            (set_result, set_exception, cancel_future) = self.update_state(
-                future, have_result
-            )
+            if self.done:
+                return
+
+            del self.fs[f]
+
+            (set_result, set_exception, cancel_futures) = self.get_state_update(f)
 
         if set_result:
-            self.output.set_result(result)
+            self.out.set_result(f.result())
         if set_exception:
-            copy_future_exception(future, self.output)
-        if cancel_future:
-            cancelled = cancel_future.cancel()
-            LOG.debug(
-                "cancel %s in callback for %s: %s", cancel_future, future, cancelled
-            )
+            copy_future_exception(f, self.out)
+
+        for to_cancel in cancel_futures:
+            to_cancel.cancel()
 
 
-class OrCallback(BoolCallback):
-    def update_state(self, future, have_result):
-        set_result = None
-        set_exception = None
-        cancel_future = None
+class OrOperation(BoolOperation):
+    def get_state_update(self, f):
+        set_result = False
+        set_exception = False
+        cancel_futures = set()
 
-        if self.state == self.AWAITING_FIRST:
-            if have_result and future.result():
-                self.state = self.STOP
-                set_result = True
-                cancel_future = self.get_cancel_future(future)
-                LOG.debug(
-                    "f_or: set result on %s to %s from left=%s",
-                    self.output,
-                    future.result(),
-                    future,
-                )
-            else:
-                self.state = self.AWAITING_SECOND
-        elif self.state == self.AWAITING_SECOND:
-            self.state = self.STOP
-            if future.cancelled():
-                cancel_future = self.output
-            elif have_result:
-                set_result = True
-                LOG.debug(
-                    "f_or: set result on %s to %s from right=%s",
-                    self.output,
-                    future.result(),
-                    future,
-                )
-            else:
-                set_exception = True
-
-        return (set_result, set_exception, cancel_future)
-
-
-class AndCallback(BoolCallback):
-    def update_state(self, future, have_result):
-        set_result = None
-        set_exception = None
-        cancel_future = None
-
-        if self.state == self.AWAITING_SECOND:
-            self.state = self.STOP
-            if future.cancelled():
-                cancel_future = self.output
-            elif future.exception():
+        # If it's the last result or it's a successful result:
+        if (not self.fs) or (not f.cancelled() and not f.exception() and f.result()):
+            self.done = True
+            cancel_futures = list(self.fs.keys())
+            if f.cancelled():
+                # Cancelled => output is cancelled
+                cancel_futures.append(self.out)
+            elif f.exception():
+                # Failed
                 set_exception = True
             else:
+                # Last or successful
                 set_result = True
-                LOG.info(
-                    "f_and: set %s result %s due completion of %s",
-                    self.output,
-                    future.result(),
-                    future,
-                )
-        elif self.state == self.AWAITING_FIRST:
-            if future.cancelled():
-                cancel_future = self.output
-                self.state = self.STOP
-            elif future.exception():
-                set_exception = True
-                cancel_future = self.get_cancel_future(future)
-                self.state = self.STOP
-            elif not future.result():
-                set_result = True
-                cancel_future = self.get_cancel_future(future)
-                self.state = self.STOP
-            else:
-                # This side gave a truthy result so await the other
-                self.state = self.AWAITING_SECOND
 
-        return (set_result, set_exception, cancel_future)
+        return (set_result, set_exception, cancel_futures)
 
 
 @ensure_futures
@@ -164,21 +95,42 @@ def f_or(f, *fs):
             - Otherwise, resolved with the latest false value or exception
               returned by the input futures.
 
+    .. note::
+        This function is tested with up to 100,000 input futures.
+        Exceeding this limit may result in performance issues.
+
     .. versionadded:: 1.19.0
     """
     if not fs:
         return f
 
-    f1 = f
-    f2 = f_or(fs[0], *fs[1:])
+    oper = OrOperation([f] + list(fs))
+    return oper.out
 
-    out = Future()
-    chain_cancel(out, f1)
-    chain_cancel(out, f2)
-    callback = OrCallback(out, f1, f2)
-    f1.add_done_callback(callback)
-    f2.add_done_callback(callback)
-    return out
+
+class AndOperation(BoolOperation):
+    def get_state_update(self, f):
+        set_result = False
+        set_exception = False
+        cancel_futures = set()
+
+        if f.cancelled():
+            # Cancelled => output is cancelled
+            self.done = True
+            cancel_futures = list(self.fs.keys())
+            cancel_futures.append(self.out)
+        elif f.exception():
+            # Failed => we're done
+            self.done = True
+            set_exception = True
+            cancel_futures = list(self.fs.keys())
+        elif (not f.result()) or (not self.fs):
+            # Falsey result or last result => we're done
+            self.done = True
+            cancel_futures = list(self.fs.keys())
+            set_result = True
+
+        return (set_result, set_exception, cancel_futures)
 
 
 @ensure_futures
@@ -202,18 +154,14 @@ def f_and(f, *fs):
             - Otherwise, resolved with the earliest false value or exception
               returned by the input futures.
 
+    .. note::
+        This function is tested with up to 100,000 input futures.
+        Exceeding this limit may result in performance issues.
+
     .. versionadded:: 1.19.0
     """
     if not fs:
         return f
 
-    f1 = f
-    f2 = f_and(fs[0], *fs[1:])
-
-    out = Future()
-    chain_cancel(out, f1)
-    chain_cancel(out, f2)
-    callback = AndCallback(out, f1, f2)
-    f1.add_done_callback(callback)
-    f2.add_done_callback(callback)
-    return out
+    oper = AndOperation([f] + list(fs))
+    return oper.out
