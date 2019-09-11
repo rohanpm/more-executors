@@ -52,7 +52,7 @@ Or it could be used in a blocking coding style by adding calls to
 .. code-block:: python
 
     connection = db_service.get_connection().result()
-    cursor = c.query(some_sql).result()
+    cursor = connection.query(some_sql).result()
     results = process_results(cursor)
 
 If we define the API as returning proxy futures (i.e. wrap each returned
@@ -63,7 +63,7 @@ blocking coding style without requiring explicit calls to ``.result()``:
 .. code-block:: python
 
     connection = db_service.get_connection()
-    cursor = c.query(some_sql)
+    cursor = connection.query(some_sql)
     results = process_results(cursor)
 
 .. automodule:: more_executors.futures
