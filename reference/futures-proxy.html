@@ -75,7 +75,7 @@ futures:</p>
 <p>Or it could be used in a blocking coding style by adding calls to
 <code class="docutils literal notranslate"><span class="pre">.result()</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">connection</span> <span class="o">=</span> <span class="n">db_service</span><span class="o">.</span><span class="n">get_connection</span><span class="p">()</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
-<span class="n">cursor</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">some_sql</span><span class="p">)</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+<span class="n">cursor</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">some_sql</span><span class="p">)</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
 <span class="n">results</span> <span class="o">=</span> <span class="n">process_results</span><span class="p">(</span><span class="n">cursor</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -84,7 +84,7 @@ future using <code class="docutils literal notranslate"><span class="pre">f_prox
 work, and the below example also becomes possible: using the API in a
 blocking coding style without requiring explicit calls to <code class="docutils literal notranslate"><span class="pre">.result()</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">connection</span> <span class="o">=</span> <span class="n">db_service</span><span class="o">.</span><span class="n">get_connection</span><span class="p">()</span>
-<span class="n">cursor</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">some_sql</span><span class="p">)</span>
+<span class="n">cursor</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">some_sql</span><span class="p">)</span>
 <span class="n">results</span> <span class="o">=</span> <span class="n">process_results</span><span class="p">(</span><span class="n">cursor</span><span class="p">)</span>
 </pre></div>
 </div>
