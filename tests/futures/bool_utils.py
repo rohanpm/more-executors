@@ -40,7 +40,7 @@ def truthy(request):
 def as_future(x):
     if x is CANCELLED:
         return f_return_cancelled()
-    elif isinstance(x, Exception):
+    if isinstance(x, Exception):
         return f_return_error(x)
     return f_return(x)
 

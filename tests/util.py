@@ -36,17 +36,19 @@ def run_or_timeout(fn, *args, **kwargs):
     thread.start()
 
     thread.join(timeout)
+
     if thread.is_alive():
         # Failed - did not complete within timeout
         raise AssertionError(
             "Function %s did not complete within %s seconds" % (fn, timeout)
         )
-    elif exception:
+
+    if exception:
         # Failed - function raised
         raise exception[0]
-    else:
-        # OK!
-        return retval[0]
+
+    # OK!
+    return retval[0]
 
 
 def thread_names():
