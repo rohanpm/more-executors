@@ -23,7 +23,7 @@ except ImportError:
 
 from more_executors.retry import RetryExecutor, ExceptionRetryPolicy, RetryPolicy
 
-from .util import assert_soon
+from ..util import assert_soon
 
 
 @fixture

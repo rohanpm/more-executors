@@ -7,7 +7,10 @@ from version 1.20.0 onwards.
 
 ## [Unreleased]
 
-- n/a
+### Fixed
+- `RetryExecutor` now logs an error and terminates retries of a future if the
+  configured `RetryPolicy` raises an exception. Previously, futures would hang
+  indefinitely in the case of a broken policy.
 
 ## [2.3.1] - 2019-09-11
 

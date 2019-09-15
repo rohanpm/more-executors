@@ -409,15 +409,9 @@ class RetryExecutor(CanCustomizeBind, Executor):
             self._log.debug("Delegate was cancelled: %s", delegate_future)
             return
 
-        if found_job.stop_retry:
-            should_retry = False
-        else:
-            should_retry = found_job.policy.should_retry(
-                found_job.attempt, delegate_future
-            )
+        (should_retry, sleep_time) = eval_policy(found_job, self._log)
 
         if should_retry:
-            sleep_time = found_job.policy.sleep_time(found_job.attempt, delegate_future)
             self._retry(found_job, sleep_time)
             return
 
@@ -443,6 +437,26 @@ def copy_future(f1, f2):
         copy_future_exception(f1, f2)
     else:
         f2.set_result(result)
+
+
+def eval_policy(job, logger):
+    if job.stop_retry:
+        return (False, None)
+
+    policy = job.policy
+
+    try:
+        should_retry = policy.should_retry(job.attempt, job.delegate_future)
+
+        if should_retry:
+            sleep_time = policy.sleep_time(job.attempt, job.delegate_future)
+        else:
+            sleep_time = None
+
+        return (should_retry, sleep_time)
+    except Exception:
+        logger.exception("Exception while evaluating retry policy %r", policy)
+        return (False, None)
 
 
 @executor_loop
