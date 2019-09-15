@@ -129,6 +129,22 @@ disable=
     inconsistent-return-statements,
     consider-merging-isinstance,
     redefined-outer-name,
+    ### Customizations start here
+    # Too aggressive, finds even duplicate sets of imports
+    duplicate-code,
+    # Autotests generate complaints, doesn't seem to affect anything
+    cyclic-import,
+    # Can't due to Py2
+    useless-object-inheritance,
+    # Can't due to Py2.6
+    consider-using-set-comprehension,
+    # There is nothing wrong with TODO or FIXME comments
+    fixme,
+    # Code style is managed by black
+    bad-continuation,
+    # Nothing wrong with a small number of public methods
+    too-few-public-methods,
+
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
