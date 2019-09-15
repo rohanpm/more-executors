@@ -24,7 +24,7 @@ class PollFuture(_Future):
 
         if delegate.cancelled():
             return
-        elif delegate.exception():
+        if delegate.exception():
             copy_future_exception(delegate, self)
         else:
             self._executor._register_poll(self, self._delegate)

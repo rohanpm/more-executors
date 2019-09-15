@@ -269,7 +269,7 @@ class RetryExecutor(CanCustomizeBind, Executor):
             if job.when <= now:
                 # job is overdue, just do it
                 return job
-            elif not min_job:
+            if not min_job:
                 min_job = job
             elif job.when < min_job.when:
                 min_job = job
