@@ -4,10 +4,6 @@ from .common import _Future, copy_exception, copy_future_exception
 from .wrap import CanCustomizeBind
 
 
-def raise_(x):
-    raise x
-
-
 def identity(x):
     return x
 
@@ -16,7 +12,7 @@ class MapFuture(_Future):
     def __init__(self, delegate, map_fn=None, error_fn=None):
         super(MapFuture, self).__init__()
         self._map_fn = map_fn or identity
-        self._error_fn = error_fn or raise_
+        self._error_fn = error_fn
         self._set_delegate(delegate)
 
     def _set_delegate(self, delegate):
@@ -25,6 +21,25 @@ class MapFuture(_Future):
 
         if delegate:
             self._delegate.add_done_callback(self._delegate_resolved)
+
+    def _delegate_failed(self, delegate):
+        if self._error_fn is None:
+            copy_future_exception(delegate, self)
+            return
+
+        ex = delegate.exception()
+
+        try:
+            return self._error_fn(ex)
+        except Exception as inner_ex:
+            if ex is inner_ex:
+                # fn raised exactly the same thing:
+                # then copy directly from the future
+                copy_future_exception(delegate, self)
+            else:
+                # fn raised something else:
+                # then copy that
+                copy_exception(self)
 
     def _delegate_resolved(self, delegate):
         assert delegate is self._delegate, "BUG: called with %s, expected %s" % (
@@ -36,19 +51,9 @@ class MapFuture(_Future):
             return
 
         ex = delegate.exception()
-        if ex:
-            try:
-                result = self._error_fn(ex)
-            except Exception as inner_ex:
-                if ex is inner_ex:
-                    # fn raised exactly the same thing:
-                    # then copy directly from the future
-                    copy_future_exception(delegate, self)
-                else:
-                    # fn raised something else:
-                    # then copy that
-                    copy_exception(self)
-                # Either way, the error means we stop here
+        if ex is not None:
+            result = self._delegate_failed(delegate)
+            if self.done():
                 return
         else:
             result = delegate.result()
