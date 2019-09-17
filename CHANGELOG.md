@@ -7,7 +7,9 @@ from version 1.20.0 onwards.
 
 ## [Unreleased]
 
-- n/a
+### Changed
+- Internal refactoring to simplify backtraces in certain cases
+  ([#169](https://github.com/rohanpm/more-executors/issues/169)).
 
 ## [2.4.0] - 2019-09-15
 
