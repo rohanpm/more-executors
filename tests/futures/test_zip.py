@@ -3,6 +3,11 @@ from concurrent.futures import Future
 from more_executors.futures import f_zip, f_return, f_return_error
 
 
+def test_zip_none():
+    future = f_zip()
+    assert future.result() == ()
+
+
 def test_zip_single():
     value = "foobar"
     future = f_zip(f_return(value))
