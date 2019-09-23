@@ -7,6 +7,10 @@ from version 1.20.0 onwards.
 
 ## [Unreleased]
 
+- n/a
+
+## [2.5.0] - 2019-09-23
+
 ### Added
 - `ThrottleExecutor` now accepts a callable for `count`, for dynamic throttling.
 
