@@ -56,7 +56,20 @@ less than <cite>count</cite> futures in progress.</p></li>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>delegate</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor" title="(in Python v3.7)"><em>Executor</em></a>) – an executor to which callables will be submitted</p></li>
-<li><p><strong>count</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – maximum number of concurrently running futures</p></li>
+<li><p><strong>count</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a><em>, </em><em>callable</em>) – <dl>
+<dt>int:</dt><dd><p>maximum number of concurrently running futures.</p>
+</dd>
+<dt>callable:</dt><dd><p>a callable which returns an <code class="docutils literal notranslate"><span class="pre">int</span></code> (or <code class="docutils literal notranslate"><span class="pre">None</span></code>, to indicate
+no throttling).</p>
+<p>The callable will be invoked each time this executor needs
+to decide whether to throttle futures; this may be used
+to implement dynamic throttling.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.5.0.</span></p>
+</div>
+</dd>
+</dl>
+</p></li>
 <li><p><strong>logger</strong> (<a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.7)"><em>Logger</em></a>) – a logger used for messages from this executor</p></li>
 </ul>
 </dd>
