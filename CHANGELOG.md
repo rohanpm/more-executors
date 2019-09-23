@@ -7,6 +7,9 @@ from version 1.20.0 onwards.
 
 ## [Unreleased]
 
+### Added
+- `ThrottleExecutor` now accepts a callable for `count`, for dynamic throttling.
+
 ### Changed
 - Internal refactoring to simplify backtraces in certain cases
   ([#169](https://github.com/rohanpm/more-executors/issues/169)).
