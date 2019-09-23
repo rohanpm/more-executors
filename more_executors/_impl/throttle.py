@@ -1,5 +1,5 @@
 from concurrent.futures import Executor
-from threading import Event, Thread, Lock, Semaphore
+from threading import Event, Thread, Lock
 from collections import namedtuple, deque
 from functools import partial
 import logging
@@ -31,6 +31,20 @@ class ThrottleFuture(MapFuture):
 ThrottleJob = namedtuple("ThrottleJob", ["future", "fn", "args", "kwargs"])
 
 
+class AtomicInt(object):
+    def __init__(self):
+        self.value = 0
+        self.lock = Lock()
+
+    def decr(self):
+        with self.lock:
+            self.value -= 1
+
+    def incr(self):
+        with self.lock:
+            self.value += 1
+
+
 class ThrottleExecutor(CanCustomizeBind, Executor):
     """An executor which delegates to another executor while enforcing
     a limit on the number of futures running concurrently.
@@ -53,8 +67,18 @@ class ThrottleExecutor(CanCustomizeBind, Executor):
             delegate (~concurrent.futures.Executor):
                 an executor to which callables will be submitted
 
-            count (int):
-                maximum number of concurrently running futures
+            count (int, callable):
+                int:
+                    maximum number of concurrently running futures.
+                callable:
+                    a callable which returns an ``int`` (or ``None``, to indicate
+                    no throttling).
+
+                    The callable will be invoked each time this executor needs
+                    to decide whether to throttle futures; this may be used
+                    to implement dynamic throttling.
+
+                    .. versionadded:: 2.5.0
 
             logger (~logging.Logger):
                 a logger used for messages from this executor
@@ -64,7 +88,9 @@ class ThrottleExecutor(CanCustomizeBind, Executor):
         self._to_submit = deque()
         self._lock = Lock()
         self._event = Event()
-        self._sem = Semaphore(count)
+        self._running_count = AtomicInt()
+        self._throttle = count if callable(count) else lambda: count
+        self._last_throttle = self._throttle()
         self._shutdown = False
 
         event = self._event
@@ -93,12 +119,24 @@ class ThrottleExecutor(CanCustomizeBind, Executor):
         if wait:
             self._thread.join(MAX_TIMEOUT)
 
+    def _eval_throttle(self):
+        try:
+            self._last_throttle = self._throttle()
+        except Exception:
+            self._log.exception(
+                "Error evaluating throttle count via %r", self._throttle
+            )
+
+        return self._last_throttle
+
     def _do_submit(self, job):
         delegate_future = self._delegate.submit(job.fn, *job.args, **job.kwargs)
         self._log.debug("Submitted %s yielding %s", job, delegate_future)
 
         delegate_future.add_done_callback(
-            partial(self._delegate_future_done, self._log, self._sem, self._event)
+            partial(
+                self._delegate_future_done, self._log, self._running_count, self._event
+            )
         )
         job.future._set_delegate(delegate_future)
 
@@ -113,12 +151,11 @@ class ThrottleExecutor(CanCustomizeBind, Executor):
         return False
 
     @classmethod
-    def _delegate_future_done(cls, log, sem, event, future):
-        # Whenever an inner future completes, one more execution slot becomes
-        # available, and the thread should wake up in case there's something to
-        # be submitted
+    def _delegate_future_done(cls, log, running_count, event, future):
+        # Whenever an inner future completes, the thread should wake up
+        # in case there's something to be submitted
         log.debug("Delegate future done: %s", future)
-        sem.release()
+        running_count.decr()
         event.set()
 
 
@@ -129,15 +166,19 @@ def _submit_loop_iter(executor):
     if executor._shutdown:
         return
 
+    throttle = executor._eval_throttle()
     to_submit = []
     with executor._lock:
         while executor._to_submit:
-            if not executor._sem.acquire(False):
+            if throttle is not None and (executor._running_count.value >= throttle):
                 executor._log.debug("Throttled")
                 break
             job = executor._to_submit.popleft()
             executor._log.debug("Will submit: %s", job)
             to_submit.append(job)
+
+            # While not actually running yet, we've committed to running it, so...
+            executor._running_count.incr()
 
         executor._log.debug(
             "Submitting %s, throttling %s", len(to_submit), len(executor._to_submit)
@@ -146,15 +187,20 @@ def _submit_loop_iter(executor):
     for job in to_submit:
         executor._do_submit(job)
 
-    return executor._event
+    # Because the throttle count is dynamic, we should wake up at some point in
+    # the future to re-check throttle, even if no other events occurred.
+    # If there's nothing running at all, we should do this sooner, because
+    # there won't be any events from completing futures.
+    return executor._event, 30.0 if executor._running_count.value else 2.0
 
 
 @executor_loop
 def _submit_loop(executor_ref):
     while True:
-        event = _submit_loop_iter(executor_ref())
-        if not event:
+        result = _submit_loop_iter(executor_ref())
+        if not result:
             break
 
-        event.wait()
+        (event, wait_time) = result
+        event.wait(wait_time)
         event.clear()
