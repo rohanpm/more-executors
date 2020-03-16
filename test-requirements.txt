@@ -1,4 +1,4 @@
-PyHamcrest
+PyHamcrest==2.0.2
 pytest >= 3.4; python_version >= '2.7'
 pytest; python_version < '2.7'
 mock; python_version < '3.3'
