@@ -1,5 +1,5 @@
 from concurrent.futures import Executor
-from threading import Event, Thread, Lock
+from threading import Thread, Lock
 from collections import namedtuple
 import weakref
 import logging
@@ -10,6 +10,7 @@ from .map import MapFuture
 from .common import MAX_TIMEOUT
 from .wrap import CanCustomizeBind
 from .helpers import executor_loop
+from .event import get_event, is_shutdown
 
 LOG = logging.getLogger("TimeoutExecutor")
 
@@ -50,7 +51,7 @@ class TimeoutExecutor(CanCustomizeBind, Executor):
         self._shutdown = False
         self._jobs = []
         self._jobs_lock = Lock()
-        self._jobs_write = Event()
+        self._jobs_write = get_event()
 
         event = self._jobs_write
         self_ref = weakref.ref(self, lambda _: event.set())
@@ -125,7 +126,7 @@ class TimeoutExecutor(CanCustomizeBind, Executor):
             LOG.debug("Executor was collected")
             return (None, None)
 
-        if executor._shutdown:
+        if executor._shutdown or is_shutdown():
             executor._log.debug("Executor was shut down")
             return (None, None)
 

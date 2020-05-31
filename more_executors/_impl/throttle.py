@@ -1,5 +1,5 @@
 from concurrent.futures import Executor
-from threading import Event, Thread, Lock
+from threading import Thread, Lock
 from collections import namedtuple, deque
 from functools import partial
 import logging
@@ -9,6 +9,7 @@ from .common import MAX_TIMEOUT
 from .wrap import CanCustomizeBind
 from .map import MapFuture
 from .helpers import executor_loop
+from .event import get_event, is_shutdown
 
 
 class ThrottleFuture(MapFuture):
@@ -87,7 +88,7 @@ class ThrottleExecutor(CanCustomizeBind, Executor):
         self._delegate = delegate
         self._to_submit = deque()
         self._lock = Lock()
-        self._event = Event()
+        self._event = get_event()
         self._running_count = AtomicInt()
         self._throttle = count if callable(count) else lambda: count
         self._last_throttle = self._throttle()
@@ -163,7 +164,7 @@ def _submit_loop_iter(executor):
     if not executor:
         return
 
-    if executor._shutdown:
+    if executor._shutdown or is_shutdown():
         return
 
     throttle = executor._eval_throttle()

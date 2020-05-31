@@ -1,11 +1,12 @@
 from concurrent.futures import Executor
-from threading import RLock, Thread, Event
+from threading import RLock, Thread
 import weakref
 import logging
 
 from .common import _Future, MAX_TIMEOUT, copy_exception, copy_future_exception
 from .wrap import CanCustomizeBind
 from .helpers import executor_loop
+from .event import get_event, is_shutdown
 
 
 class PollFuture(_Future):
@@ -155,7 +156,7 @@ class PollExecutor(CanCustomizeBind, Executor):
         self._poll_fn = poll_fn
         self._cancel_fn = cancel_fn
         self._poll_descriptors = []
-        self._poll_event = Event()
+        self._poll_event = get_event()
 
         poll_event = self._poll_event
         self_ref = weakref.ref(self, lambda _: poll_event.set())
@@ -252,7 +253,7 @@ def _poll_loop(executor_ref):
         if not executor:
             break
 
-        if executor._shutdown:
+        if executor._shutdown or is_shutdown():
             break
 
         executor._log.debug("Polling...")
