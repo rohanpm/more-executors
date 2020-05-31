@@ -7,7 +7,9 @@ from version 1.20.0 onwards.
 
 ## [Unreleased]
 
-- n/a
+### Fixed
+- Fixed a potential hang on exit when executors are not explicitly shut down
+ ([#176](https://github.com/rohanpm/more-executors/issues/176))
 
 ## [2.5.0] - 2019-09-23
 

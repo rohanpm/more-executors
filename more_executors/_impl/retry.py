@@ -1,5 +1,5 @@
 from concurrent.futures import Executor
-from threading import RLock, Thread, Event
+from threading import RLock, Thread
 import logging
 import weakref
 
@@ -8,6 +8,7 @@ from monotonic import monotonic
 from .common import _Future, MAX_TIMEOUT, copy_future_exception
 from .wrap import CanCustomizeBind
 from .helpers import executor_loop
+from .event import get_event, is_shutdown
 
 
 class RetryPolicy(object):
@@ -205,7 +206,7 @@ class RetryExecutor(CanCustomizeBind, Executor):
         self._delegate = delegate
         self._default_retry_policy = retry_policy or ExceptionRetryPolicy(**kwargs)
         self._jobs = []
-        self._submit_event = Event()
+        self._submit_event = get_event()
 
         event = self._submit_event
         self_ref = weakref.ref(self, lambda _: event.set())
@@ -468,7 +469,7 @@ def _submit_loop(executor_ref):
         if not executor:
             break
 
-        if executor._shutdown:
+        if executor._shutdown or is_shutdown():
             break
 
         executor._log.debug("_submit_loop iter")
