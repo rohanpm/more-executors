@@ -7,6 +7,10 @@ from version 1.20.0 onwards.
 
 ## [Unreleased]
 
+- n/a
+
+## [2.5.1] - 2020-06-01
+
 ### Fixed
 - Fixed a potential hang on exit when executors are not explicitly shut down
  ([#176](https://github.com/rohanpm/more-executors/issues/176))
@@ -230,7 +234,8 @@ from version 1.20.0 onwards.
 - Minor improvements to logging
 
 
-[Unreleased]: https://github.com/rohanpm/more-executors/compare/v2.5.0...HEAD
+[Unreleased]: https://github.com/rohanpm/more-executors/compare/v2.5.1...HEAD
+[2.5.1]: https://github.com/rohanpm/more-executors/compare/v2.5.0...v2.5.1
 [2.5.0]: https://github.com/rohanpm/more-executors/compare/v2.4.0...v2.5.0
 [2.4.0]: https://github.com/rohanpm/more-executors/compare/v2.3.1...v2.4.0
 [2.3.1]: https://github.com/rohanpm/more-executors/compare/v2.3.0...v2.3.1
