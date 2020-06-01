@@ -1,17 +1,17 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
     <title>Applying functions: f_apply &#8212; more-executors  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Boolean operations: f_or, f_and" href="futures-bool.html" />
@@ -34,25 +34,25 @@
             
   <div class="section" id="module-more_executors.futures">
 <span id="applying-functions-f-apply"></span><h1>Applying functions: <code class="docutils literal notranslate"><span class="pre">f_apply</span></code><a class="headerlink" href="#module-more_executors.futures" title="Permalink to this headline">¶</a></h1>
-<dl class="function">
+<dl class="py function">
 <dt id="more_executors.futures.f_apply">
-<code class="sig-prename descclassname">more_executors.futures.</code><code class="sig-name descname">f_apply</code><span class="sig-paren">(</span><em class="sig-param">future_fn</em>, <em class="sig-param">*future_args</em>, <em class="sig-param">**future_kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.futures.f_apply" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">more_executors.futures.</code><code class="sig-name descname">f_apply</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">future_fn</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">future_args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">future_kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.futures.f_apply" title="Permalink to this definition">¶</a></dt>
 <dd><p>Call a function, where the function, its arguments and return value
 are all provided by futures.</p>
 <p>Signature: <code class="code docutils literal notranslate"><span class="pre">Future&lt;fn&lt;A[,B[,...]]⟶R&gt;&gt;,</span> <span class="pre">Future&lt;A&gt;[,</span> <span class="pre">Future&lt;B&gt;[,</span> <span class="pre">...]]</span> <span class="pre">⟶</span> <span class="pre">Future&lt;R&gt;</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>future_fn</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a> of <code class="xref py py-class docutils literal notranslate"><span class="pre">callable</span></code>) – A future returning a function to be applied.</p></li>
-<li><p><strong>future_args</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.7)"><em>Future</em></a>) – Futures holding positional arguments for the function.</p></li>
-<li><p><strong>future_kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.7)"><em>Future</em></a>) – Futures holding keyword arguments for the function.</p></li>
+<li><p><strong>future_fn</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a> of <code class="xref py py-class docutils literal notranslate"><span class="pre">callable</span></code>) – A future returning a function to be applied.</p></li>
+<li><p><strong>future_args</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.8)"><em>Future</em></a>) – Futures holding positional arguments for the function.</p></li>
+<li><p><strong>future_kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.8)"><em>Future</em></a>) – Futures holding keyword arguments for the function.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>A future holding the returned value of the applied function.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.7)">Future</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.8)">Future</a></p>
 </dd>
 </dl>
 <div class="versionadded">
@@ -134,7 +134,7 @@ are all provided by futures.</p>
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
 
 
 

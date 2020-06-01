@@ -1,17 +1,17 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
     <title>Retrying: RetryExecutor &#8212; more-executors  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Throttling: ThrottleExecutor" href="throttle.html" />
@@ -35,9 +35,9 @@
   <div class="section" id="retrying-retryexecutor">
 <h1>Retrying: <code class="docutils literal notranslate"><span class="pre">RetryExecutor</span></code><a class="headerlink" href="#retrying-retryexecutor" title="Permalink to this headline">¶</a></h1>
 <p>RetryExecutor produces futures which will implicitly retry on error.</p>
-<dl class="class">
+<dl class="py class">
 <dt id="more_executors.retry.RetryExecutor">
-<em class="property">class </em><code class="sig-prename descclassname">more_executors.retry.</code><code class="sig-name descname">RetryExecutor</code><span class="sig-paren">(</span><em class="sig-param">delegate</em>, <em class="sig-param">retry_policy=None</em>, <em class="sig-param">logger=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.retry.RetryExecutor" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">more_executors.retry.</code><code class="sig-name descname">RetryExecutor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">delegate</span></em>, <em class="sig-param"><span class="n">retry_policy</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">logger</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.retry.RetryExecutor" title="Permalink to this definition">¶</a></dt>
 <dd><p>An executor which delegates to another executor while adding
 implicit retry behavior.</p>
 <ul class="simple">
@@ -57,17 +57,17 @@ were exhausted.  This includes activation of the done callback.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>delegate</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor" title="(in Python v3.7)"><em>Executor</em></a>) – executor to which callables will be submitted</p></li>
+<li><p><strong>delegate</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor" title="(in Python v3.8)"><em>Executor</em></a>) – executor to which callables will be submitted</p></li>
 <li><p><strong>retry_policy</strong> (<a class="reference internal" href="#more_executors.retry.RetryPolicy" title="more_executors.retry.RetryPolicy"><em>RetryPolicy</em></a>) – policy used to determine when futures shall be retried; if omitted,
 an <a class="reference internal" href="#more_executors.retry.ExceptionRetryPolicy" title="more_executors.retry.ExceptionRetryPolicy"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExceptionRetryPolicy</span></code></a> is used, supplied with keyword
 arguments to this constructor</p></li>
-<li><p><strong>logger</strong> (<a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.7)"><em>Logger</em></a>) – a logger used for messages from this executor</p></li>
+<li><p><strong>logger</strong> (<a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.8)"><em>Logger</em></a>) – a logger used for messages from this executor</p></li>
 </ul>
 </dd>
 </dl>
-<dl class="method">
+<dl class="py method">
 <dt id="more_executors.retry.RetryExecutor.submit_retry">
-<code class="sig-name descname">submit_retry</code><span class="sig-paren">(</span><em class="sig-param">retry_policy</em>, <em class="sig-param">fn</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.retry.RetryExecutor.submit_retry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">submit_retry</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">retry_policy</span></em>, <em class="sig-param"><span class="n">fn</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.retry.RetryExecutor.submit_retry" title="Permalink to this definition">¶</a></dt>
 <dd><p>Submit a callable with a specific retry policy.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -78,9 +78,9 @@ arguments to this constructor</p></li>
 
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="more_executors.Executors.with_retry">
-<em class="property">classmethod </em><code class="sig-prename descclassname">Executors.</code><code class="sig-name descname">with_retry</code><span class="sig-paren">(</span><em class="sig-param">executor</em>, <em class="sig-param">retry_policy=None</em>, <em class="sig-param">logger=None</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.Executors.with_retry" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-prename descclassname">Executors.</code><code class="sig-name descname">with_retry</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">executor</span></em>, <em class="sig-param"><span class="n">retry_policy</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">logger</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.Executors.with_retry" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>a new executor which will retry callables on failure</p>
@@ -91,40 +91,40 @@ arguments to this constructor</p></li>
 </dl>
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="more_executors.retry.RetryPolicy">
 <em class="property">class </em><code class="sig-prename descclassname">more_executors.retry.</code><code class="sig-name descname">RetryPolicy</code><a class="headerlink" href="#more_executors.retry.RetryPolicy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Instances of this class may be supplied to <a class="reference internal" href="#more_executors.retry.RetryExecutor" title="more_executors.retry.RetryExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">RetryExecutor</span></code></a>
 to customize the retry behavior.</p>
 <p>This base class will never retry.  See <a class="reference internal" href="#more_executors.retry.ExceptionRetryPolicy" title="more_executors.retry.ExceptionRetryPolicy"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExceptionRetryPolicy</span></code></a> for
 a general-purpose implementation.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="more_executors.retry.RetryPolicy.should_retry">
-<code class="sig-name descname">should_retry</code><span class="sig-paren">(</span><em class="sig-param">attempt</em>, <em class="sig-param">future</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.retry.RetryPolicy.should_retry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">should_retry</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attempt</span></em>, <em class="sig-param"><span class="n">future</span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.retry.RetryPolicy.should_retry" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>attempt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – number of times the future has been attempted; starts counting at 1</p></li>
-<li><p><strong>future</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.7)"><em>Future</em></a>) – a completed future</p></li>
+<li><p><strong>attempt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – number of times the future has been attempted; starts counting at 1</p></li>
+<li><p><strong>future</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.8)"><em>Future</em></a>) – a completed future</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>True if and only if a future should be retried.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a></p>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="more_executors.retry.RetryPolicy.sleep_time">
-<code class="sig-name descname">sleep_time</code><span class="sig-paren">(</span><em class="sig-param">attempt</em>, <em class="sig-param">future</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.retry.RetryPolicy.sleep_time" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">sleep_time</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attempt</span></em>, <em class="sig-param"><span class="n">future</span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.retry.RetryPolicy.sleep_time" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>attempt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – number of times the future has been attempted; starts counting at 1</p></li>
-<li><p><strong>future</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.7)"><em>Future</em></a>) – a completed future</p></li>
+<li><p><strong>attempt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – number of times the future has been attempted; starts counting at 1</p></li>
+<li><p><strong>future</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.8)"><em>Future</em></a>) – a completed future</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -132,29 +132,29 @@ a general-purpose implementation.</p>
 attempt at running a future.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)">float</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a></p>
 </dd>
 </dl>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="more_executors.retry.ExceptionRetryPolicy">
-<em class="property">class </em><code class="sig-prename descclassname">more_executors.retry.</code><code class="sig-name descname">ExceptionRetryPolicy</code><span class="sig-paren">(</span><em class="sig-param">max_attempts</em>, <em class="sig-param">exponent</em>, <em class="sig-param">sleep</em>, <em class="sig-param">max_sleep</em>, <em class="sig-param">exception_base</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.retry.ExceptionRetryPolicy" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">more_executors.retry.</code><code class="sig-name descname">ExceptionRetryPolicy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">max_attempts</span></em>, <em class="sig-param"><span class="n">exponent</span></em>, <em class="sig-param"><span class="n">sleep</span></em>, <em class="sig-param"><span class="n">max_sleep</span></em>, <em class="sig-param"><span class="n">exception_base</span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.retry.ExceptionRetryPolicy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retries on any exceptions under the given base class(es),
 up to a fixed number of attempts, with an exponential
 backoff between each attempt.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>max_attempts</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – maximum number of times a callable should be attempted</p></li>
-<li><p><strong>exponent</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – exponent used for backoff, e.g. 2.0 will result in a delay
+<li><p><strong>max_attempts</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – maximum number of times a callable should be attempted</p></li>
+<li><p><strong>exponent</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a>) – exponent used for backoff, e.g. 2.0 will result in a delay
 which doubles between each attempt</p></li>
-<li><p><strong>sleep</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – base value for delay between attempts in seconds, e.g. 1.0
+<li><p><strong>sleep</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a>) – base value for delay between attempts in seconds, e.g. 1.0
 will delay by one second between first two attempts</p></li>
-<li><p><strong>max_sleep</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – maximum delay between attempts, in seconds</p></li>
-<li><p><strong>exception_base</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.7)"><em>type</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>(</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.7)"><em>type</em></a><em>)</em>) – future will be retried if (and only if)
+<li><p><strong>max_sleep</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a>) – maximum delay between attempts, in seconds</p></li>
+<li><p><strong>exception_base</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.8)"><em>type</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>(</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.8)"><em>type</em></a><em>)</em>) – future will be retried if (and only if)
 it raises an exception inheriting from one of these classes</p></li>
 </ul>
 </dd>
@@ -236,7 +236,7 @@ it raises an exception inheriting from one of these classes</p></li>
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
 
 
 

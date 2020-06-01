@@ -1,17 +1,17 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
     <title>Polling: PollExecutor &#8212; more-executors  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="asyncio bridge: AsyncioExecutor" href="asyncio.html" />
@@ -55,7 +55,7 @@ in seconds until the next poll.</p></li>
 <p class="admonition-title">Warning</p>
 <p>The poll function should avoid holding a reference to the corresponding
 <a class="reference internal" href="#more_executors.poll.PollExecutor" title="more_executors.poll.PollExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">PollExecutor</span></code></a>. If it holds a reference to the
-executor, invoking <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor.shutdown" title="(in Python v3.7)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">shutdown()</span></code></a> becomes
+executor, invoking <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor.shutdown" title="(in Python v3.8)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">shutdown()</span></code></a> becomes
 mandatory in order to stop the polling thread.</p>
 </div>
 </div>
@@ -113,7 +113,7 @@ Two obvious approaches include:</p>
 it completes, and have several threads run that function for different tasks.</p>
 <ul class="simple">
 <li><p>This could be easily encapsulated as a future using only the executors
-from <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#module-concurrent.futures" title="(in Python v3.7)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">concurrent.futures</span></code></a>, but is very inefficient - each task in
+from <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#module-concurrent.futures" title="(in Python v3.8)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">concurrent.futures</span></code></a>, but is very inefficient - each task in
 progress will consume a thread for polling.</p></li>
 </ul>
 </li>
@@ -123,7 +123,7 @@ special-purpose function to wait for all of them to complete.</p>
 <div><ul class="simple">
 <li><p>This is efficient as only one request is needed per poll interval, but
 since tasks aren’t represented as futures, useful features from
-<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#module-concurrent.futures" title="(in Python v3.7)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">concurrent.futures</span></code></a> cannot be used and different types of
+<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#module-concurrent.futures" title="(in Python v3.8)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">concurrent.futures</span></code></a> cannot be used and different types of
 asynchronous work will be handled inconsistently.</p></li>
 </ul>
 </div></blockquote>
@@ -195,9 +195,9 @@ like this:</p>
     <span class="c1"># ...</span>
 </pre></div>
 </div>
-<dl class="class">
+<dl class="py class">
 <dt id="more_executors.poll.PollExecutor">
-<em class="property">class </em><code class="sig-prename descclassname">more_executors.poll.</code><code class="sig-name descname">PollExecutor</code><span class="sig-paren">(</span><em class="sig-param">delegate</em>, <em class="sig-param">poll_fn</em>, <em class="sig-param">cancel_fn=None</em>, <em class="sig-param">default_interval=5.0</em>, <em class="sig-param">logger=None</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.poll.PollExecutor" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">more_executors.poll.</code><code class="sig-name descname">PollExecutor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">delegate</span></em>, <em class="sig-param"><span class="n">poll_fn</span></em>, <em class="sig-param"><span class="n">cancel_fn</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">default_interval</span><span class="o">=</span><span class="default_value">5.0</span></em>, <em class="sig-param"><span class="n">logger</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.poll.PollExecutor" title="Permalink to this definition">¶</a></dt>
 <dd><p>Instances of <cite>PollExecutor</cite> submit callables to a delegate executor
 and resolve the returned futures via a provided poll function.</p>
 <p>A cancel function may also be provided to perform additional processing
@@ -205,15 +205,15 @@ when a returned future is cancelled.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>delegate</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor" title="(in Python v3.7)"><em>Executor</em></a>) – executor to which callables will be submitted</p></li>
+<li><p><strong>delegate</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor" title="(in Python v3.8)"><em>Executor</em></a>) – executor to which callables will be submitted</p></li>
 <li><p><strong>poll_fn</strong> (<em>callable</em>) – a <a class="reference internal" href="#poll-function">poll function</a> used to decide when futures should be resolved</p></li>
 <li><p><strong>cancel_fn</strong> (<em>callable</em>) – a <a class="reference internal" href="#cancel-function">cancel function</a> invoked when future cancel is required</p></li>
-<li><p><strong>default_interval</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – default interval between polls (in seconds)</p></li>
-<li><p><strong>logger</strong> (<a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.7)"><em>Logger</em></a>) – a logger used for messages from this executor</p></li>
+<li><p><strong>default_interval</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a>) – default interval between polls (in seconds)</p></li>
+<li><p><strong>logger</strong> (<a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.8)"><em>Logger</em></a>) – a logger used for messages from this executor</p></li>
 </ul>
 </dd>
 </dl>
-<dl class="method">
+<dl class="py method">
 <dt id="more_executors.poll.PollExecutor.notify">
 <code class="sig-name descname">notify</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.poll.PollExecutor.notify" title="Permalink to this definition">¶</a></dt>
 <dd><p>Request the executor to re-run the polling function as soon as possible.</p>
@@ -228,9 +228,9 @@ polling and external events.</p>
 
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="more_executors.Executors.with_poll">
-<em class="property">classmethod </em><code class="sig-prename descclassname">Executors.</code><code class="sig-name descname">with_poll</code><span class="sig-paren">(</span><em class="sig-param">executor</em>, <em class="sig-param">poll_fn</em>, <em class="sig-param">cancel_fn=None</em>, <em class="sig-param">default_interval=5.0</em>, <em class="sig-param">logger=None</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.Executors.with_poll" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-prename descclassname">Executors.</code><code class="sig-name descname">with_poll</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">executor</span></em>, <em class="sig-param"><span class="n">poll_fn</span></em>, <em class="sig-param"><span class="n">cancel_fn</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">default_interval</span><span class="o">=</span><span class="default_value">5.0</span></em>, <em class="sig-param"><span class="n">logger</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.Executors.with_poll" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p><p>a new executor which produces polled futures.</p>
@@ -244,27 +244,27 @@ a poll function.</p>
 </dl>
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="more_executors.poll.PollDescriptor">
 <em class="property">class </em><code class="sig-prename descclassname">more_executors.poll.</code><code class="sig-name descname">PollDescriptor</code><a class="headerlink" href="#more_executors.poll.PollDescriptor" title="Permalink to this definition">¶</a></dt>
-<dd><p>Represents an unresolved <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a>.</p>
+<dd><p>Represents an unresolved <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a>.</p>
 <p>The poll function used by <a class="reference internal" href="#more_executors.poll.PollExecutor" title="more_executors.poll.PollExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">PollExecutor</span></code></a> will be
 invoked with a list of PollDescriptor objects.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="more_executors.poll.PollDescriptor.result">
 <em class="property">property </em><code class="sig-name descname">result</code><a class="headerlink" href="#more_executors.poll.PollDescriptor.result" title="Permalink to this definition">¶</a></dt>
 <dd><p>The result from the delegate executor’s future, which should be used to
 drive the poll.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="more_executors.poll.PollDescriptor.yield_exception">
-<code class="sig-name descname">yield_exception</code><span class="sig-paren">(</span><em class="sig-param">exception</em>, <em class="sig-param">traceback=None</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.poll.PollDescriptor.yield_exception" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">yield_exception</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">exception</span></em>, <em class="sig-param"><span class="n">traceback</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.poll.PollDescriptor.yield_exception" title="Permalink to this definition">¶</a></dt>
 <dd><p>The poll function can call this function to make the future raise the given exception.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>exception</strong> (<a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.7)"><em>Exception</em></a>) – An exception to be returned or raised by the future associated with this
+<li><p><strong>exception</strong> (<a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.8)"><em>Exception</em></a>) – An exception to be returned or raised by the future associated with this
 descriptor</p></li>
 <li><p><strong>traceback</strong> (<em>traceback</em>) – An optional associated traceback. This argument only has an effect on python 2.x,
 where exception objects do not include a traceback.</p></li>
@@ -273,13 +273,13 @@ where exception objects do not include a traceback.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="more_executors.poll.PollDescriptor.yield_result">
-<code class="sig-name descname">yield_result</code><span class="sig-paren">(</span><em class="sig-param">result</em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.poll.PollDescriptor.yield_result" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">yield_result</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">result</span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.poll.PollDescriptor.yield_result" title="Permalink to this definition">¶</a></dt>
 <dd><p>The poll function can call this function to make the future yield the given result.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>result</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><em>object</em></a>) – a result to be returned by the future associated with this descriptor</p>
+<dd class="field-odd"><p><strong>result</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><em>object</em></a>) – a result to be returned by the future associated with this descriptor</p>
 </dd>
 </dl>
 </dd></dl>
@@ -361,7 +361,7 @@ where exception objects do not include a traceback.</p></li>
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
 
 
 
