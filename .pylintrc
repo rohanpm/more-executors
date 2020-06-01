@@ -144,6 +144,10 @@ disable=
     bad-continuation,
     # Nothing wrong with a small number of public methods
     too-few-public-methods,
+    # Python 3.9 is changing the signature of Executor.shutdown().
+    # Not sure how to deal with it yet, but it likely will trigger
+    # this warning.
+    signature-differs,
 
 
 # Enable the message, report, category or checker with the given id(s). You can
