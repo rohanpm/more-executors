@@ -4,6 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Futures and sequences: f_traverse, f_sequence, f_zip &#8212; more-executors  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -33,36 +34,6 @@
             
   <div class="section" id="module-more_executors.futures">
 <span id="futures-and-sequences-f-traverse-f-sequence-f-zip"></span><h1>Futures and sequences: <code class="docutils literal notranslate"><span class="pre">f_traverse</span></code>, <code class="docutils literal notranslate"><span class="pre">f_sequence</span></code>, <code class="docutils literal notranslate"><span class="pre">f_zip</span></code><a class="headerlink" href="#module-more_executors.futures" title="Permalink to this headline">¶</a></h1>
-<dl class="py function">
-<dt id="more_executors.futures.f_zip">
-<code class="sig-prename descclassname">more_executors.futures.</code><code class="sig-name descname">f_zip</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">fs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.futures.f_zip" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a new future holding the return values of any number of input futures.</p>
-<p>Signature: <code class="code docutils literal notranslate"><span class="pre">Future&lt;A&gt;[,</span> <span class="pre">Future&lt;B&gt;[,</span> <span class="pre">...]]</span> <span class="pre">⟶</span> <span class="pre">Future&lt;A[,</span> <span class="pre">B[,</span> <span class="pre">...]]&gt;</span></code></p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>fs</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.8)"><em>Future</em></a>) – Any number of futures.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><dl>
-<dt><a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a></dt><dd><p>A future holding the returned values of all input futures as a tuple.
-The returned tuple has the same length and order as the input futures.</p>
-<p>Alternatively, a future raising an exception, if any input futures raised
-an exception.</p>
-</dd>
-</dl>
-</p>
-</dd>
-</dl>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This function is tested with up to 100,000 input futures.
-Exceeding this limit may result in performance issues.</p>
-</div>
-<div class="versionadded">
-<p><span class="versionmodified added">New in version 1.19.0.</span></p>
-</div>
-</dd></dl>
-
 <dl class="py function">
 <dt id="more_executors.futures.f_sequence">
 <code class="sig-prename descclassname">more_executors.futures.</code><code class="sig-name descname">f_sequence</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">futures</span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.futures.f_sequence" title="Permalink to this definition">¶</a></dt>
@@ -119,6 +90,36 @@ and return a future holding the returned values as a list.</p>
 </p>
 </dd>
 </dl>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.19.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="more_executors.futures.f_zip">
+<code class="sig-prename descclassname">more_executors.futures.</code><code class="sig-name descname">f_zip</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">fs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.futures.f_zip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new future holding the return values of any number of input futures.</p>
+<p>Signature: <code class="code docutils literal notranslate"><span class="pre">Future&lt;A&gt;[,</span> <span class="pre">Future&lt;B&gt;[,</span> <span class="pre">...]]</span> <span class="pre">⟶</span> <span class="pre">Future&lt;A[,</span> <span class="pre">B[,</span> <span class="pre">...]]&gt;</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fs</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.8)"><em>Future</em></a>) – Any number of futures.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl>
+<dt><a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a></dt><dd><p>A future holding the returned values of all input futures as a tuple.
+The returned tuple has the same length and order as the input futures.</p>
+<p>Alternatively, a future raising an exception, if any input futures raised
+an exception.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This function is tested with up to 100,000 input futures.
+Exceeding this limit may result in performance issues.</p>
+</div>
 <div class="versionadded">
 <p><span class="versionmodified added">New in version 1.19.0.</span></p>
 </div>

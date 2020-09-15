@@ -4,6 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Transforming futures: f_map, f_flat_map, MapExecutor, FlatMapExecutor &#8212; more-executors  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -39,42 +40,6 @@ provided function.</p>
 <div class="section" id="module-more_executors.futures">
 <span id="futures-api"></span><h2>Futures API<a class="headerlink" href="#module-more_executors.futures" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
-<dt id="more_executors.futures.f_map">
-<code class="sig-prename descclassname">more_executors.futures.</code><code class="sig-name descname">f_map</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">future</span></em>, <em class="sig-param"><span class="n">fn</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">error_fn</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.futures.f_map" title="Permalink to this definition">¶</a></dt>
-<dd><p>Map the output value of a future using the given functions.</p>
-<p>Signature: <code class="code docutils literal notranslate"><span class="pre">Future&lt;A&gt;,</span> <span class="pre">fn&lt;A⟶B&gt;</span> <span class="pre">⟶</span> <span class="pre">Future&lt;B&gt;</span></code></p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>future</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.8)"><em>Future</em></a>) – Any future.</p></li>
-<li><p><strong>fn</strong> (<em>callable</em>) – Any callable to be applied on successful futures.
-This function is provided the result of the input future.</p></li>
-<li><p><strong>error_fn</strong> (<em>callable</em>) – Any callable to be applied on unsuccessful futures.
-This function is provided the exception of the input future.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><dl class="simple">
-<dt><a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a></dt><dd><p>A future resolved with:</p>
-<ul class="simple">
-<li><p>the returned value of <code class="code docutils literal notranslate"><span class="pre">fn(future.result())</span></code></p></li>
-<li><p>or the returned value of <code class="code docutils literal notranslate"><span class="pre">error_fn(future.exception())</span></code></p></li>
-<li><p>or with the exception raised by <code class="xref py py-obj docutils literal notranslate"><span class="pre">future</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">fn</span></code> or <code class="xref py py-obj docutils literal notranslate"><span class="pre">error_fn</span></code>.</p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd>
-</dl>
-<div class="versionadded">
-<p><span class="versionmodified added">New in version 1.19.0.</span></p>
-</div>
-<div class="versionchanged">
-<p><span class="versionmodified changed">Changed in version 2.2.0: </span>Introduced <code class="docutils literal notranslate"><span class="pre">error_fn</span></code>.</p>
-</div>
-</dd></dl>
-
-<dl class="py function">
 <dt id="more_executors.futures.f_flat_map">
 <code class="sig-prename descclassname">more_executors.futures.</code><code class="sig-name descname">f_flat_map</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">future</span></em>, <em class="sig-param"><span class="n">fn</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">error_fn</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.futures.f_flat_map" title="Permalink to this definition">¶</a></dt>
 <dd><p>Map the output value of a future using the given future-returning functions.</p>
@@ -99,6 +64,42 @@ This function is provided the exception of the input future.</p></li>
 <li><p>or equivalent to that returned by <code class="xref py py-obj docutils literal notranslate"><span class="pre">error_fn</span></code> if input future failed</p></li>
 <li><p>or resolved with an exception if any of <code class="xref py py-obj docutils literal notranslate"><span class="pre">future</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">fn</span></code> or
 <code class="xref py py-obj docutils literal notranslate"><span class="pre">error_fn</span></code> failed</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.19.0.</span></p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.2.0: </span>Introduced <code class="docutils literal notranslate"><span class="pre">error_fn</span></code>.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="more_executors.futures.f_map">
+<code class="sig-prename descclassname">more_executors.futures.</code><code class="sig-name descname">f_map</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">future</span></em>, <em class="sig-param"><span class="n">fn</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">error_fn</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.futures.f_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Map the output value of a future using the given functions.</p>
+<p>Signature: <code class="code docutils literal notranslate"><span class="pre">Future&lt;A&gt;,</span> <span class="pre">fn&lt;A⟶B&gt;</span> <span class="pre">⟶</span> <span class="pre">Future&lt;B&gt;</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>future</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.8)"><em>Future</em></a>) – Any future.</p></li>
+<li><p><strong>fn</strong> (<em>callable</em>) – Any callable to be applied on successful futures.
+This function is provided the result of the input future.</p></li>
+<li><p><strong>error_fn</strong> (<em>callable</em>) – Any callable to be applied on unsuccessful futures.
+This function is provided the exception of the input future.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a></dt><dd><p>A future resolved with:</p>
+<ul class="simple">
+<li><p>the returned value of <code class="code docutils literal notranslate"><span class="pre">fn(future.result())</span></code></p></li>
+<li><p>or the returned value of <code class="code docutils literal notranslate"><span class="pre">error_fn(future.exception())</span></code></p></li>
+<li><p>or with the exception raised by <code class="xref py py-obj docutils literal notranslate"><span class="pre">future</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">fn</span></code> or <code class="xref py py-obj docutils literal notranslate"><span class="pre">error_fn</span></code>.</p></li>
 </ul>
 </dd>
 </dl>
