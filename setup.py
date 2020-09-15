@@ -15,7 +15,7 @@ def get_long_description():
 
 
 def get_install_requires():
-    return open("requirements.txt").readlines()
+    return open("requirements.in").readlines()
 
 
 setup(
