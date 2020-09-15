@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  python: rohanpm/python@1.2.0
+  python: rohanpm/python@1.3.0
 
 workflows:
   version: 2
@@ -30,22 +30,20 @@ workflows:
         filters:
           <<: *ci_filters
     - python/tox:
-        name: Python 3.7 tests
-        toxenv: py37
-        executor: python/python37
+        name: Python 3.8 tests
+        toxenv: py38
+        executor: python/python38
         persist_coverage: true
         filters:
           <<: *ci_filters
     - python/tox:
         name: "Reverse dependency tests: pubtools-pulplib"
         toxenv: revdep-pulplib
-        executor: python/python37
         filters:
           <<: *ci_filters
     - python/tox:
         name: "Reverse dependency tests: python-fastpurge"
         toxenv: revdep-fastpurge
-        executor: python/python37
         filters:
           <<: *ci_filters
     - python/tox:
@@ -76,7 +74,7 @@ workflows:
         test_reporter_id: d02a1b5b6e33a7225c7c9e39145d3e89dc984a56e465bac4f9d276bba6ee4b84
         requires:
         - Python 2.7 tests
-        - Python 3.7 tests
+        - Python 3.8 tests
         filters:
           <<: *ci_filters
     - python/release:
@@ -88,7 +86,7 @@ workflows:
         - Python 2.6 tests
         - Python 2.7 tests
         - Python 3.6 tests
-        - Python 3.7 tests
+        - Python 3.8 tests
         - "Reverse dependency tests: python-fastpurge"
         - "Reverse dependency tests: pubtools-pulplib"
         - Static checks
