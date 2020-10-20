@@ -44,11 +44,11 @@
 <p>Signature: <code class="code docutils literal notranslate"><span class="pre">Future&lt;X&gt;</span> <span class="pre">⟶</span> <span class="pre">Future&lt;X&gt;</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>future</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.8)"><em>Future</em></a>) – Any future.</p>
+<dd class="field-odd"><p><strong>future</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.9)"><em>Future</em></a>) – Any future.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><dl class="simple">
-<dt><a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a></dt><dd><p>A wrapped version of <code class="xref py py-obj docutils literal notranslate"><span class="pre">future</span></code> which cannot be cancelled.</p>
+<dt><a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a></dt><dd><p>A wrapped version of <code class="xref py py-obj docutils literal notranslate"><span class="pre">future</span></code> which cannot be cancelled.</p>
 </dd>
 </dl>
 </p>
@@ -72,8 +72,8 @@ behavior, such as <a class="reference internal" href="poll.html#more_executors.p
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>delegate</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor" title="(in Python v3.8)"><em>Executor</em></a>) – executor to which callables will be submitted</p></li>
-<li><p><strong>logger</strong> (<a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.8)"><em>Logger</em></a>) – a logger used for messages from this executor</p></li>
+<li><p><strong>delegate</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor" title="(in Python v3.9)"><em>Executor</em></a>) – executor to which callables will be submitted</p></li>
+<li><p><strong>logger</strong> (<a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.9)"><em>Logger</em></a>) – a logger used for messages from this executor</p></li>
 </ul>
 </dd>
 </dl>
@@ -82,7 +82,7 @@ behavior, such as <a class="reference internal" href="poll.html#more_executors.p
 <code class="sig-name descname">shutdown</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">wait</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.cancel_on_shutdown.CancelOnShutdownExecutor.shutdown" title="Permalink to this definition">¶</a></dt>
 <dd><p>Shut down the executor.</p>
 <p>All futures created by this executor which have not yet been completed
-will have <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future.cancel" title="(in Python v3.8)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">cancel()</span></code></a> invoked.</p>
+will have <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future.cancel" title="(in Python v3.9)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">cancel()</span></code></a> invoked.</p>
 <p>Note that there is no guarantee that the cancel will succeed, and only a single
 attempt is made to cancel any future.</p>
 </dd></dl>

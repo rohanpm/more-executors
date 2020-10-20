@@ -35,14 +35,14 @@
             
   <div class="section" id="asyncio-bridge-asyncioexecutor">
 <h1>asyncio bridge: <code class="docutils literal notranslate"><span class="pre">AsyncioExecutor</span></code><a class="headerlink" href="#asyncio-bridge-asyncioexecutor" title="Permalink to this headline">¶</a></h1>
-<p>AsyncioExecutor transforms <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#module-concurrent.futures" title="(in Python v3.8)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">concurrent.futures</span></code></a> futures into
-<a class="reference external" href="https://docs.python.org/3/library/asyncio.html#module-asyncio" title="(in Python v3.8)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">asyncio</span></code></a> futures.</p>
+<p>AsyncioExecutor transforms <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#module-concurrent.futures" title="(in Python v3.9)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">concurrent.futures</span></code></a> futures into
+<a class="reference external" href="https://docs.python.org/3/library/asyncio.html#module-asyncio" title="(in Python v3.9)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">asyncio</span></code></a> futures.</p>
 <dl class="py class">
 <dt id="more_executors.asyncio.AsyncioExecutor">
 <em class="property">class </em><code class="sig-prename descclassname">more_executors.asyncio.</code><code class="sig-name descname">AsyncioExecutor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">delegate</span></em>, <em class="sig-param"><span class="n">loop</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">logger</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.asyncio.AsyncioExecutor" title="Permalink to this definition">¶</a></dt>
 <dd><p>An executor which delegates to another executor while converting
-returned futures into instances of <a class="reference external" href="https://docs.python.org/3/library/asyncio-future.html#asyncio.Future" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">asyncio.Future</span></code></a>.</p>
-<p>Note that since this class produces <a class="reference external" href="https://docs.python.org/3/library/asyncio.html#module-asyncio" title="(in Python v3.8)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">asyncio</span></code></a> rather than <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#module-concurrent.futures" title="(in Python v3.8)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">concurrent.futures</span></code></a>
+returned futures into instances of <a class="reference external" href="https://docs.python.org/3/library/asyncio-future.html#asyncio.Future" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">asyncio.Future</span></code></a>.</p>
+<p>Note that since this class produces <a class="reference external" href="https://docs.python.org/3/library/asyncio.html#module-asyncio" title="(in Python v3.9)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">asyncio</span></code></a> rather than <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#module-concurrent.futures" title="(in Python v3.9)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">concurrent.futures</span></code></a>
 future objects, AsyncioExecutor instances themselves cannot be used
 as a delegate executor of other executor instances within this library.</p>
 <div class="versionadded">
@@ -51,10 +51,10 @@ as a delegate executor of other executor instances within this library.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>delegate</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor" title="(in Python v3.8)"><em>Executor</em></a>) – executor to which callables will be submitted</p></li>
-<li><p><strong>loop</strong> (<a class="reference external" href="https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.AbstractEventLoop" title="(in Python v3.8)"><em>AbstractEventLoop</em></a>) – asyncio event loop used to wrap futures; if omitted, the default
+<li><p><strong>delegate</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor" title="(in Python v3.9)"><em>Executor</em></a>) – executor to which callables will be submitted</p></li>
+<li><p><strong>loop</strong> (<a class="reference external" href="https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.AbstractEventLoop" title="(in Python v3.9)"><em>AbstractEventLoop</em></a>) – asyncio event loop used to wrap futures; if omitted, the default
 event loop is used.</p></li>
-<li><p><strong>logger</strong> (<a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.8)"><em>Logger</em></a>) – a logger used for messages from this executor</p></li>
+<li><p><strong>logger</strong> (<a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.9)"><em>Logger</em></a>) – a logger used for messages from this executor</p></li>
 </ul>
 </dd>
 </dl>
@@ -65,8 +65,8 @@ event loop is used.</p></li>
 <em class="property">classmethod </em><code class="sig-prename descclassname">Executors.</code><code class="sig-name descname">with_asyncio</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">executor</span></em>, <em class="sig-param"><span class="n">loop</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">logger</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.Executors.with_asyncio" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>a new executor which returns <a class="reference external" href="https://docs.python.org/3/library/asyncio-future.html#asyncio.Future" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">asyncio.Future</span></code></a> instances
-rather than <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">concurrent.futures.Future</span></code></a> instances, i.e. may be used
+<dd class="field-odd"><p>a new executor which returns <a class="reference external" href="https://docs.python.org/3/library/asyncio-future.html#asyncio.Future" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">asyncio.Future</span></code></a> instances
+rather than <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">concurrent.futures.Future</span></code></a> instances, i.e. may be used
 with the <cite>await</cite> keyword and coroutines.</p>
 </dd>
 <dt class="field-even">Return type</dt>
@@ -76,7 +76,7 @@ with the <cite>await</cite> keyword and coroutines.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Since the other executors from <code class="xref py py-class docutils literal notranslate"><span class="pre">Executors</span></code> class are designed
-for use with <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">concurrent.futures.Future</span></code></a>, if an executor is being
+for use with <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">concurrent.futures.Future</span></code></a>, if an executor is being
 configured using chained <cite>with_*</cite> methods, this must be the last method called.</p>
 </div>
 <div class="admonition note">

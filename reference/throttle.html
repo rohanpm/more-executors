@@ -46,7 +46,7 @@ a limit on the number of futures running concurrently.</p>
 thread than the calling thread.</p></li>
 <li><p>Where <cite>count</cite> is used to initialize this executor, if there
 are already <cite>count</cite> futures submitted to the delegate executor and not
-yet <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future.done" title="(in Python v3.8)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">done()</span></code></a>, additional callables will
+yet <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future.done" title="(in Python v3.9)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">done()</span></code></a>, additional callables will
 be queued and only submitted to the delegate executor once there are
 less than <cite>count</cite> futures in progress.</p></li>
 </ul>
@@ -56,8 +56,8 @@ less than <cite>count</cite> futures in progress.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>delegate</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor" title="(in Python v3.8)"><em>Executor</em></a>) – an executor to which callables will be submitted</p></li>
-<li><p><strong>count</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a><em>, </em><em>callable</em>) – <dl>
+<li><p><strong>delegate</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor" title="(in Python v3.9)"><em>Executor</em></a>) – an executor to which callables will be submitted</p></li>
+<li><p><strong>count</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>callable</em>) – <dl>
 <dt>int:</dt><dd><p>maximum number of concurrently running futures.</p>
 </dd>
 <dt>callable:</dt><dd><p>a callable which returns an <code class="docutils literal notranslate"><span class="pre">int</span></code> (or <code class="docutils literal notranslate"><span class="pre">None</span></code>, to indicate
@@ -71,7 +71,7 @@ to implement dynamic throttling.</p>
 </dd>
 </dl>
 </p></li>
-<li><p><strong>logger</strong> (<a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.8)"><em>Logger</em></a>) – a logger used for messages from this executor</p></li>
+<li><p><strong>logger</strong> (<a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.9)"><em>Logger</em></a>) – a logger used for messages from this executor</p></li>
 </ul>
 </dd>
 </dl>
