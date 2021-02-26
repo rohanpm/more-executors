@@ -1,0 +1,17 @@
+name: Prepare next release
+
+on:
+  push:
+    branches: [ master ]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: rohanpm/tagmunster@main
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          transformer: tagmunster-test
