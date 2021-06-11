@@ -8,27 +8,15 @@ workflows:
   ci-cd:
     jobs:
     - python/tox:
-        name: Python 2.6 tests
-        toxenv: py26
-        executor: python/python26
+        name: Python 2.7 tests
+        toxenv: py27
+        executor: python/python27
+        persist_coverage: true
         filters: &ci_filters
           branches:
             ignore: gh-pages
           tags:
             only: /^v.*/
-    - python/tox:
-        name: Python 2.7 tests
-        toxenv: py27
-        executor: python/python27
-        persist_coverage: true
-        filters:
-          <<: *ci_filters
-    - python/tox:
-        name: Python 3.6 tests
-        toxenv: py36
-        executor: python/python36
-        filters:
-          <<: *ci_filters
     - python/tox:
         name: Python 3.8 tests
         toxenv: py38
@@ -83,12 +71,8 @@ workflows:
         context: secrets
         # Only release if all tests passed
         requires:
-        - Python 2.6 tests
         - Python 2.7 tests
-        - Python 3.6 tests
         - Python 3.8 tests
-        - "Reverse dependency tests: python-fastpurge"
-        - "Reverse dependency tests: pubtools-pulplib"
         - Static checks
         - Build docs
         filters:
