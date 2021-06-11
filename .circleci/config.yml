@@ -25,16 +25,6 @@ workflows:
         filters:
           <<: *ci_filters
     - python/tox:
-        name: "Reverse dependency tests: pubtools-pulplib"
-        toxenv: revdep-pulplib
-        filters:
-          <<: *ci_filters
-    - python/tox:
-        name: "Reverse dependency tests: python-fastpurge"
-        toxenv: revdep-fastpurge
-        filters:
-          <<: *ci_filters
-    - python/tox:
         name: API compatibility check
         toxenv: pidiff
         filters:
