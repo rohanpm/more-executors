@@ -7,13 +7,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
     <title>Creating futures from values: f_return* &#8212; more-executors  documentation</title>
-    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Transforming futures: f_map, f_flat_map, MapExecutor, FlatMapExecutor" href="futures-map.html" />
@@ -37,8 +36,8 @@
   <section id="module-more_executors.futures">
 <span id="creating-futures-from-values-f-return"></span><h1>Creating futures from values: <code class="docutils literal notranslate"><span class="pre">f_return*</span></code><a class="headerlink" href="#module-more_executors.futures" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="more_executors.futures.f_return">
-<code class="sig-prename descclassname">more_executors.futures.</code><code class="sig-name descname">f_return</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.futures.f_return" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="more_executors.futures.f_return">
+<span class="sig-prename descclassname"><span class="pre">more_executors.futures.</span></span><span class="sig-name descname"><span class="pre">f_return</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.futures.f_return" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a future which provides the value <cite>x</cite>.</p>
 <p>Signature: <code class="code docutils literal notranslate"><span class="pre">A</span> <span class="pre">⟶</span> <span class="pre">Future&lt;A&gt;</span></code></p>
 <dl class="field-list simple">
@@ -62,8 +61,8 @@
 </dd></dl>
 
 <dl class="py function">
-<dt id="more_executors.futures.f_return_cancelled">
-<code class="sig-prename descclassname">more_executors.futures.</code><code class="sig-name descname">f_return_cancelled</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.futures.f_return_cancelled" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="more_executors.futures.f_return_cancelled">
+<span class="sig-prename descclassname"><span class="pre">more_executors.futures.</span></span><span class="sig-name descname"><span class="pre">f_return_cancelled</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.futures.f_return_cancelled" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p><dl class="simple">
@@ -79,8 +78,8 @@
 </dd></dl>
 
 <dl class="py function">
-<dt id="more_executors.futures.f_return_error">
-<code class="sig-prename descclassname">more_executors.futures.</code><code class="sig-name descname">f_return_error</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">traceback</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.futures.f_return_error" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="more_executors.futures.f_return_error">
+<span class="sig-prename descclassname"><span class="pre">more_executors.futures.</span></span><span class="sig-name descname"><span class="pre">f_return_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">traceback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.futures.f_return_error" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a future which returns/raises the exception <cite>x</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -130,7 +129,7 @@ which only exists on Python 2.</p>
 
 
 <h3>Navigation</h3>
-<p><span class="caption-text">Contents:</span></p>
+<p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../user-guide.html">User Guide</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../api-reference.html">Reference</a><ul class="current">

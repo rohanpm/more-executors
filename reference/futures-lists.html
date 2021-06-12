@@ -7,13 +7,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
     <title>Futures and sequences: f_traverse, f_sequence, f_zip &#8212; more-executors  documentation</title>
-    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="prev" title="Boolean operations: f_or, f_and" href="futures-bool.html" />
@@ -36,8 +35,8 @@
   <section id="module-more_executors.futures">
 <span id="futures-and-sequences-f-traverse-f-sequence-f-zip"></span><h1>Futures and sequences: <code class="docutils literal notranslate"><span class="pre">f_traverse</span></code>, <code class="docutils literal notranslate"><span class="pre">f_sequence</span></code>, <code class="docutils literal notranslate"><span class="pre">f_zip</span></code><a class="headerlink" href="#module-more_executors.futures" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="more_executors.futures.f_sequence">
-<code class="sig-prename descclassname">more_executors.futures.</code><code class="sig-name descname">f_sequence</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">futures</span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.futures.f_sequence" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="more_executors.futures.f_sequence">
+<span class="sig-prename descclassname"><span class="pre">more_executors.futures.</span></span><span class="sig-name descname"><span class="pre">f_sequence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">futures</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.futures.f_sequence" title="Permalink to this definition">¶</a></dt>
 <dd><p>Transform a list of futures into a future containing a list.</p>
 <p>Signature: <code class="code docutils literal notranslate"><span class="pre">list&lt;Future&lt;X&gt;&gt;</span> <span class="pre">⟶</span> <span class="pre">Future&lt;list&lt;X&gt;&gt;</span></code></p>
 <dl class="field-list simple">
@@ -67,8 +66,8 @@ Exceeding this limit may result in performance issues.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="more_executors.futures.f_traverse">
-<code class="sig-prename descclassname">more_executors.futures.</code><code class="sig-name descname">f_traverse</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fn</span></em>, <em class="sig-param"><span class="n">xs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.futures.f_traverse" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="more_executors.futures.f_traverse">
+<span class="sig-prename descclassname"><span class="pre">more_executors.futures.</span></span><span class="sig-name descname"><span class="pre">f_traverse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.futures.f_traverse" title="Permalink to this definition">¶</a></dt>
 <dd><p>Traverse over an iterable calling a future-returning function,
 and return a future holding the returned values as a list.</p>
 <p>Signature: <code class="code docutils literal notranslate"><span class="pre">fn&lt;A⟶Future&lt;B&gt;&gt;,</span> <span class="pre">iterable&lt;A&gt;</span> <span class="pre">⟶</span> <span class="pre">Future&lt;list&lt;B&gt;&gt;</span></code></p>
@@ -97,8 +96,8 @@ and return a future holding the returned values as a list.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="more_executors.futures.f_zip">
-<code class="sig-prename descclassname">more_executors.futures.</code><code class="sig-name descname">f_zip</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">fs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.futures.f_zip" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="more_executors.futures.f_zip">
+<span class="sig-prename descclassname"><span class="pre">more_executors.futures.</span></span><span class="sig-name descname"><span class="pre">f_zip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">fs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.futures.f_zip" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a new future holding the return values of any number of input futures.</p>
 <p>Signature: <code class="code docutils literal notranslate"><span class="pre">Future&lt;A&gt;[,</span> <span class="pre">Future&lt;B&gt;[,</span> <span class="pre">...]]</span> <span class="pre">⟶</span> <span class="pre">Future&lt;A[,</span> <span class="pre">B[,</span> <span class="pre">...]]&gt;</span></code></p>
 <dl class="field-list simple">
@@ -149,7 +148,7 @@ Exceeding this limit may result in performance issues.</p>
 
 
 <h3>Navigation</h3>
-<p><span class="caption-text">Contents:</span></p>
+<p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../user-guide.html">User Guide</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../api-reference.html">Reference</a><ul class="current">

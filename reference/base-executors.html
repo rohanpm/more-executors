@@ -7,13 +7,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
     <title>Base executors: thread_pool, process_pool, sync &#8212; more-executors  documentation</title>
-    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Retrying: RetryExecutor" href="retry.html" />
@@ -43,8 +42,8 @@
 include the <code class="xref py py-class docutils literal notranslate"><span class="pre">more_executors.Executors</span></code> <cite>with_*</cite> methods for
 <a class="reference internal" href="../user-guide.html#composing-executors"><span class="std std-ref">Composing executors</span></a>.</p>
 <dl class="py method">
-<dt id="more_executors.Executors.thread_pool">
-<em class="property">classmethod </em><code class="sig-prename descclassname">Executors.</code><code class="sig-name descname">thread_pool</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.Executors.thread_pool" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="more_executors.Executors.thread_pool">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-prename descclassname"><span class="pre">Executors.</span></span><span class="sig-name descname"><span class="pre">thread_pool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.Executors.thread_pool" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a thread pool executor.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -57,8 +56,8 @@ include the <code class="xref py py-class docutils literal notranslate"><span cl
 </dd></dl>
 
 <dl class="py method">
-<dt id="more_executors.Executors.process_pool">
-<em class="property">classmethod </em><code class="sig-prename descclassname">Executors.</code><code class="sig-name descname">process_pool</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.Executors.process_pool" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="more_executors.Executors.process_pool">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-prename descclassname"><span class="pre">Executors.</span></span><span class="sig-name descname"><span class="pre">process_pool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.Executors.process_pool" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a process pool executor.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -76,8 +75,8 @@ include the <code class="xref py py-class docutils literal notranslate"><span cl
 <p>SyncExecutor is a base executor which invokes any submitted callables
 immediately in the calling thread.</p>
 <dl class="py class">
-<dt id="more_executors.sync.SyncExecutor">
-<em class="property">class </em><code class="sig-prename descclassname">more_executors.sync.</code><code class="sig-name descname">SyncExecutor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">logger</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.sync.SyncExecutor" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="more_executors.sync.SyncExecutor">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">more_executors.sync.</span></span><span class="sig-name descname"><span class="pre">SyncExecutor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.sync.SyncExecutor" title="Permalink to this definition">¶</a></dt>
 <dd><p>An executor which immediately invokes all submitted callables.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -85,8 +84,8 @@ immediately in the calling thread.</p>
 </dd>
 </dl>
 <dl class="py method">
-<dt id="more_executors.sync.SyncExecutor.submit">
-<code class="sig-name descname">submit</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fn</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.sync.SyncExecutor.submit" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="more_executors.sync.SyncExecutor.submit">
+<span class="sig-name descname"><span class="pre">submit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fn</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.sync.SyncExecutor.submit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Immediately invokes <cite>fn(*args, **kwargs)</cite> and returns a future
 with the result (or exception).</p>
 </dd></dl>
@@ -94,8 +93,8 @@ with the result (or exception).</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="more_executors.Executors.sync">
-<em class="property">classmethod </em><code class="sig-prename descclassname">Executors.</code><code class="sig-name descname">sync</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">logger</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.Executors.sync" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="more_executors.Executors.sync">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-prename descclassname"><span class="pre">Executors.</span></span><span class="sig-name descname"><span class="pre">sync</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.Executors.sync" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a new synchronous executor.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -132,7 +131,7 @@ with the result (or exception).</p>
 
 
 <h3>Navigation</h3>
-<p><span class="caption-text">Contents:</span></p>
+<p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../user-guide.html">User Guide</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../api-reference.html">Reference</a><ul class="current">
