@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>User Guide &#8212; more-executors  documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -33,9 +34,9 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="user-guide">
+  <section id="user-guide">
 <h1>User Guide<a class="headerlink" href="#user-guide" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="base-executors">
+<section id="base-executors">
 <span id="id1"></span><h2>Base executors<a class="headerlink" href="#base-executors" title="Permalink to this headline">¶</a></h2>
 <p>These methods on the <code class="xref py py-class docutils literal notranslate"><span class="pre">more_executors.Executors</span></code> class
 create standalone <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>
@@ -59,8 +60,8 @@ to execute callables in the calling thread.</p>
     <span class="n">future</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">,</span> <span class="s1">&#39;https://github.com/rohanpm/more-executors&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="composing-executors">
+</section>
+<section id="composing-executors">
 <span id="id2"></span><h2>Composing executors<a class="headerlink" href="#composing-executors" title="Permalink to this headline">¶</a></h2>
 <p>Executors produced by this module can be customized by chaining a series of
 <cite>with_*</cite> methods. This may be used to compose different behaviors for specific
@@ -111,8 +112,8 @@ attempts).</p>
 retries. The throttling in this example has no effect, since a
 <a class="reference internal" href="reference/base-executors.html#more_executors.sync.SyncExecutor" title="more_executors.sync.SyncExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyncExecutor</span></code></a> is intrinsically throttled to
 a single pending future.</p>
-</div>
-<div class="section" id="composing-futures">
+</section>
+<section id="composing-futures">
 <h2>Composing futures<a class="headerlink" href="#composing-futures" title="Permalink to this headline">¶</a></h2>
 <p>A series of functions are provided for creating and composing
 <code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code> objects.  These functions
@@ -243,8 +244,8 @@ timeout has elapsed</p></td>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="usage-of-threads">
+</section>
+<section id="usage-of-threads">
 <h2>Usage of threads<a class="headerlink" href="#usage-of-threads" title="Permalink to this headline">¶</a></h2>
 <p>Several executors internally make use of threads. Thus, executors should be
 considered relatively heavyweight: creating dozens of executors within a
@@ -254,8 +255,8 @@ be invoked from any thread and should avoid any slow blocking operations.</p>
 <p>All provided executors are thread-safe with the exception of the
 <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor.shutdown" title="(in Python v3.9)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">shutdown()</span></code></a> method, which should be called
 from one thread only.</p>
-</div>
-<div class="section" id="executor-shutdown">
+</section>
+<section id="executor-shutdown">
 <h2>Executor shutdown<a class="headerlink" href="#executor-shutdown" title="Permalink to this headline">¶</a></h2>
 <p>Shutting down an executor will also shut down all wrapped executors.</p>
 <p>In the example below, any threads created by the
@@ -295,8 +296,8 @@ executor. When this happens, it will no longer be possible for the garbage
 collector to clean up the executor’s resources automatically and a thread
 leak may occur. If in doubt, call
 <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor.shutdown" title="(in Python v3.9)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">shutdown()</span></code></a>.</p>
-</div>
-</div>
+</section>
+</section>
 
 
           </div>
@@ -319,7 +320,7 @@ leak may occur. If in doubt, call
 
 
 <h3>Navigation</h3>
-<p class="caption"><span class="caption-text">Contents:</span></p>
+<p><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">User Guide</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#base-executors">Base executors</a></li>

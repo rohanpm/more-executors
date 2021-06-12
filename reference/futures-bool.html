@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Boolean operations: f_or, f_and &#8212; more-executors  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -33,17 +34,17 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="boolean-operations-f-or-f-and">
+  <section id="boolean-operations-f-or-f-and">
 <h1>Boolean operations: <code class="docutils literal notranslate"><span class="pre">f_or</span></code>, <code class="docutils literal notranslate"><span class="pre">f_and</span></code><a class="headerlink" href="#boolean-operations-f-or-f-and" title="Permalink to this headline">¶</a></h1>
 <p>Provides <code class="docutils literal notranslate"><span class="pre">AND</span></code> and <code class="docutils literal notranslate"><span class="pre">OR</span></code> operations over futures.</p>
-<div class="section" id="short-circuit">
+<section id="short-circuit">
 <h2>Short circuit<a class="headerlink" href="#short-circuit" title="Permalink to this headline">¶</a></h2>
 <p>Much like a standard boolean expression, these operations are short-circuited
 where possible.</p>
 <p>Futures which are no longer needed in order to calculate the output value will
 be canceled. In cases where this is not appropriate, consider wrapping the
 input(s) in <a class="reference internal" href="cancel.html#more_executors.futures.f_nocancel" title="more_executors.futures.f_nocancel"><code class="xref py py-meth docutils literal notranslate"><span class="pre">f_nocancel()</span></code></a>.</p>
-<div class="section" id="example">
+<section id="example">
 <h3>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h3>
 <p>Consider this Python statement:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">result</span> <span class="o">=</span> <span class="n">x</span><span class="p">()</span> <span class="ow">or</span> <span class="n">y</span><span class="p">()</span> <span class="ow">or</span> <span class="n">z</span><span class="p">()</span>
@@ -136,9 +137,9 @@ Exceeding this limit may result in performance issues.</p>
 </div>
 </dd></dl>
 
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
           </div>
@@ -161,7 +162,7 @@ Exceeding this limit may result in performance issues.</p>
 
 
 <h3>Navigation</h3>
-<p class="caption"><span class="caption-text">Contents:</span></p>
+<p><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../user-guide.html">User Guide</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../api-reference.html">Reference</a><ul class="current">
