@@ -71,10 +71,9 @@ importlib-metadata==1.7.0 \
 iniconfig==1.1.1 \
     --hash=sha256:011e24c64b7f47f6ebd835bb12a743f2fbe9a26d4cecaa7f53bc4f35ee9da8b3 \
     --hash=sha256:bc3af051d7d14b2ee5ef9969666def0cd1a000e121eaea580d4a313df4b37f32
-isort==5.5.2 \
-    --hash=sha256:171c5f365791073426b5ed3a156c2081a47f88c329161fd28228ff2da4c97ddb \
-    --hash=sha256:ba91218eee31f1e300ecc079ef0c524cea3fc41bfbb979cbdf5fd3a889e3cfed \
-    # via pylint
+isort==5.8.0 \
+    --hash=sha256:0a943902919f65c5684ac4e0154b1ad4fac6dcaa5d9f3426b732f1c8b5419be6 \
+    --hash=sha256:2bb1680aad211e3c9944dbce1d4ba09a989f04e238296c87fe2139faa26d655d
 lazy-object-proxy==1.4.3 \
     --hash=sha256:0c4b206227a8097f05c4dbdd323c50edf81f15db3b8dc064d08c62d37e1a504d \
     --hash=sha256:194d092e6f246b906e8f70884e620e459fc54db3259e60cf69a4d66c3fda3449 \
