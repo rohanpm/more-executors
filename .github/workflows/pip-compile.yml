@@ -1,7 +1,8 @@
 on:
   workflow_dispatch: {}
-#  schedule:
-#    - cron: 0 0 * * *
+  schedule:
+  - cron: '40 5 * * *'
+
 
 name: pip-compile
 jobs:
@@ -18,13 +19,14 @@ jobs:
        with:
          EXECUTE_COMMANDS: |
            pip install pip-tools
-           pip-compile --generate-hashes docs-requirements.in
-           pip-compile --generate-hashes pidiff-requirements.in
-           pip-compile --generate-hashes requirements.in
-           pip-compile --generate-hashes test-requirements.in
+           pip-compile -U --generate-hashes docs-requirements.in
+           pip-compile -U --generate-hashes pidiff-requirements.in
+           pip-compile -U --generate-hashes requirements.in
+           pip-compile -U --generate-hashes test-requirements.in
          COMMIT_MESSAGE: 'chore: scheduled pip-compile'
          COMMIT_NAME: 'GitHub Actions'
          COMMIT_EMAIL: 'noreply@github.com'
-         PR_BRANCH_NAME: 'pip-compile-${PR_ID}'
+         PR_BRANCH_PREFIX: deps
+         PR_BRANCH_NAME: 'pip-compile'
          PR_TITLE: 'chore: scheduled pip-compile'
          AUTO_MERGE_THRESHOLD_DAYS: 3
