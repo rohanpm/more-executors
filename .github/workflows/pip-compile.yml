@@ -9,10 +9,15 @@ jobs:
    name: pip-compile
    runs-on: ubuntu-latest
    steps:
+     - name: Setup Python
+       uses: actions/setup-python@v2
+       with:
+         python-version: 3.8
      - name: pip-compile
        uses: technote-space/create-pr-action@v2
        with:
          EXECUTE_COMMANDS: |
+           pip install pip-tools
            pip-compile --generate-hashes docs-requirements.in
            pip-compile --generate-hashes pidiff-requirements.in
            pip-compile --generate-hashes requirements.in
