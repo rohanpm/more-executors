@@ -1,0 +1,25 @@
+on:
+  workflow_dispatch: {}
+#  schedule:
+#    - cron: 0 0 * * *
+
+name: pip-compile
+jobs:
+ pip_compile:
+   name: pip-compile
+   runs-on: ubuntu-latest
+   steps:
+     - name: pip-compile
+       uses: technote-space/create-pr-action@v2
+       with:
+         EXECUTE_COMMANDS: |
+           pip-compile --generate-hashes docs-requirements.in
+           pip-compile --generate-hashes pidiff-requirements.in
+           pip-compile --generate-hashes requirements.in
+           pip-compile --generate-hashes test-requirements.in
+         COMMIT_MESSAGE: 'chore: scheduled pip-compile'
+         COMMIT_NAME: 'GitHub Actions'
+         COMMIT_EMAIL: 'noreply@github.com'
+         PR_BRANCH_NAME: 'pip-compile-${PR_ID}'
+         PR_TITLE: 'chore: scheduled pip-compile'
+         AUTO_MERGE_THRESHOLD_DAYS: 3
