@@ -26,7 +26,15 @@ jobs:
          COMMIT_MESSAGE: 'chore: scheduled pip-compile'
          COMMIT_NAME: 'GitHub Actions'
          COMMIT_EMAIL: 'noreply@github.com'
-         PR_BRANCH_PREFIX: deps
+         PR_BRANCH_PREFIX: deps/
          PR_BRANCH_NAME: 'pip-compile'
          PR_TITLE: 'chore: scheduled pip-compile'
          AUTO_MERGE_THRESHOLD_DAYS: 3
+         PR_BODY: |-
+           ## Update dependencies
+
+           This is a scheduled update of Python dependencies within this
+           repo managed by pip-compile.
+
+           This change will be submitted automatically after 3 days if
+           all checks have succeeded.
