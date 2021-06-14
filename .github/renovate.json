@@ -1,8 +1,0 @@
-{
-  "extends": [
-    "config:base"
-  ],
-  "automerge": true,
-  "stabilityDays": 3,
-  "groupName": "deps"
-}
