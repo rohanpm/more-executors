@@ -7,9 +7,10 @@ from concurrent.futures import Future
 from .base import chain_cancel, weak_callback
 from ..common import copy_future_exception
 from .check import ensure_futures
+from ..logwrap import LogWrapper
 
 
-LOG = logging.getLogger("more_executors.futures")
+LOG = LogWrapper(logging.getLogger("more_executors.futures"))
 
 
 class BoolOperation(object):

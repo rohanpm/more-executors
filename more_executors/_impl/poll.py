@@ -7,6 +7,7 @@ from .common import _Future, MAX_TIMEOUT, copy_exception, copy_future_exception
 from .wrap import CanCustomizeBind
 from .helpers import executor_loop
 from .event import get_event, is_shutdown
+from .logwrap import LogWrapper
 
 
 class PollFuture(_Future):
@@ -150,7 +151,7 @@ class PollExecutor(CanCustomizeBind, Executor):
             logger (~logging.Logger):
                 a logger used for messages from this executor
         """
-        self._log = logger if logger else logging.getLogger("PollExecutor")
+        self._log = LogWrapper(logger if logger else logging.getLogger("PollExecutor"))
         self._delegate = delegate
         self._default_interval = default_interval
         self._poll_fn = poll_fn

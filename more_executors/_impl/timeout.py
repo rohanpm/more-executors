@@ -11,8 +11,9 @@ from .common import MAX_TIMEOUT
 from .wrap import CanCustomizeBind
 from .helpers import executor_loop
 from .event import get_event, is_shutdown
+from .logwrap import LogWrapper
 
-LOG = logging.getLogger("TimeoutExecutor")
+LOG = LogWrapper(logging.getLogger("TimeoutExecutor"))
 
 Job = namedtuple("Job", ["future", "delegate_future", "deadline"])
 

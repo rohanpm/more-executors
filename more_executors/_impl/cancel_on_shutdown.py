@@ -3,6 +3,7 @@ from threading import RLock
 import logging
 
 from .wrap import CanCustomizeBind
+from .logwrap import LogWrapper
 
 
 class CancelOnShutdownExecutor(CanCustomizeBind, Executor):
@@ -43,7 +44,9 @@ class CancelOnShutdownExecutor(CanCustomizeBind, Executor):
             logger (~logging.Logger):
                 a logger used for messages from this executor
         """
-        self._log = logger if logger else logging.getLogger("CancelOnShutdownExecutor")
+        self._log = LogWrapper(
+            logger if logger else logging.getLogger("CancelOnShutdownExecutor")
+        )
         self._delegate = delegate
         self._futures = set()
         self._lock = RLock()

@@ -17,6 +17,7 @@ from .bool_utils import (
 )
 from ..util import assert_in_traceback
 
+
 LOG = logging.getLogger("test_or")
 
 

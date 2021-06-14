@@ -13,6 +13,11 @@ from version 1.20.0 onwards.
 - Support the `cancel_futures` argument introduced onto `Executor.shutdown`
   in Python 3.9.
 
+### Changed
+- `DEBUG` log events are now only generated if the `MORE_EXECUTORS_DEBUG`
+  environment variable is set to `1`. This change was made due to the extreme
+  verbosity of debug logs if executors are used heavily.
+
 ## [2.5.1] - 2020-06-01
 
 ### Fixed

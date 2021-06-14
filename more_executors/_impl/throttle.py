@@ -10,6 +10,7 @@ from .wrap import CanCustomizeBind
 from .map import MapFuture
 from .helpers import executor_loop
 from .event import get_event, is_shutdown
+from .logwrap import LogWrapper
 
 
 class ThrottleFuture(MapFuture):
@@ -84,7 +85,9 @@ class ThrottleExecutor(CanCustomizeBind, Executor):
             logger (~logging.Logger):
                 a logger used for messages from this executor
         """
-        self._log = logger if logger else logging.getLogger("ThrottleExecutor")
+        self._log = LogWrapper(
+            logger if logger else logging.getLogger("ThrottleExecutor")
+        )
         self._delegate = delegate
         self._to_submit = deque()
         self._lock = Lock()
