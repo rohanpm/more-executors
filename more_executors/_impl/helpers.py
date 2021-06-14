@@ -1,7 +1,9 @@
 import logging
 from functools import wraps
 
-LOG = logging.getLogger(__name__)
+from .logwrap import LogWrapper
+
+LOG = LogWrapper(logging.getLogger(__name__))
 
 
 def executor_loop(fn):

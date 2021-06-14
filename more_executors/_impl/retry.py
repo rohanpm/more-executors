@@ -9,6 +9,7 @@ from .common import _Future, MAX_TIMEOUT, copy_future_exception
 from .wrap import CanCustomizeBind
 from .helpers import executor_loop
 from .event import get_event, is_shutdown
+from .logwrap import LogWrapper
 
 
 class RetryPolicy(object):
@@ -202,7 +203,7 @@ class RetryExecutor(CanCustomizeBind, Executor):
             logger (~logging.Logger):
                 a logger used for messages from this executor
         """
-        self._log = logger if logger else logging.getLogger("RetryExecutor")
+        self._log = LogWrapper(logger if logger else logging.getLogger("RetryExecutor"))
         self._delegate = delegate
         self._default_retry_policy = retry_policy or ExceptionRetryPolicy(**kwargs)
         self._jobs = []

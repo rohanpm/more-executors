@@ -3,8 +3,10 @@ from concurrent.futures import Future
 from threading import RLock
 import logging
 
+from .logwrap import LogWrapper
 
-LOG = logging.getLogger("more_executors._Future")
+
+LOG = LogWrapper(logging.getLogger("more_executors._Future"))
 
 # This value should be used for any blocking waits likely to be invoked
 # from the main thread, where blocking forever is technically appropriate.
