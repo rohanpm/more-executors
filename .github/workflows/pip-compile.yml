@@ -1,7 +1,8 @@
 on:
   workflow_dispatch: {}
   schedule:
-  - cron: '40 5 * * *'
+  # Sunday
+  - cron: '20 20 * * 0'
 
 name: "pip-compile: create PR"
 jobs:
@@ -34,8 +35,8 @@ jobs:
            This is a scheduled update of Python dependencies within this
            repo managed by pip-compile.
 
-           This change will be submitted automatically after 3 days if
-           all checks have succeeded.
+           This change will be approved automatically and merged within
+           a few days if all checks have succeeded.
      - name: Look up pull request
        uses: juliangruber/find-pull-request-action@v1
        id: find-pull-request

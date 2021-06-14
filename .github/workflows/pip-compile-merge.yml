@@ -1,6 +1,8 @@
 on:
   workflow_dispatch: {}
-  # TODO: add cron
+  schedule:
+  # Tuesday
+  - cron: '20 20 * * 2'
 
 name: "pip-compile: merge PR"
 jobs:
