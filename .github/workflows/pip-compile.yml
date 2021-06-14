@@ -29,7 +29,6 @@ jobs:
          PR_BRANCH_PREFIX: deps/
          PR_BRANCH_NAME: 'pip-compile'
          PR_TITLE: 'chore: scheduled pip-compile'
-         AUTO_MERGE_THRESHOLD_DAYS: 3
          PR_BODY: |-
            ## Update dependencies
 
@@ -38,3 +37,17 @@ jobs:
 
            This change will be submitted automatically after 3 days if
            all checks have succeeded.
+     - name: Look up pull request
+       uses: juliangruber/find-pull-request-action@v1
+       id: find-pull-request
+       with:
+         branch: deps/pip-compile
+     - run: echo "Pull Request ${number} (${sha})"
+       env:
+         number: ${{ steps.find-pull-request.outputs.number }}
+         sha: ${{ steps.find-pull-request.outputs.head-sha }}
+     - name: Approve Pull Request
+       uses: juliangruber/approve-pull-request-action@v1
+       with:
+         github-token: ${{ secrets.GITHUB_TOKEN }}
+         number: ${{ steps.find-pull-request.outputs.number }}
