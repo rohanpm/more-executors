@@ -20,7 +20,7 @@ def get_install_requires():
 
 setup(
     name="more-executors",
-    version="2.5.1",
+    version="2.6.0",
     author="Rohan McGovern",
     author_email="rohan@mcgovern.id.au",
     packages=find_packages(exclude=["tests", "tests.*"]),

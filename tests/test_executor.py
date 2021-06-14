@@ -6,6 +6,7 @@ from functools import partial
 from random import randint
 import traceback
 from threading import RLock
+import sys
 from concurrent.futures import Executor, CancelledError, wait, FIRST_COMPLETED
 
 from six.moves.queue import Queue
@@ -260,7 +261,10 @@ def any_executor(request):
 
     if not failed_diff:
         try:
-            run_or_timeout(ex.shutdown, True)
+            kwargs = {}
+            if sys.version_info > (3, 9):
+                kwargs['cancel_futures'] = True
+            run_or_timeout(ex.shutdown, True, **kwargs)
             return
         except Exception:
             print("Shutdown failed")

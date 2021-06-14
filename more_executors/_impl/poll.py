@@ -236,10 +236,10 @@ class PollExecutor(CanCustomizeBind, Executor):
             # depending on the poll also immediately fails.
             [d.yield_exception(e) for d in descriptors]
 
-    def shutdown(self, wait=True):
+    def shutdown(self, wait=True, **_kwargs):
         self._shutdown = True
         self._poll_event.set()
-        self._delegate.shutdown(wait)
+        self._delegate.shutdown(wait, **_kwargs)
         if wait:
             self._log.debug("Join poll thread...")
             self._poll_thread.join(MAX_TIMEOUT)

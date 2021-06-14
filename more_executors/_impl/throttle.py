@@ -112,10 +112,10 @@ class ThrottleExecutor(CanCustomizeBind, Executor):
         self._event.set()
         return out
 
-    def shutdown(self, wait=True):
+    def shutdown(self, wait=True, **_kwargs):
         self._log.debug("Shutting down")
         self._shutdown = True
-        self._delegate.shutdown(wait)
+        self._delegate.shutdown(wait, **_kwargs)
         self._event.set()
         if wait:
             self._thread.join(MAX_TIMEOUT)
