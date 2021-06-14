@@ -52,5 +52,5 @@ class AsyncioExecutor(Executor):
         future = self._delegate.submit(fn, *args, **kwargs)
         return asyncio.wrap_future(future, loop=loop)
 
-    def shutdown(self, wait=True):
-        self._delegate.shutdown(wait)
+    def shutdown(self, wait=True, **_kwargs):
+        self._delegate.shutdown(wait, **_kwargs)

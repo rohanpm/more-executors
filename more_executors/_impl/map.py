@@ -138,8 +138,8 @@ class MapExecutor(CanCustomizeBind, Executor):
         self._fn = fn
         self._error_fn = kwargs.get("error_fn")
 
-    def shutdown(self, wait=True):
-        self._delegate.shutdown(wait)
+    def shutdown(self, wait=True, **_kwargs):
+        self._delegate.shutdown(wait, **_kwargs)
 
     def submit(self, *args, **kwargs):  # pylint: disable=arguments-differ
         inner_f = self._delegate.submit(*args, **kwargs)

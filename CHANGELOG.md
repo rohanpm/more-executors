@@ -9,6 +9,10 @@ from version 1.20.0 onwards.
 
 - n/a
 
+### Added
+- Support the `cancel_futures` argument introduced onto `Executor.shutdown`
+  in Python 3.9.
+
 ## [2.5.1] - 2020-06-01
 
 ### Fixed

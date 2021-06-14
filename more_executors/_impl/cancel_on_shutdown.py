@@ -11,6 +11,26 @@ class CancelOnShutdownExecutor(CanCustomizeBind, Executor):
 
     This class is useful in conjunction with executors having custom cancel
     behavior, such as :class:`~more_executors.poll.PollExecutor`.
+
+    .. note::
+        From Python 3.9 onwards, the standard
+        :meth:`~concurrent.futures.Executor.shutdown` method includes a
+        ``cancel_futures`` parameter which can be used to cancel futures
+        on shutdown.
+
+        These two approaches of cancelling futures on shutdown have the
+        following differences:
+
+        - ``cancel_futures=True`` will only cancel futures which have not
+          yet started running.
+        - ``CancelOnShutdownExecutor`` will attempt to cancel *all* incomplete
+          futures, including those which are running.
+
+        If you're using other executors from this library and you want to
+        ensure futures are cancelled on shutdown, ``CancelOnShutdownExecutor``
+        should be preferred because several of the executor classes in this
+        library do support cancellation of running futures (unlike the executors
+        in the standard library).
     """
 
     def __init__(self, delegate, logger=None):
@@ -29,7 +49,7 @@ class CancelOnShutdownExecutor(CanCustomizeBind, Executor):
         self._lock = RLock()
         self._shutdown = False
 
-    def shutdown(self, wait=True):
+    def shutdown(self, wait=True, **_kwargs):
         """Shut down the executor.
 
         All futures created by this executor which have not yet been completed
@@ -48,7 +68,7 @@ class CancelOnShutdownExecutor(CanCustomizeBind, Executor):
             cancel = f.cancel()
             self._log.debug("Cancel %s: %s", f, cancel)
 
-        self._delegate.shutdown(wait)
+        self._delegate.shutdown(wait, **_kwargs)
 
     def submit(self, *args, **kwargs):  # pylint: disable=arguments-differ
         with self._lock:

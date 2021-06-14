@@ -80,11 +80,11 @@ class TimeoutExecutor(CanCustomizeBind, Executor):
         self._jobs_write.set()
         return future
 
-    def shutdown(self, wait=True):
+    def shutdown(self, wait=True, **_kwargs):
         self._log.debug("shutdown")
         self._shutdown = True
         self._jobs_write.set()
-        self._delegate.shutdown(wait)
+        self._delegate.shutdown(wait, **_kwargs)
         if wait:
             self._job_thread.join(MAX_TIMEOUT)
 
