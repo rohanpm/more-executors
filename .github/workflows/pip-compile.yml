@@ -3,8 +3,7 @@ on:
   schedule:
   - cron: '40 5 * * *'
 
-
-name: pip-compile
+name: "pip-compile: create PR"
 jobs:
  pip_compile:
    name: pip-compile
@@ -49,5 +48,5 @@ jobs:
      - name: Approve Pull Request
        uses: juliangruber/approve-pull-request-action@v1
        with:
-         github-token: ${{ secrets.GITHUB_TOKEN }}
+         github-token: ${{ secrets.APPROVAL_TOKEN }}
          number: ${{ steps.find-pull-request.outputs.number }}

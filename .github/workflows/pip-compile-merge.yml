@@ -2,10 +2,10 @@ on:
   workflow_dispatch: {}
   # TODO: add cron
 
-name: Automerge pip-compile PR
+name: "pip-compile: merge PR"
 jobs:
  pip_compile_merge:
-   name: pip-compile 
+   name: pip-compile automerge
    runs-on: ubuntu-latest
    steps:
     - name: Look up pull request
