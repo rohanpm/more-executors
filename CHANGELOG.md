@@ -9,6 +9,8 @@ from version 1.20.0 onwards.
 
 - n/a
 
+## [2.6.0] - 2021-06-19
+
 ### Added
 - Support the `cancel_futures` argument introduced onto `Executor.shutdown`
   in Python 3.9.
@@ -243,7 +245,8 @@ from version 1.20.0 onwards.
 - Minor improvements to logging
 
 
-[Unreleased]: https://github.com/rohanpm/more-executors/compare/v2.5.1...HEAD
+[Unreleased]: https://github.com/rohanpm/more-executors/compare/v2.6.0...HEAD
+[2.6.0]: https://github.com/rohanpm/more-executors/compare/v2.5.1...v2.6.0
 [2.5.1]: https://github.com/rohanpm/more-executors/compare/v2.5.0...v2.5.1
 [2.5.0]: https://github.com/rohanpm/more-executors/compare/v2.4.0...v2.5.0
 [2.4.0]: https://github.com/rohanpm/more-executors/compare/v2.3.1...v2.4.0
