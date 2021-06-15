@@ -16,7 +16,10 @@ from hamcrest import (
 )
 from pytest import fixture
 
-from mock import MagicMock, call
+try:
+    from unittest.mock import MagicMock, call
+except ImportError:
+    from mock import MagicMock, call
 
 from more_executors.retry import RetryExecutor, ExceptionRetryPolicy, RetryPolicy
 
