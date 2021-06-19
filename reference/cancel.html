@@ -69,6 +69,26 @@
 futures when the executor is shut down.</p>
 <p>This class is useful in conjunction with executors having custom cancel
 behavior, such as <a class="reference internal" href="poll.html#more_executors.poll.PollExecutor" title="more_executors.poll.PollExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">PollExecutor</span></code></a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>From Python 3.9 onwards, the standard
+<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor.shutdown" title="(in Python v3.9)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">shutdown()</span></code></a> method includes a
+<code class="docutils literal notranslate"><span class="pre">cancel_futures</span></code> parameter which can be used to cancel futures
+on shutdown.</p>
+<p>These two approaches of cancelling futures on shutdown have the
+following differences:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">cancel_futures=True</span></code> will only cancel futures which have not
+yet started running.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CancelOnShutdownExecutor</span></code> will attempt to cancel <em>all</em> incomplete
+futures, including those which are running.</p></li>
+</ul>
+<p>If you’re using other executors from this library and you want to
+ensure futures are cancelled on shutdown, <code class="docutils literal notranslate"><span class="pre">CancelOnShutdownExecutor</span></code>
+should be preferred because several of the executor classes in this
+library do support cancellation of running futures (unlike the executors
+in the standard library).</p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -79,7 +99,7 @@ behavior, such as <a class="reference internal" href="poll.html#more_executors.p
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="more_executors.cancel_on_shutdown.CancelOnShutdownExecutor.shutdown">
-<span class="sig-name descname"><span class="pre">shutdown</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wait</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.cancel_on_shutdown.CancelOnShutdownExecutor.shutdown" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">shutdown</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wait</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">_kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.cancel_on_shutdown.CancelOnShutdownExecutor.shutdown" title="Permalink to this definition">¶</a></dt>
 <dd><p>Shut down the executor.</p>
 <p>All futures created by this executor which have not yet been completed
 will have <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future.cancel" title="(in Python v3.9)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">cancel()</span></code></a> invoked.</p>
