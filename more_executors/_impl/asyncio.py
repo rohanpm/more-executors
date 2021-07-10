@@ -1,6 +1,8 @@
 from concurrent.futures import Executor
 import asyncio
 
+from .metrics import metrics
+
 
 class AsyncioExecutor(Executor):
     """An executor which delegates to another executor while converting
@@ -13,7 +15,7 @@ class AsyncioExecutor(Executor):
     .. versionadded:: 1.7.0
     """
 
-    def __init__(self, delegate, loop=None, logger=None):
+    def __init__(self, delegate, loop=None, logger=None, name="default"):
         """
         Parameters:
 
@@ -26,9 +28,18 @@ class AsyncioExecutor(Executor):
 
             logger (~logging.Logger):
                 a logger used for messages from this executor
+
+            name (str):
+                a name for this executor
+
+        .. versionchanged:: 2.7.0
+            Introduced ``name``.
         """
         self._delegate = delegate
         self._loop = loop
+        self._name = name
+        metrics.EXEC_TOTAL.labels(type="asyncio", executor=self._name).inc()
+        metrics.EXEC_INPROGRESS.labels(type="asyncio", executor=self._name).inc()
 
     def submit(self, *args, **kwargs):  # pylint: disable=arguments-differ
         return self.submit_with_loop(self._loop, *args, **kwargs)
@@ -53,4 +64,5 @@ class AsyncioExecutor(Executor):
         return asyncio.wrap_future(future, loop=loop)
 
     def shutdown(self, wait=True, **_kwargs):
+        metrics.EXEC_INPROGRESS.labels(type="asyncio", executor=self._name).dec()
         self._delegate.shutdown(wait, **_kwargs)

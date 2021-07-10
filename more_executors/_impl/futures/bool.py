@@ -8,7 +8,7 @@ from .base import chain_cancel, weak_callback
 from ..common import copy_future_exception
 from .check import ensure_futures
 from ..logwrap import LogWrapper
-
+from ..metrics import track_future
 
 LOG = LogWrapper(logging.getLogger("more_executors.futures"))
 
@@ -106,6 +106,7 @@ def f_or(f, *fs):
         return f
 
     oper = OrOperation([f] + list(fs))
+    track_future(oper.out, type="or")
     return oper.out
 
 
@@ -165,4 +166,5 @@ def f_and(f, *fs):
         return f
 
     oper = AndOperation([f] + list(fs))
+    track_future(oper.out, type="and")
     return oper.out

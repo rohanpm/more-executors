@@ -11,6 +11,8 @@ from .helpers import executor_loop
 from .event import get_event, is_shutdown
 from .logwrap import LogWrapper
 
+from .metrics import metrics, track_future
+
 
 class RetryPolicy(object):
     """Instances of this class may be supplied to :class:`RetryExecutor`
@@ -188,7 +190,9 @@ class RetryExecutor(CanCustomizeBind, Executor):
     - This executor is thread-safe.
     """
 
-    def __init__(self, delegate, retry_policy=None, logger=None, **kwargs):
+    def __init__(
+        self, delegate, retry_policy=None, logger=None, name="default", **kwargs
+    ):
         """
         Parameters:
 
@@ -202,27 +206,38 @@ class RetryExecutor(CanCustomizeBind, Executor):
 
             logger (~logging.Logger):
                 a logger used for messages from this executor
+
+            name (str):
+                a name for this executor
+
+        .. versionchanged:: 2.7.0
+            Introduced ``name``.
         """
         self._log = LogWrapper(logger if logger else logging.getLogger("RetryExecutor"))
         self._delegate = delegate
         self._default_retry_policy = retry_policy or ExceptionRetryPolicy(**kwargs)
         self._jobs = []
         self._submit_event = get_event()
+        self._name = name
 
         event = self._submit_event
         self_ref = weakref.ref(self, lambda _: event.set())
         self._submit_thread = Thread(
-            name="RetryExecutor", target=_submit_loop, args=(self_ref,)
+            name="RetryExecutor-%s" % name, target=_submit_loop, args=(self_ref,)
         )
         self._submit_thread.daemon = True
 
         self._shutdown = False
         self._lock = RLock()
 
+        metrics.EXEC_INPROGRESS.labels(executor=self._name, type="retry").inc()
+        metrics.EXEC_TOTAL.labels(executor=self._name, type="retry").inc()
+
         self._submit_thread.start()
 
     def shutdown(self, wait=True, **_kwargs):
         self._log.debug("Shutting down.")
+        metrics.EXEC_INPROGRESS.labels(executor=self._name, type="retry").dec()
         self._shutdown = True
         self._wake_thread()
         self._delegate.shutdown(wait, **_kwargs)
@@ -241,6 +256,7 @@ class RetryExecutor(CanCustomizeBind, Executor):
             retry_policy (RetryPolicy): a policy which is used for this call only
         """
         future = RetryFuture(self)
+        track_future(future, type="retry", executor=self._name)
 
         job = RetryJob(retry_policy, None, future, 0, monotonic(), fn, args, kwargs)
         self._append_job(job)
@@ -293,6 +309,9 @@ class RetryExecutor(CanCustomizeBind, Executor):
                     )
                     return
 
+                if job.attempt != 0:
+                    metrics.RETRY_TOTAL.labels(executor=self._name).inc()
+
                 delegate_future = self._delegate.submit(job.fn, *job.args, **job.kwargs)
                 job.future.delegate_future = delegate_future
 
@@ -316,10 +335,12 @@ class RetryExecutor(CanCustomizeBind, Executor):
         with self._lock:
             for idx, pending in enumerate(self._jobs):
                 if pending is job:
+                    metrics.RETRY_QUEUE.labels(executor=self._name).dec()
                     return self._jobs.pop(idx)
 
     def _append_job(self, job):
         with self._lock:
+            metrics.RETRY_QUEUE.labels(executor=self._name).inc()
             self._jobs.append(job)
 
     def _retry(self, job, sleep_time):
@@ -327,6 +348,7 @@ class RetryExecutor(CanCustomizeBind, Executor):
 
         with self._lock:
             self._pop_job(job)
+            metrics.RETRY_DELAY.labels(executor=self._name).inc(sleep_time)
             new_job = RetryJob(
                 job.policy,
                 None,

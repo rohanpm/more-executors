@@ -2,6 +2,7 @@
 
 from .base import wrap
 from .check import ensure_futures
+from ..metrics import track_future
 
 
 # for wrapping arguments.
@@ -31,7 +32,7 @@ def f_apply(future_fn, *future_args, **future_kwargs):
     .. versionadded:: 1.19.0
     """
     wrapped_args = _wrap_args(*future_args, **future_kwargs)
-    return _wrapped_f_apply(future_fn, wrapped_args)
+    return track_future(_wrapped_f_apply(future_fn, wrapped_args), type="apply")
 
 
 def _wrap_args(*future_args, **future_kwargs):

@@ -2,6 +2,7 @@ from concurrent.futures import Executor
 
 from .common import _Future, copy_exception, copy_future_exception
 from .wrap import CanCustomizeBind
+from .metrics import metrics, track_future
 
 
 def identity(x):
@@ -106,8 +107,17 @@ class MapExecutor(CanCustomizeBind, Executor):
     """
 
     _FUTURE_CLASS = MapFuture
+    _TYPE = "map"
 
-    def __init__(self, delegate, fn=None, logger=None, **kwargs):
+    @property
+    def _metric_exec_total(self):
+        return metrics.EXEC_TOTAL.labels(type=self._TYPE, executor=self._name)
+
+    @property
+    def _metric_exec_inprogress(self):
+        return metrics.EXEC_INPROGRESS.labels(type=self._TYPE, executor=self._name)
+
+    def __init__(self, delegate, fn=None, logger=None, name="default", **kwargs):
         """
         Arguments:
             delegate (~concurrent.futures.Executor):
@@ -130,17 +140,30 @@ class MapExecutor(CanCustomizeBind, Executor):
                 If omitted, no transformation occurs on ``exception()``.
             logger (~logging.Logger):
                 a logger used for messages from this executor
+            name (str):
+                a name for this executor
 
         .. versionchanged:: 2.2.0
-           Introduced ``error_fn``.
+            Introduced ``error_fn``.
+
+        .. versionchanged:: 2.7.0
+            Introduced ``name``.
         """
         self._delegate = delegate
         self._fn = fn
+        self._name = name
         self._error_fn = kwargs.get("error_fn")
+        self._metric_exec_total.inc()
+        self._metric_exec_inprogress.inc()
 
     def shutdown(self, wait=True, **_kwargs):
+        self._metric_exec_inprogress.dec()
         self._delegate.shutdown(wait, **_kwargs)
 
     def submit(self, *args, **kwargs):  # pylint: disable=arguments-differ
         inner_f = self._delegate.submit(*args, **kwargs)
-        return self._FUTURE_CLASS(inner_f, self._fn, self._error_fn)
+        return track_future(
+            self._FUTURE_CLASS(inner_f, self._fn, self._error_fn),
+            type=self._TYPE,
+            executor=self._name,
+        )

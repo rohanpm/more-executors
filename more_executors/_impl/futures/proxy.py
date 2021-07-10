@@ -5,6 +5,7 @@ import math
 from more_executors._impl.map import MapFuture
 from more_executors._impl.common import MAX_TIMEOUT
 from .check import ensure_future
+from ..metrics import track_future
 
 
 class ProxyFuture(MapFuture):
@@ -213,4 +214,6 @@ def f_proxy(f, **kwargs):
 
     .. versionadded:: 2.3.0
     """
-    return ProxyFuture(f, timeout=kwargs.pop("timeout", MAX_TIMEOUT))
+    return track_future(
+        ProxyFuture(f, timeout=kwargs.pop("timeout", MAX_TIMEOUT)), type="proxy"
+    )

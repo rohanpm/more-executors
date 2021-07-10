@@ -20,7 +20,7 @@ def get_install_requires():
 
 setup(
     name="more-executors",
-    version="2.6.0",
+    version="2.7.0",
     author="Rohan McGovern",
     author_email="rohan@mcgovern.id.au",
     packages=find_packages(exclude=["tests", "tests.*"]),
@@ -40,6 +40,7 @@ setup(
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
     install_requires=get_install_requires(),
+    extras_require={"prometheus": ["prometheus-client"]},
     project_urls={
         "Changelog": "https://github.com/rohanpm/more-executors/blob/master/CHANGELOG.md",
         "Documentation": "https://rohanpm.github.io/more-executors/",

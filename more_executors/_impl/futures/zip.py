@@ -6,6 +6,7 @@ from functools import partial
 from more_executors._impl.common import copy_future_exception
 from .base import f_return, chain_cancel, weak_callback
 from .check import ensure_futures
+from ..metrics import track_future
 
 
 class Zipper(object):
@@ -71,4 +72,4 @@ def f_zip(*fs):
     if not fs:
         return f_return(())
 
-    return Zipper(fs).out
+    return track_future(Zipper(fs).out, type="zip")

@@ -2,6 +2,7 @@
 
 from ..map import MapFuture
 from .check import ensure_future
+from ..metrics import track_future
 
 
 class NoCancelFuture(MapFuture):
@@ -25,4 +26,4 @@ def f_nocancel(future):
 
     .. versionadded:: 1.19.0
     """
-    return NoCancelFuture(future, lambda x: x)
+    return track_future(NoCancelFuture(future, lambda x: x), type="nocancel")

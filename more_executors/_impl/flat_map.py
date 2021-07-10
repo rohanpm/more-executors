@@ -54,3 +54,4 @@ class FlatMapExecutor(MapExecutor):
     """
 
     _FUTURE_CLASS = FlatMapFuture
+    _TYPE = "flat_map"

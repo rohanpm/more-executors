@@ -4,6 +4,7 @@ import logging
 
 from .wrap import CanCustomizeBind
 from .logwrap import LogWrapper
+from .metrics import metrics
 
 
 class CancelOnShutdownExecutor(CanCustomizeBind, Executor):
@@ -34,7 +35,7 @@ class CancelOnShutdownExecutor(CanCustomizeBind, Executor):
         in the standard library).
     """
 
-    def __init__(self, delegate, logger=None):
+    def __init__(self, delegate, logger=None, name="default"):
         """
         Parameters:
 
@@ -43,14 +44,25 @@ class CancelOnShutdownExecutor(CanCustomizeBind, Executor):
 
             logger (~logging.Logger):
                 a logger used for messages from this executor
+
+            name (str):
+                a name for this executor
+
+        .. versionchanged:: 2.7.0
+            Introduced ``name``.
         """
         self._log = LogWrapper(
             logger if logger else logging.getLogger("CancelOnShutdownExecutor")
         )
+        self._name = name
         self._delegate = delegate
         self._futures = set()
         self._lock = RLock()
         self._shutdown = False
+        metrics.EXEC_TOTAL.labels(type="cancel_on_shutdown", executor=self._name).inc()
+        metrics.EXEC_INPROGRESS.labels(
+            type="cancel_on_shutdown", executor=self._name
+        ).inc()
 
     def shutdown(self, wait=True, **_kwargs):
         """Shut down the executor.
@@ -65,11 +77,16 @@ class CancelOnShutdownExecutor(CanCustomizeBind, Executor):
             if self._shutdown:
                 return
             self._shutdown = True
+            metrics.EXEC_INPROGRESS.labels(
+                type="cancel_on_shutdown", executor=self._name
+            ).dec()
             futures = self._futures.copy()
 
         for f in futures:
             cancel = f.cancel()
             self._log.debug("Cancel %s: %s", f, cancel)
+            if cancel:
+                metrics.SHUTDOWN_CANCEL.labels(executor=self._name).inc()
 
         self._delegate.shutdown(wait, **_kwargs)
 

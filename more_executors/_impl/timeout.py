@@ -12,8 +12,10 @@ from .wrap import CanCustomizeBind
 from .helpers import executor_loop
 from .event import get_event, is_shutdown
 from .logwrap import LogWrapper
+from .metrics import metrics, track_future
 
 LOG = LogWrapper(logging.getLogger("TimeoutExecutor"))
+
 
 Job = namedtuple("Job", ["future", "delegate_future", "deadline"])
 
@@ -32,7 +34,7 @@ class TimeoutExecutor(CanCustomizeBind, Executor):
     .. versionadded:: 1.7.0
     """
 
-    def __init__(self, delegate, timeout, logger=None):
+    def __init__(self, delegate, timeout, logger=None, name="default"):
         """
         Parameters:
 
@@ -45,8 +47,15 @@ class TimeoutExecutor(CanCustomizeBind, Executor):
 
             logger (~logging.Logger):
                 a logger used for messages from this executor
+
+            name (str):
+                a name for this executor
+
+        .. versionchanged:: 2.7.0
+            Introduced ``name``.
         """
         self._log = logger if logger else LOG
+        self._name = name
         self._delegate = delegate
         self._timeout = timeout
         self._shutdown = False
@@ -58,10 +67,13 @@ class TimeoutExecutor(CanCustomizeBind, Executor):
         self_ref = weakref.ref(self, lambda _: event.set())
 
         self._job_thread = Thread(
-            name="TimeoutExecutor", target=self._job_loop, args=(self_ref,)
+            name="TimeoutExecutor-%s" % name, target=self._job_loop, args=(self_ref,)
         )
         self._job_thread.daemon = True
         self._job_thread.start()
+
+        metrics.EXEC_TOTAL.labels(type="timeout", executor=self._name).inc()
+        metrics.EXEC_INPROGRESS.labels(type="timeout", executor=self._name).inc()
 
     def submit(self, *args, **kwargs):  # pylint: disable=arguments-differ
         return self.submit_timeout(self._timeout, *args, **kwargs)
@@ -74,6 +86,8 @@ class TimeoutExecutor(CanCustomizeBind, Executor):
         """
         delegate_future = self._delegate.submit(fn, *args, **kwargs)
         future = MapFuture(delegate_future)
+        track_future(future, type="timeout", executor=self._name)
+
         future.add_done_callback(self._on_future_done)
         job = Job(future, delegate_future, monotonic() + timeout)
         with self._jobs_lock:
@@ -84,6 +98,7 @@ class TimeoutExecutor(CanCustomizeBind, Executor):
     def shutdown(self, wait=True, **_kwargs):
         self._log.debug("shutdown")
         self._shutdown = True
+        metrics.EXEC_INPROGRESS.labels(type="timeout", executor=self._name).dec()
         self._jobs_write.set()
         self._delegate.shutdown(wait, **_kwargs)
         if wait:
@@ -109,6 +124,8 @@ class TimeoutExecutor(CanCustomizeBind, Executor):
     def _do_cancel(self, job):
         self._log.debug("Attempting cancel: %s", job)
         cancel_result = job.future.cancel()
+        if cancel_result:
+            metrics.TIMEOUT.labels(executor=self._name).inc()
         self._log.debug("Cancel of %s resulted in %s", job, cancel_result)
 
     @classmethod
