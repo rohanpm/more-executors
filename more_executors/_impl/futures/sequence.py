@@ -6,6 +6,7 @@ from .zip import f_zip
 from .map import f_map
 
 from ..common import copy_exception
+from ..metrics import track_future
 
 
 def f_sequence(futures):
@@ -30,7 +31,7 @@ def f_sequence(futures):
 
     .. versionadded:: 1.19.0
     """
-    return f_traverse(lambda x: x, futures)
+    return track_future(f_traverse(lambda x: x, futures), type="sequence")
 
 
 def f_traverse(fn, xs):
@@ -62,4 +63,4 @@ def f_traverse(fn, xs):
         return future
 
     zipped = f_zip(*futures)
-    return f_map(zipped, list)
+    return track_future(f_map(zipped, list), type="traverse")

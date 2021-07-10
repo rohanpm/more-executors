@@ -51,4 +51,7 @@ def test_throttle():
 
 
 def test_with_throttle():
-    assert_that(Executors.sync().with_throttle(4), instance_of(ThrottleExecutor))
+    assert_that(
+        Executors.sync(name="throttle-test").with_throttle(4),
+        instance_of(ThrottleExecutor),
+    )

@@ -7,7 +7,10 @@ from version 1.20.0 onwards.
 
 ## [Unreleased]
 
-- n/a
+### Added
+- Introduced support for prometheus instrumentation.
+- All executors now accept a `name` argument. If given, the name is used
+  in prometheus metrics and in the name of any threads created by an executor.
 
 ## [2.6.0] - 2021-06-19
 

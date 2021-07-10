@@ -12,6 +12,8 @@ from .helpers import executor_loop
 from .event import get_event, is_shutdown
 from .logwrap import LogWrapper
 
+from .metrics import metrics, track_future
+
 
 class ThrottleFuture(MapFuture):
     def __init__(self, executor):
@@ -63,7 +65,7 @@ class ThrottleExecutor(CanCustomizeBind, Executor):
     .. versionadded:: 1.9.0
     """
 
-    def __init__(self, delegate, count, logger=None):
+    def __init__(self, delegate, count, logger=None, name="default"):
         """
         Parameters:
             delegate (~concurrent.futures.Executor):
@@ -84,10 +86,17 @@ class ThrottleExecutor(CanCustomizeBind, Executor):
 
             logger (~logging.Logger):
                 a logger used for messages from this executor
+
+            name (str):
+                a name for this executor
+
+        .. versionchanged:: 2.7.0
+            Introduced ``name``.
         """
         self._log = LogWrapper(
             logger if logger else logging.getLogger("ThrottleExecutor")
         )
+        self._name = name
         self._delegate = delegate
         self._to_submit = deque()
         self._lock = Lock()
@@ -100,23 +109,30 @@ class ThrottleExecutor(CanCustomizeBind, Executor):
         event = self._event
         self_ref = weakref.ref(self, lambda _: event.set())
 
+        metrics.EXEC_INPROGRESS.labels(type="throttle", executor=self._name).inc()
+        metrics.EXEC_TOTAL.labels(type="throttle", executor=self._name).inc()
+
         self._thread = Thread(
-            name="ThrottleExecutor", target=_submit_loop, args=(self_ref,)
+            name="ThrottleExecutor-%s" % name, target=_submit_loop, args=(self_ref,)
         )
         self._thread.daemon = True
         self._thread.start()
 
     def submit(self, fn, *args, **kwargs):  # pylint: disable=arguments-differ
         out = ThrottleFuture(self)
+        track_future(out, type="throttle", executor=self._name)
+
         job = ThrottleJob(out, fn, args, kwargs)
         with self._lock:
             self._to_submit.append(job)
+            metrics.THROTTLE_QUEUE.labels(executor=self._name).inc()
             self._log.debug("Enqueued: %s", job)
         self._event.set()
         return out
 
     def shutdown(self, wait=True, **_kwargs):
         self._log.debug("Shutting down")
+        metrics.EXEC_INPROGRESS.labels(type="throttle", executor=self._name).dec()
         self._shutdown = True
         self._delegate.shutdown(wait, **_kwargs)
         self._event.set()
@@ -183,6 +199,7 @@ def _submit_loop_iter(executor):
 
             # While not actually running yet, we've committed to running it, so...
             executor._running_count.incr()
+            metrics.THROTTLE_QUEUE.labels(executor=executor._name).dec()
 
         executor._log.debug(
             "Submitting %s, throttling %s", len(to_submit), len(executor._to_submit)

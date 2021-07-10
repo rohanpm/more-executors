@@ -72,7 +72,7 @@ class ProxyExecutor(Executor):
 
 @fixture
 def retry_executor_ctor():
-    return lambda: Executors.thread_pool().with_retry(max_attempts=1)
+    return lambda: Executors.thread_pool(name="test-retry").with_retry(max_attempts=1)
 
 
 @fixture
@@ -189,10 +189,10 @@ def poll_executor_ctor(threadpool_executor_ctor):
     return lambda: threadpool_executor_ctor().with_poll(poll_noop, random_cancel)
 
 
-def everything_executor(base_executor):
+def everything_executor(base_executor, name):
     # Get ready to go *nuts*
     return (
-        base_executor.with_poll(poll_noop)
+        base_executor.with_poll(poll_noop, name=name)
         .with_map(map_noop)
         .with_retry(RetryPolicy())
         .with_cancel_on_shutdown()
@@ -216,12 +216,14 @@ def everything_executor(base_executor):
 
 @fixture
 def everything_sync_executor_ctor(sync_executor_ctor):
-    return lambda: everything_executor(sync_executor_ctor())
+    return lambda: everything_executor(sync_executor_ctor(), "everything-sync")
 
 
 @fixture
 def everything_threadpool_executor_ctor(threadpool_executor_ctor):
-    return lambda: everything_executor(threadpool_executor_ctor())
+    return lambda: everything_executor(
+        threadpool_executor_ctor(), "everything-threadpool"
+    )
 
 
 EXECUTOR_TYPES = [
@@ -263,7 +265,7 @@ def any_executor(request):
         try:
             kwargs = {}
             if sys.version_info > (3, 9):
-                kwargs['cancel_futures'] = True
+                kwargs["cancel_futures"] = True
             run_or_timeout(ex.shutdown, True, **kwargs)
             return
         except Exception:

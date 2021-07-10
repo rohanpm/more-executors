@@ -1,11 +1,37 @@
+import sys
 from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 
 from .wrap import CanCustomizeBind
+from .metrics import metrics, track_future
 
 
 class CustomizableThreadPoolExecutor(CanCustomizeBind, ThreadPoolExecutor):
-    pass
+    def __init__(self, *args, **kwargs):
+        self.__name = kwargs.pop("name", "default")
+
+        if (
+            sys.version_info >= (3, 6)
+            and len(args) < 2
+            and "thread_name_prefix" not in kwargs
+            and self.__name != "default"
+        ):
+            kwargs["thread_name_prefix"] = "ThreadPoolExecutor-%s" % self.__name
+
+        super(CustomizableThreadPoolExecutor, self).__init__(*args, **kwargs)
+        metrics.EXEC_TOTAL.labels(type="threadpool", executor=self.__name).inc()
+        metrics.EXEC_INPROGRESS.labels(type="threadpool", executor=self.__name).inc()
+
+    def shutdown(self, *args, **kwargs):
+        metrics.EXEC_INPROGRESS.labels(type="threadpool", executor=self.__name).dec()
+        super(CustomizableThreadPoolExecutor, self).shutdown(*args, **kwargs)
+
+    def submit(self, *args, **kwargs):
+        f = super(CustomizableThreadPoolExecutor, self).submit(*args, **kwargs)
+        track_future(f, type="threadpool", executor=self.__name)
+        return f
 
 
 class CustomizableProcessPoolExecutor(CanCustomizeBind, ProcessPoolExecutor):
-    pass
+    def __init__(self, *args, **kwargs):
+        kwargs.pop("name", None)
+        super(CustomizableProcessPoolExecutor, self).__init__(*args, **kwargs)

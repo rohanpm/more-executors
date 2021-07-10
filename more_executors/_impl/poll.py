@@ -3,11 +3,15 @@ from threading import RLock, Thread
 import weakref
 import logging
 
+from monotonic import monotonic
+
 from .common import _Future, MAX_TIMEOUT, copy_exception, copy_future_exception
 from .wrap import CanCustomizeBind
 from .helpers import executor_loop
 from .event import get_event, is_shutdown
 from .logwrap import LogWrapper
+
+from .metrics import metrics, track_future
 
 
 class PollFuture(_Future):
@@ -131,7 +135,13 @@ class PollExecutor(CanCustomizeBind, Executor):
     """
 
     def __init__(
-        self, delegate, poll_fn, cancel_fn=None, default_interval=5.0, logger=None
+        self,
+        delegate,
+        poll_fn,
+        cancel_fn=None,
+        default_interval=5.0,
+        logger=None,
+        name="default",
     ):
         """
         Parameters:
@@ -150,8 +160,15 @@ class PollExecutor(CanCustomizeBind, Executor):
 
             logger (~logging.Logger):
                 a logger used for messages from this executor
+
+            name (str):
+                a name for this executor
+
+        .. versionchanged:: 2.7.0
+            Introduced ``name``.
         """
         self._log = LogWrapper(logger if logger else logging.getLogger("PollExecutor"))
+        self._name = name
         self._delegate = delegate
         self._default_interval = default_interval
         self._poll_fn = poll_fn
@@ -163,17 +180,22 @@ class PollExecutor(CanCustomizeBind, Executor):
         self_ref = weakref.ref(self, lambda _: poll_event.set())
 
         self._poll_thread = Thread(
-            name="PollExecutor", target=_poll_loop, args=(self_ref,)
+            name="PollExecutor-%s" % name, target=_poll_loop, args=(self_ref,)
         )
         self._poll_thread.daemon = True
         self._shutdown = False
         self._lock = RLock()
 
+        metrics.EXEC_TOTAL.labels(type="poll", executor=self._name).inc()
+        metrics.EXEC_INPROGRESS.labels(type="poll", executor=self._name).inc()
+
         self._poll_thread.start()
 
     def submit(self, *args, **kwargs):  # pylint: disable=arguments-differ
         delegate_future = self._delegate.submit(*args, **kwargs)
-        return PollFuture(delegate_future, self)
+        out = PollFuture(delegate_future, self)
+        track_future(out, type="poll", executor=self._name)
+        return out
 
     def notify(self):
         """Request the executor to re-run the polling function as soon as possible.
@@ -230,14 +252,20 @@ class PollExecutor(CanCustomizeBind, Executor):
             descriptors = [d for (_, d) in self._poll_descriptors]
 
         try:
+            now = monotonic()
             return self._poll_fn(descriptors)
         except Exception as e:
             self._log.debug("Poll function failed", exc_info=True)
+            metrics.POLL_ERROR.labels(executor=self._name).inc()
             # If poll function fails, then every future
             # depending on the poll also immediately fails.
             [d.yield_exception(e) for d in descriptors]
+        finally:
+            metrics.POLL_TOTAL.labels(executor=self._name).inc()
+            metrics.POLL_TIME.labels(executor=self._name).inc(monotonic() - now)
 
     def shutdown(self, wait=True, **_kwargs):
+        metrics.EXEC_INPROGRESS.labels(type="poll", executor=self._name).dec()
         self._shutdown = True
         self._poll_event.set()
         self._delegate.shutdown(wait, **_kwargs)

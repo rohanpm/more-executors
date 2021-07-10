@@ -18,3 +18,16 @@ def set_debug_var():
     os.environ["MORE_EXECUTORS_DEBUG"] = "1"
     yield
     del os.environ["MORE_EXECUTORS_DEBUG"]
+
+
+@pytest.fixture(scope="session", autouse=True)
+def dump_metrics():
+    yield
+
+    try:
+        import prometheus_client  # pylint: disable=import-error
+    except Exception:
+        return
+
+    metrics = prometheus_client.generate_latest().decode("utf-8")
+    print(metrics)

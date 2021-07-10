@@ -26,6 +26,7 @@ extend the behavior of `Future` objects.
 - Synchronous executor
 - Bridge `concurrent.futures` with `asyncio`
 - Convenience API for creating executors
+- Instrumented with [Prometheus](https://prometheus.io/)
 
 See the [API documentation](https://rohanpm.github.io/more-executors/) for detailed information on usage.
 
