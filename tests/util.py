@@ -6,12 +6,12 @@ from functools import partial
 
 
 def assert_soon(fn):
-    for _ in range(0, 1000):
+    for _ in range(0, 2000):
         try:
             fn()
             break
         except AssertionError:
-            time.sleep(0.01)
+            time.sleep(0.05)
     else:
         fn()
 
