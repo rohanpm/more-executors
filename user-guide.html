@@ -55,7 +55,7 @@ to execute callables in the calling thread.</p>
 </div></blockquote>
 <p>Example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">more_executors</span> <span class="kn">import</span> <span class="n">Executors</span>
-<span class="k">with</span> <span class="n">Executors</span><span class="o">.</span><span class="n">thread_pool</span><span class="p">()</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
+<span class="k">with</span> <span class="n">Executors</span><span class="o">.</span><span class="n">thread_pool</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;web-client&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
     <span class="n">future</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">,</span> <span class="s1">&#39;https://github.com/rohanpm/more-executors&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -88,7 +88,7 @@ use-cases.</p>
 </div></blockquote>
 <p>Example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Run in up to 4 threads, retry on failure, transform output values</span>
-<span class="n">executor</span> <span class="o">=</span> <span class="n">Executors</span><span class="o">.</span><span class="n">thread_pool</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span> \
+<span class="n">executor</span> <span class="o">=</span> <span class="n">Executors</span><span class="o">.</span><span class="n">thread_pool</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;web-client&#39;</span><span class="p">)</span><span class="o">.</span> \
     <span class="n">with_map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">response</span><span class="p">:</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">())</span><span class="o">.</span> \
     <span class="n">with_retry</span><span class="p">()</span>
 <span class="n">responses</span> <span class="o">=</span> <span class="p">[</span><span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
@@ -111,6 +111,25 @@ attempts).</p>
 retries. The throttling in this example has no effect, since a
 <a class="reference internal" href="reference/base-executors.html#more_executors.sync.SyncExecutor" title="more_executors.sync.SyncExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyncExecutor</span></code></a> is intrinsically throttled to
 a single pending future.</p>
+</section>
+<section id="naming-executors">
+<span id="id3"></span><h2>Naming executors<a class="headerlink" href="#naming-executors" title="Permalink to this headline">¶</a></h2>
+<p>All executors accept an optional <code class="docutils literal notranslate"><span class="pre">name</span></code> argument, an arbitrary string.
+Setting the <code class="docutils literal notranslate"><span class="pre">name</span></code> when creating an executor has the following effects:</p>
+<ul class="simple">
+<li><p>If the executor creates any threads, the thread name will include the
+specified value.</p></li>
+<li><p>The name will be used as <code class="docutils literal notranslate"><span class="pre">executor</span></code> label on any <a class="reference internal" href="#metrics"><span class="std std-ref">Prometheus metrics</span></a>
+associated with the executor.</p></li>
+</ul>
+<p>When creating chained executors via the <code class="docutils literal notranslate"><span class="pre">with_*</span></code> methods
+(see <a class="reference internal" href="#composing-executors"><span class="std std-ref">Composing executors</span></a>), names automatically propagate through
+the chain:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Executors</span><span class="o">.</span><span class="n">thread_pool</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;svc-client&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">with_retry</span><span class="p">()</span><span class="o">.</span><span class="n">with_throttle</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In the above example, three executors are created and all of them are
+given the name <code class="docutils literal notranslate"><span class="pre">svc-client</span></code>.</p>
 </section>
 <section id="composing-futures">
 <h2>Composing futures<a class="headerlink" href="#composing-futures" title="Permalink to this headline">¶</a></h2>
@@ -296,6 +315,94 @@ collector to clean up the executor’s resources automatically and a thread
 leak may occur. If in doubt, call
 <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor.shutdown" title="(in Python v3.9)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">shutdown()</span></code></a>.</p>
 </section>
+<section id="prometheus-metrics">
+<span id="metrics"></span><h2>Prometheus metrics<a class="headerlink" href="#prometheus-metrics" title="Permalink to this headline">¶</a></h2>
+<p>This library automatically collects <a class="reference external" href="https://prometheus.io/">Prometheus</a>
+metrics if the <code class="docutils literal notranslate"><span class="pre">prometheus_client</span></code> Python module is available.
+The feature is disabled when this module is not installed.</p>
+<p>If you want to ensure that <code class="docutils literal notranslate"><span class="pre">more-executors</span></code> is installed along with
+all prometheus dependencies, you may request the ‘prometheus’ extras,
+as in example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">more</span><span class="o">-</span><span class="n">executors</span><span class="p">[</span><span class="n">prometheus</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The library only collects metrics; it does not expose them.
+You must use <code class="docutils literal notranslate"><span class="pre">prometheus_client</span></code> to expose metrics in the most
+appropriate manner when integrating this library with your tool or service.
+Here is a simple example to dump metrics to a file:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">prometheus_client</span>
+<span class="n">prometheus_client</span><span class="o">.</span><span class="n">write_to_textfile</span><span class="p">(</span><span class="s1">&#39;metrics.txt&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The following metrics are available:</p>
+<blockquote>
+<div><dl>
+<dt><code class="docutils literal notranslate"><span class="pre">more_executors_exec_inprogress</span></code></dt><dd><p>A <em>gauge</em> for the number of executors currently in use.</p>
+<p>“In use” means an executor has been created and <code class="docutils literal notranslate"><span class="pre">shutdown()</span></code> not
+yet called. Incorrect usage of <code class="docutils literal notranslate"><span class="pre">shutdown()</span></code> (e.g. calling more than
+once) will lead to inaccurate data.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">more_executors_exec_total</span></code></dt><dd><p>A <em>counter</em> for the total number of executors created.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">more_executors_future_inprogress</span></code></dt><dd><p>A <em>gauge</em> for the number of futures currently in progress.</p>
+<p>“In progress” means a future has been created and not yet reached
+a terminal state.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">more_executors_future_total</span></code></dt><dd><p>A <em>counter</em> for the total number of futures created.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">more_executors_future_cancel_total</span></code></dt><dd><p>A <em>counter</em> for the total number of futures cancelled.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">more_executors_future_error_total</span></code></dt><dd><p>A <em>counter</em> for the total number of futures resolved with an exception.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">more_executors_future_time_total</span></code></dt><dd><p>A <em>counter</em> for the total execution time (in seconds) of futures.</p>
+<p>The execution time of a future is the period between the
+creation and resolution of a future.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">more_executors_poll_total</span></code></dt><dd><p>A <em>counter</em> for the total number of times a <a class="reference internal" href="reference/poll.html#poll-function"><span class="std std-ref">Poll function</span></a> was
+invoked.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">more_executors_poll_error_total</span></code></dt><dd><p>A <em>counter</em> for the total number of times a <a class="reference internal" href="reference/poll.html#poll-function"><span class="std std-ref">Poll function</span></a>
+raised an exception.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">more_executors_poll_time_total</span></code></dt><dd><p>A <em>counter</em> for the total execution time (in seconds) of
+<a class="reference internal" href="reference/poll.html#poll-function"><span class="std std-ref">Poll function</span></a> calls.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">more_executors_retry_total</span></code></dt><dd><p>A <em>counter</em> for the total number of times a future was retried
+by <a class="reference internal" href="reference/retry.html#more_executors.retry.RetryExecutor" title="more_executors.retry.RetryExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">RetryExecutor</span></code></a>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">more_executors_retry_queue</span></code></dt><dd><p>A <em>gauge</em> for the current queue size of a
+<a class="reference internal" href="reference/retry.html#more_executors.retry.RetryExecutor" title="more_executors.retry.RetryExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">RetryExecutor</span></code></a> (i.e. the
+number of futures currently waiting to retry).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">more_executors_retry_delay_total</span></code></dt><dd><p>A <em>counter</em> for the total time (in seconds) spent waiting to
+retry futures via <a class="reference internal" href="reference/retry.html#more_executors.retry.RetryExecutor" title="more_executors.retry.RetryExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">RetryExecutor</span></code></a>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">more_executors_throttle_queue</span></code></dt><dd><p>A <em>gauge</em> for the current queue size of a
+<a class="reference internal" href="reference/throttle.html#more_executors.throttle.ThrottleExecutor" title="more_executors.throttle.ThrottleExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">ThrottleExecutor</span></code></a> (i.e. the number of futures
+not yet able to start due to throttling).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">more_executors_timeout_total</span></code></dt><dd><p>A <em>counter</em> for the total number of futures cancelled due to timeout
+via <a class="reference internal" href="reference/timeout.html#more_executors.timeout.TimeoutExecutor" title="more_executors.timeout.TimeoutExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeoutExecutor</span></code></a> or
+<a class="reference internal" href="reference/timeout.html#more_executors.futures.f_timeout" title="more_executors.futures.f_timeout"><code class="xref py py-func docutils literal notranslate"><span class="pre">f_timeout()</span></code></a>.</p>
+<p>Only successfully cancelled futures are included.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">more_executors_shutdown_cancel_total</span></code></dt><dd><p>A <em>counter</em> for the total number of futures cancelled due to executor
+shutdown via <a class="reference internal" href="reference/cancel.html#more_executors.cancel_on_shutdown.CancelOnShutdownExecutor" title="more_executors.cancel_on_shutdown.CancelOnShutdownExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">CancelOnShutdownExecutor</span></code></a>.</p>
+<p>Only successfully cancelled futures are included.</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>Metrics include the following labels:</p>
+<blockquote>
+<div><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">type</span></code></dt><dd><p>The type of executor or future in use; e.g. <code class="docutils literal notranslate"><span class="pre">map</span></code>, <code class="docutils literal notranslate"><span class="pre">retry</span></code>,
+<code class="docutils literal notranslate"><span class="pre">poll</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">executor</span></code></dt><dd><p>Name of executor (see <a class="reference internal" href="#naming-executors"><span class="std std-ref">Naming executors</span></a>).</p>
+</dd>
+</dl>
+</div></blockquote>
+</section>
 </section>
 
 
@@ -324,9 +431,11 @@ leak may occur. If in doubt, call
 <li class="toctree-l1 current"><a class="current reference internal" href="#">User Guide</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#base-executors">Base executors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#composing-executors">Composing executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#naming-executors">Naming executors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#composing-futures">Composing futures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#usage-of-threads">Usage of threads</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#executor-shutdown">Executor shutdown</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#prometheus-metrics">Prometheus metrics</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api-reference.html">Reference</a></li>

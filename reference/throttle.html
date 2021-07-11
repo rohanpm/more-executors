@@ -38,7 +38,7 @@
 <p>ThrottleExecutor limits the number of concurrently executing futures.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="more_executors.throttle.ThrottleExecutor">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">more_executors.throttle.</span></span><span class="sig-name descname"><span class="pre">ThrottleExecutor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">delegate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.throttle.ThrottleExecutor" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">more_executors.throttle.</span></span><span class="sig-name descname"><span class="pre">ThrottleExecutor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">delegate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.throttle.ThrottleExecutor" title="Permalink to this definition">¶</a></dt>
 <dd><p>An executor which delegates to another executor while enforcing
 a limit on the number of futures running concurrently.</p>
 <ul class="simple">
@@ -72,9 +72,13 @@ to implement dynamic throttling.</p>
 </dl>
 </p></li>
 <li><p><strong>logger</strong> (<a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.9)"><em>Logger</em></a>) – a logger used for messages from this executor</p></li>
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – a name for this executor</p></li>
 </ul>
 </dd>
 </dl>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.7.0: </span>Introduced <code class="docutils literal notranslate"><span class="pre">name</span></code>.</p>
+</div>
 </dd></dl>
 
 <dl class="py method">

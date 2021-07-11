@@ -27,7 +27,7 @@ Example:
 .. code-block:: python
 
     from more_executors import Executors
-    with Executors.thread_pool() as executor:
+    with Executors.thread_pool(name='web-client') as executor:
         future = executor.submit(requests.get, 'https://github.com/rohanpm/more-executors')
 
 
@@ -64,7 +64,7 @@ Example:
 .. code-block:: python
 
     # Run in up to 4 threads, retry on failure, transform output values
-    executor = Executors.thread_pool(max_workers=4). \
+    executor = Executors.thread_pool(max_workers=4, name='web-client'). \
         with_map(lambda response: response.json()). \
         with_retry()
     responses = [executor.submit(requests.get, url)
@@ -90,6 +90,31 @@ In this example, an unlimited number of futures may be failed and awaiting
 retries. The throttling in this example has no effect, since a
 :class:`~more_executors.sync.SyncExecutor` is intrinsically throttled to
 a single pending future.
+
+.. _naming executors:
+
+Naming executors
+----------------
+
+All executors accept an optional ``name`` argument, an arbitrary string.
+Setting the ``name`` when creating an executor has the following effects:
+
+- If the executor creates any threads, the thread name will include the
+  specified value.
+
+- The name will be used as ``executor`` label on any :ref:`metrics`
+  associated with the executor.
+
+When creating chained executors via the ``with_*`` methods
+(see :ref:`composing executors`), names automatically propagate through
+the chain:
+
+.. code-block:: python
+
+    Executors.thread_pool(name='svc-client').with_retry().with_throttle(4)
+
+In the above example, three executors are created and all of them are
+given the name ``svc-client``.
 
 
 Composing futures
@@ -207,3 +232,117 @@ executor. When this happens, it will no longer be possible for the garbage
 collector to clean up the executor's resources automatically and a thread
 leak may occur. If in doubt, call
 :meth:`~concurrent.futures.Executor.shutdown`.
+
+.. _metrics:
+
+Prometheus metrics
+------------------
+
+This library automatically collects `Prometheus <https://prometheus.io/>`_
+metrics if the ``prometheus_client`` Python module is available.
+The feature is disabled when this module is not installed.
+
+If you want to ensure that ``more-executors`` is installed along with
+all prometheus dependencies, you may request the 'prometheus' extras,
+as in example:
+
+.. code-block::
+
+    pip install more-executors[prometheus]
+
+The library only collects metrics; it does not expose them.
+You must use ``prometheus_client`` to expose metrics in the most
+appropriate manner when integrating this library with your tool or service.
+Here is a simple example to dump metrics to a file:
+
+.. code-block:: python
+
+    import prometheus_client
+    prometheus_client.write_to_textfile('metrics.txt')
+
+
+The following metrics are available:
+
+    ``more_executors_exec_inprogress``
+        A *gauge* for the number of executors currently in use.
+
+        "In use" means an executor has been created and ``shutdown()`` not
+        yet called. Incorrect usage of ``shutdown()`` (e.g. calling more than
+        once) will lead to inaccurate data.
+
+    ``more_executors_exec_total``
+        A *counter* for the total number of executors created.
+
+    ``more_executors_future_inprogress``
+        A *gauge* for the number of futures currently in progress.
+
+        "In progress" means a future has been created and not yet reached
+        a terminal state.
+
+    ``more_executors_future_total``
+        A *counter* for the total number of futures created.
+
+    ``more_executors_future_cancel_total``
+        A *counter* for the total number of futures cancelled.
+
+    ``more_executors_future_error_total``
+        A *counter* for the total number of futures resolved with an exception.
+
+    ``more_executors_future_time_total``
+        A *counter* for the total execution time (in seconds) of futures.
+
+        The execution time of a future is the period between the
+        creation and resolution of a future.
+
+    ``more_executors_poll_total``
+        A *counter* for the total number of times a :ref:`poll function` was
+        invoked.
+
+    ``more_executors_poll_error_total``
+        A *counter* for the total number of times a :ref:`poll function`
+        raised an exception.
+
+    ``more_executors_poll_time_total``
+        A *counter* for the total execution time (in seconds) of
+        :ref:`poll function` calls.
+
+    ``more_executors_retry_total``
+        A *counter* for the total number of times a future was retried
+        by :class:`~more_executors.retry.RetryExecutor`.
+
+    ``more_executors_retry_queue``
+        A *gauge* for the current queue size of a
+        :class:`~more_executors.retry.RetryExecutor` (i.e. the
+        number of futures currently waiting to retry).
+
+    ``more_executors_retry_delay_total``
+        A *counter* for the total time (in seconds) spent waiting to
+        retry futures via :class:`~more_executors.retry.RetryExecutor`.
+
+    ``more_executors_throttle_queue``
+        A *gauge* for the current queue size of a
+        :class:`~more_executors.throttle.ThrottleExecutor` (i.e. the number of futures
+        not yet able to start due to throttling).
+
+    ``more_executors_timeout_total``
+        A *counter* for the total number of futures cancelled due to timeout
+        via :class:`~more_executors.timeout.TimeoutExecutor` or
+        :func:`~more_executors.futures.f_timeout`.
+
+        Only successfully cancelled futures are included.
+
+    ``more_executors_shutdown_cancel_total``
+        A *counter* for the total number of futures cancelled due to executor
+        shutdown via :class:`~more_executors.cancel_on_shutdown.CancelOnShutdownExecutor`.
+
+        Only successfully cancelled futures are included.
+
+Metrics include the following labels:
+
+    ``type``
+        The type of executor or future in use; e.g. ``map``, ``retry``,
+        ``poll``.
+
+    ``executor``
+        Name of executor (see :ref:`Naming executors`).
+
