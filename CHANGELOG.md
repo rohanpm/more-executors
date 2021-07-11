@@ -7,6 +7,10 @@ from version 1.20.0 onwards.
 
 ## [Unreleased]
 
+- n/a
+
+## [2.7.0] - 2021-07-11
+
 ### Added
 - Introduced support for prometheus instrumentation.
 - All executors now accept a `name` argument. If given, the name is used
@@ -248,7 +252,8 @@ from version 1.20.0 onwards.
 - Minor improvements to logging
 
 
-[Unreleased]: https://github.com/rohanpm/more-executors/compare/v2.6.0...HEAD
+[Unreleased]: https://github.com/rohanpm/more-executors/compare/v2.7.0...HEAD
+[2.7.0]: https://github.com/rohanpm/more-executors/compare/v2.6.0...v2.7.0
 [2.6.0]: https://github.com/rohanpm/more-executors/compare/v2.5.1...v2.6.0
 [2.5.1]: https://github.com/rohanpm/more-executors/compare/v2.5.0...v2.5.1
 [2.5.0]: https://github.com/rohanpm/more-executors/compare/v2.4.0...v2.5.0
