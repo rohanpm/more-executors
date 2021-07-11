@@ -7,15 +7,14 @@ from .null import NullMetrics
 
 LOG = logging.getLogger("more-executors.metrics")
 
-metrics = NullMetrics()
 try:  # pylint: disable=import-error
     from .prometheus import PrometheusMetrics
 
     metrics = PrometheusMetrics()
 except Exception:
-    LOG.debug("disabling prometheus support", exc_info=1)
+    LOG.debug("disabling prometheus support", exc_info=True)
 
-    metrics = NullMetrics()
+    metrics = NullMetrics()  # type: ignore
 
 
 def record_done(f, started_when, time, inprogress, cancelled, failed):

@@ -1,0 +1,12 @@
+#!/usr/bin/env python
+from more_executors import Executors
+
+for exc in [
+    Executors.sync().with_throttle().with_retry().with_cancel_on_shutdown(),
+    Executors.sync().with_throttle(),
+    Executors.sync().with_retry(),
+    Executors.sync().with_cancel_on_shutdown(),
+    Executors.thread_pool().with_retry().with_throttle().with_cancel_on_shutdown(),
+]:
+    with exc as e:
+        x: int = e.submit(lambda: 123).result()

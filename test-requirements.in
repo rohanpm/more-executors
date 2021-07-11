@@ -3,3 +3,4 @@ PyHamcrest
 pylint; python_version >= '3'
 pytest
 pytest-cov
+mypy; python_version >= '3'

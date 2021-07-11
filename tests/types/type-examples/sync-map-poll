@@ -1,0 +1,16 @@
+#!/usr/bin/env python
+from concurrent.futures import Future
+from more_executors import Executors
+from more_executors.sync import SyncExecutor
+from more_executors.map import MapExecutor
+from more_executors.poll import PollDescriptor, PollExecutor
+
+
+def poll_to_list(ds: list[PollDescriptor[int, list[int]]]) -> None:
+    for d in ds:
+        d.yield_result([d.result])
+
+
+with Executors.sync().with_map(int).with_poll(poll_to_list) as exc:
+    f = exc.submit(lambda: "123")
+    value: list[int] = f.result()
