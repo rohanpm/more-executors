@@ -1,0 +1,17 @@
+#!/usr/bin/env python
+from concurrent.futures import Future
+from more_executors import Executors
+from more_executors.futures import f_return
+
+
+def fn1(x: int) -> Future[str]:
+    return f_return(str(x))
+
+
+def fn2(x: str) -> Future[list[str]]:
+    return f_return([x])
+
+
+with Executors.sync().with_flat_map(fn1).with_flat_map(fn2) as exc:
+    f: Future[list[str]] = exc.submit(lambda: 123)
+    value: list[str] = f.result()

@@ -1,0 +1,51 @@
+#!/usr/bin/env python
+from concurrent.futures import Future
+from collections.abc import Callable
+from typing import Union, Optional
+from more_executors.futures import *
+
+
+x1: int = f_return(123).result()
+
+x2: None = f_return_error(RuntimeError("quux")).result()
+# TODO: might be nice to make this not Optional
+x3: Optional[BaseException] = f_return_error(RuntimeError("x")).exception()
+x4: None = f_return_cancelled().result()
+
+
+def mult(a: int, b: int) -> int:
+    return a * b
+
+
+fmult = f_return(mult)
+ftwo = f_return(2)
+fthree = f_return(3)
+fstr = f_return("some-str")
+
+x5: int = f_apply(fmult, ftwo, b=fthree).result()
+
+
+x6: int = f_or(ftwo, fthree).result()
+x7: Union[int, str] = f_or(ftwo, fstr).result()
+
+x8: int = f_and(ftwo, fthree).result()
+x9: Union[int, str] = f_and(ftwo, fstr).result()
+
+x10: tuple[int, str, int] = f_zip(ftwo, fstr, fthree).result()
+
+x11: str = f_map(ftwo, str).result()
+
+
+def str_async(x: int) -> Future[str]:
+    return f_return(str(x))
+
+
+x12: str = f_flat_map(ftwo, str_async).result()
+
+x13: list[str] = f_traverse(str_async, [1, 2, 3]).result()
+
+x14: list[int] = f_sequence([ftwo, fthree]).result()
+
+x15: str = f_nocancel(fstr).result()
+x16: str = f_proxy(fstr).result()
+x17: str = f_timeout(fstr, 1.0).result()

@@ -7,7 +7,10 @@ from version 1.20.0 onwards.
 
 ## [Unreleased]
 
-- n/a
+### Added
+- Type stubs are now included. These have been tested with mypy and pylance.
+  Type information is not complete, but is sufficient for most typical
+  scenarios for composing executors and futures. Requires Python 3.9 or later.
 
 ## [2.7.0] - 2021-07-11
 

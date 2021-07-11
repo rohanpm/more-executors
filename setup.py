@@ -24,6 +24,8 @@ setup(
     author="Rohan McGovern",
     author_email="rohan@mcgovern.id.au",
     packages=find_packages(exclude=["tests", "tests.*"]),
+    include_package_data=True,
+    zip_safe=False,
     url="https://github.com/rohanpm/more-executors",
     license="GNU General Public License",
     description=get_description(),

@@ -1,0 +1,7 @@
+#!/usr/bin/env python
+from concurrent.futures import Future
+from more_executors import Executors
+
+with Executors.sync().with_map(str).with_throttle() as exc:
+    f: Future[str] = exc.submit(lambda: 123)
+    value: str = f.result()

@@ -1,0 +1,20 @@
+#!/usr/bin/env python
+from concurrent.futures import Future
+from more_executors.retry import RetryExecutor, RetryPolicy, ExceptionRetryPolicy
+from more_executors import Executors
+
+
+for exc in [
+    Executors.sync().with_retry(),
+    RetryExecutor(Executors.sync()),
+]:
+    policy = ExceptionRetryPolicy()
+    with exc as e:
+        f: int = e.submit_retry(policy, lambda: 123).result()
+
+for exc2 in [
+    Executors.sync().with_map(str).with_retry(),
+    # TimeoutExecutor(Executors.sync().with_map(str), 50.0),
+]:
+    with exc2 as e2:
+        f2: str = e2.submit_retry(ExceptionRetryPolicy(), lambda: 123).result()
