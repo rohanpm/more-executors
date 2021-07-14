@@ -8,7 +8,7 @@ import weakref
 from .common import MAX_TIMEOUT
 from .wrap import CanCustomizeBind
 from .map import MapFuture
-from .helpers import executor_loop
+from .helpers import executor_loop, ShutdownHelper
 from .event import get_event, is_shutdown
 from .logwrap import LogWrapper
 
@@ -104,7 +104,7 @@ class ThrottleExecutor(CanCustomizeBind, Executor):
         self._running_count = AtomicInt()
         self._throttle = count if callable(count) else lambda: count
         self._last_throttle = self._throttle()
-        self._shutdown = False
+        self._shutdown = ShutdownHelper()
 
         event = self._event
         self_ref = weakref.ref(self, lambda _: event.set())
@@ -119,25 +119,26 @@ class ThrottleExecutor(CanCustomizeBind, Executor):
         self._thread.start()
 
     def submit(self, fn, *args, **kwargs):  # pylint: disable=arguments-differ
-        out = ThrottleFuture(self)
-        track_future(out, type="throttle", executor=self._name)
+        with self._shutdown.ensure_alive():
+            out = ThrottleFuture(self)
+            track_future(out, type="throttle", executor=self._name)
 
-        job = ThrottleJob(out, fn, args, kwargs)
-        with self._lock:
-            self._to_submit.append(job)
-            metrics.THROTTLE_QUEUE.labels(executor=self._name).inc()
-            self._log.debug("Enqueued: %s", job)
-        self._event.set()
-        return out
+            job = ThrottleJob(out, fn, args, kwargs)
+            with self._lock:
+                self._to_submit.append(job)
+                metrics.THROTTLE_QUEUE.labels(executor=self._name).inc()
+                self._log.debug("Enqueued: %s", job)
+            self._event.set()
+            return out
 
     def shutdown(self, wait=True, **_kwargs):
-        self._log.debug("Shutting down")
-        metrics.EXEC_INPROGRESS.labels(type="throttle", executor=self._name).dec()
-        self._shutdown = True
-        self._delegate.shutdown(wait, **_kwargs)
-        self._event.set()
-        if wait:
-            self._thread.join(MAX_TIMEOUT)
+        if self._shutdown():
+            self._log.debug("Shutting down")
+            metrics.EXEC_INPROGRESS.labels(type="throttle", executor=self._name).dec()
+            self._delegate.shutdown(wait, **_kwargs)
+            self._event.set()
+            if wait:
+                self._thread.join(MAX_TIMEOUT)
 
     def _eval_throttle(self):
         try:
@@ -183,7 +184,7 @@ def _submit_loop_iter(executor):
     if not executor:
         return
 
-    if executor._shutdown or is_shutdown():
+    if executor._shutdown.is_shutdown or is_shutdown():
         return
 
     throttle = executor._eval_throttle()

@@ -5,6 +5,7 @@ import logging
 from .wrap import CanCustomizeBind
 from .logwrap import LogWrapper
 from .metrics import metrics
+from .helpers import ShutdownHelper
 
 
 class CancelOnShutdownExecutor(CanCustomizeBind, Executor):
@@ -58,7 +59,7 @@ class CancelOnShutdownExecutor(CanCustomizeBind, Executor):
         self._delegate = delegate
         self._futures = set()
         self._lock = RLock()
-        self._shutdown = False
+        self._shutdown = ShutdownHelper()
         metrics.EXEC_TOTAL.labels(type="cancel_on_shutdown", executor=self._name).inc()
         metrics.EXEC_INPROGRESS.labels(
             type="cancel_on_shutdown", executor=self._name
@@ -74,9 +75,8 @@ class CancelOnShutdownExecutor(CanCustomizeBind, Executor):
         attempt is made to cancel any future.
         """
         with self._lock:
-            if self._shutdown:
+            if not self._shutdown():
                 return
-            self._shutdown = True
             metrics.EXEC_INPROGRESS.labels(
                 type="cancel_on_shutdown", executor=self._name
             ).dec()
@@ -91,10 +91,9 @@ class CancelOnShutdownExecutor(CanCustomizeBind, Executor):
         self._delegate.shutdown(wait, **_kwargs)
 
     def submit(self, *args, **kwargs):  # pylint: disable=arguments-differ
-        with self._lock:
-            if self._shutdown:
-                raise RuntimeError("Cannot submit after shutdown")
-            future = self._delegate.submit(*args, **kwargs)
-            self._futures.add(future)
-            future.add_done_callback(self._futures.discard)
-        return future
+        with self._shutdown.ensure_alive():
+            with self._lock:
+                future = self._delegate.submit(*args, **kwargs)
+                self._futures.add(future)
+                future.add_done_callback(self._futures.discard)
+            return future
