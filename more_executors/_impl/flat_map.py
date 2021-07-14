@@ -1,13 +1,11 @@
 from .map import MapFuture, MapExecutor
-from .sync import SyncExecutor
-
-
-def f_return(x):
-    return SyncExecutor().submit(lambda: x)
 
 
 class FlatMapFuture(MapFuture):
     def __init__(self, delegate, map_fn=None, error_fn=None):
+        # avoiding circular dep
+        from ..futures import f_return
+
         self.__flattened = False
         map_fn = map_fn or f_return
         super(FlatMapFuture, self).__init__(delegate, map_fn, error_fn)

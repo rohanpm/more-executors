@@ -41,6 +41,12 @@ def timeout_executor():
     with LOCK:
         executor = EXECUTOR_REF and EXECUTOR_REF()
         if not executor:
-            executor = Executors.sync().with_flat_map(lambda x: x).with_timeout(None)
+            # TODO: consider rethinking this and keeping one
+            # executor alive until atexit() instead.
+            executor = (
+                Executors.sync(name="internal")
+                .with_flat_map(lambda x: x)
+                .with_timeout(None)
+            )
             EXECUTOR_REF = weakref.ref(executor)
         return executor
