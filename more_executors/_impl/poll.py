@@ -10,7 +10,7 @@ from .wrap import CanCustomizeBind
 from .helpers import executor_loop
 from .event import get_event, is_shutdown
 from .logwrap import LogWrapper
-
+from .helpers import ShutdownHelper
 from .metrics import metrics, track_future
 
 
@@ -183,7 +183,7 @@ class PollExecutor(CanCustomizeBind, Executor):
             name="PollExecutor-%s" % name, target=_poll_loop, args=(self_ref,)
         )
         self._poll_thread.daemon = True
-        self._shutdown = False
+        self._shutdown = ShutdownHelper()
         self._lock = RLock()
 
         metrics.EXEC_TOTAL.labels(type="poll", executor=self._name).inc()
@@ -192,10 +192,11 @@ class PollExecutor(CanCustomizeBind, Executor):
         self._poll_thread.start()
 
     def submit(self, *args, **kwargs):  # pylint: disable=arguments-differ
-        delegate_future = self._delegate.submit(*args, **kwargs)
-        out = PollFuture(delegate_future, self)
-        track_future(out, type="poll", executor=self._name)
-        return out
+        with self._shutdown.ensure_alive():
+            delegate_future = self._delegate.submit(*args, **kwargs)
+            out = PollFuture(delegate_future, self)
+            track_future(out, type="poll", executor=self._name)
+            return out
 
     def notify(self):
         """Request the executor to re-run the polling function as soon as possible.
@@ -265,14 +266,14 @@ class PollExecutor(CanCustomizeBind, Executor):
             metrics.POLL_TIME.labels(executor=self._name).inc(monotonic() - now)
 
     def shutdown(self, wait=True, **_kwargs):
-        metrics.EXEC_INPROGRESS.labels(type="poll", executor=self._name).dec()
-        self._shutdown = True
-        self._poll_event.set()
-        self._delegate.shutdown(wait, **_kwargs)
-        if wait:
-            self._log.debug("Join poll thread...")
-            self._poll_thread.join(MAX_TIMEOUT)
-            self._log.debug("Joined poll thread.")
+        if self._shutdown():
+            metrics.EXEC_INPROGRESS.labels(type="poll", executor=self._name).dec()
+            self._poll_event.set()
+            self._delegate.shutdown(wait, **_kwargs)
+            if wait:
+                self._log.debug("Join poll thread...")
+                self._poll_thread.join(MAX_TIMEOUT)
+                self._log.debug("Joined poll thread.")
 
 
 @executor_loop
@@ -282,7 +283,7 @@ def _poll_loop(executor_ref):
         if not executor:
             break
 
-        if executor._shutdown or is_shutdown():
+        if executor._shutdown.is_shutdown or is_shutdown():
             break
 
         executor._log.debug("Polling...")

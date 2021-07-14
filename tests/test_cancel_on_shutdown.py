@@ -76,7 +76,7 @@ def test_submit_during_shutdown():
         assert_that(f, equal_to(futures[2]))
         assert_that(
             calling(executor.submit).with_args(lambda: None),
-            raises(RuntimeError, "Cannot submit after shutdown"),
+            raises(RuntimeError, "cannot schedule new futures after shutdown"),
         )
         submit_more_done[0] = True
 
@@ -103,7 +103,7 @@ def test_submit_during_shutdown_no_deadlock():
         proceed.wait()
         assert_that(
             calling(executor.submit).with_args(lambda: None),
-            raises(RuntimeError, "Cannot submit after shutdown"),
+            raises(RuntimeError, "cannot schedule new futures after shutdown"),
         )
         submit_more_done[0] = True
 

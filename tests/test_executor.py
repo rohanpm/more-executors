@@ -503,6 +503,21 @@ def test_submit_staggered(any_executor, request):
         do_test_submit_staggered(any_executor)
 
 
+def test_double_shutdown(any_executor):
+    """Shutting down an executore more than once is OK."""
+    any_executor.shutdown()
+    any_executor.shutdown()
+
+
+def test_submit_after_shutdown(any_executor):
+    """Submitting after executor shutdown raises an error."""
+    any_executor.shutdown()
+    assert_that(
+        calling(any_executor.submit).with_args(lambda: 123),
+        raises(RuntimeError, "cannot schedule new futures after shutdown"),
+    )
+
+
 def do_test_submit_staggered(executor):
     values = [1, 2, 3]
     expected_results = [2, 4, 6, 2, 4, 6]

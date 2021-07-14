@@ -3,11 +3,13 @@ from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 
 from .wrap import CanCustomizeBind
 from .metrics import metrics, track_future
+from .helpers import ShutdownHelper
 
 
 class CustomizableThreadPoolExecutor(CanCustomizeBind, ThreadPoolExecutor):
     def __init__(self, *args, **kwargs):
         self.__name = kwargs.pop("name", "default")
+        self.__shutdown = ShutdownHelper()
 
         if (
             sys.version_info >= (3, 6)
@@ -22,13 +24,17 @@ class CustomizableThreadPoolExecutor(CanCustomizeBind, ThreadPoolExecutor):
         metrics.EXEC_INPROGRESS.labels(type="threadpool", executor=self.__name).inc()
 
     def shutdown(self, *args, **kwargs):
-        metrics.EXEC_INPROGRESS.labels(type="threadpool", executor=self.__name).dec()
-        super(CustomizableThreadPoolExecutor, self).shutdown(*args, **kwargs)
+        if self.__shutdown():
+            metrics.EXEC_INPROGRESS.labels(
+                type="threadpool", executor=self.__name
+            ).dec()
+            super(CustomizableThreadPoolExecutor, self).shutdown(*args, **kwargs)
 
     def submit(self, *args, **kwargs):
-        f = super(CustomizableThreadPoolExecutor, self).submit(*args, **kwargs)
-        track_future(f, type="threadpool", executor=self.__name)
-        return f
+        with self.__shutdown.ensure_alive():
+            f = super(CustomizableThreadPoolExecutor, self).submit(*args, **kwargs)
+            track_future(f, type="threadpool", executor=self.__name)
+            return f
 
 
 class CustomizableProcessPoolExecutor(CanCustomizeBind, ProcessPoolExecutor):

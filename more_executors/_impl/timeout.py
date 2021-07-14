@@ -12,6 +12,7 @@ from .wrap import CanCustomizeBind
 from .helpers import executor_loop
 from .event import get_event, is_shutdown
 from .logwrap import LogWrapper
+from .helpers import ShutdownHelper
 from .metrics import metrics, track_future
 
 LOG = LogWrapper(logging.getLogger("TimeoutExecutor"))
@@ -58,7 +59,7 @@ class TimeoutExecutor(CanCustomizeBind, Executor):
         self._name = name
         self._delegate = delegate
         self._timeout = timeout
-        self._shutdown = False
+        self._shutdown = ShutdownHelper()
         self._jobs = []
         self._jobs_lock = Lock()
         self._jobs_write = get_event()
@@ -84,25 +85,26 @@ class TimeoutExecutor(CanCustomizeBind, Executor):
 
         .. versionadded:: 1.19.0
         """
-        delegate_future = self._delegate.submit(fn, *args, **kwargs)
-        future = MapFuture(delegate_future)
-        track_future(future, type="timeout", executor=self._name)
+        with self._shutdown.ensure_alive():
+            delegate_future = self._delegate.submit(fn, *args, **kwargs)
+            future = MapFuture(delegate_future)
+            track_future(future, type="timeout", executor=self._name)
 
-        future.add_done_callback(self._on_future_done)
-        job = Job(future, delegate_future, monotonic() + timeout)
-        with self._jobs_lock:
-            self._jobs.append(job)
-        self._jobs_write.set()
-        return future
+            future.add_done_callback(self._on_future_done)
+            job = Job(future, delegate_future, monotonic() + timeout)
+            with self._jobs_lock:
+                self._jobs.append(job)
+            self._jobs_write.set()
+            return future
 
     def shutdown(self, wait=True, **_kwargs):
-        self._log.debug("shutdown")
-        self._shutdown = True
-        metrics.EXEC_INPROGRESS.labels(type="timeout", executor=self._name).dec()
-        self._jobs_write.set()
-        self._delegate.shutdown(wait, **_kwargs)
-        if wait:
-            self._job_thread.join(MAX_TIMEOUT)
+        if self._shutdown():
+            self._log.debug("shutdown")
+            metrics.EXEC_INPROGRESS.labels(type="timeout", executor=self._name).dec()
+            self._jobs_write.set()
+            self._delegate.shutdown(wait, **_kwargs)
+            if wait:
+                self._job_thread.join(MAX_TIMEOUT)
 
     def _partition_jobs(self):
         pending = []
@@ -144,7 +146,7 @@ class TimeoutExecutor(CanCustomizeBind, Executor):
             LOG.debug("Executor was collected")
             return (None, None)
 
-        if executor._shutdown or is_shutdown():
+        if executor._shutdown.is_shutdown or is_shutdown():
             executor._log.debug("Executor was shut down")
             return (None, None)
 

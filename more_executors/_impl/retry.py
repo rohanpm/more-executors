@@ -10,7 +10,7 @@ from .wrap import CanCustomizeBind
 from .helpers import executor_loop
 from .event import get_event, is_shutdown
 from .logwrap import LogWrapper
-
+from .helpers import ShutdownHelper
 from .metrics import metrics, track_future
 
 
@@ -227,7 +227,7 @@ class RetryExecutor(CanCustomizeBind, Executor):
         )
         self._submit_thread.daemon = True
 
-        self._shutdown = False
+        self._shutdown = ShutdownHelper()
         self._lock = RLock()
 
         metrics.EXEC_INPROGRESS.labels(executor=self._name, type="retry").inc()
@@ -236,15 +236,15 @@ class RetryExecutor(CanCustomizeBind, Executor):
         self._submit_thread.start()
 
     def shutdown(self, wait=True, **_kwargs):
-        self._log.debug("Shutting down.")
-        metrics.EXEC_INPROGRESS.labels(executor=self._name, type="retry").dec()
-        self._shutdown = True
-        self._wake_thread()
-        self._delegate.shutdown(wait, **_kwargs)
-        if wait:
-            self._log.debug("Waiting for thread")
-            self._submit_thread.join(MAX_TIMEOUT)
-        self._log.debug("Shutdown complete")
+        if self._shutdown():
+            self._log.debug("Shutting down.")
+            metrics.EXEC_INPROGRESS.labels(executor=self._name, type="retry").dec()
+            self._wake_thread()
+            self._delegate.shutdown(wait, **_kwargs)
+            if wait:
+                self._log.debug("Waiting for thread")
+                self._submit_thread.join(MAX_TIMEOUT)
+            self._log.debug("Shutdown complete")
 
     def submit(self, *args, **kwargs):  # pylint: disable=arguments-differ
         return self.submit_retry(self._default_retry_policy, *args, **kwargs)
@@ -255,17 +255,18 @@ class RetryExecutor(CanCustomizeBind, Executor):
         Parameters:
             retry_policy (RetryPolicy): a policy which is used for this call only
         """
-        future = RetryFuture(self)
-        track_future(future, type="retry", executor=self._name)
+        with self._shutdown.ensure_alive():
+            future = RetryFuture(self)
+            track_future(future, type="retry", executor=self._name)
 
-        job = RetryJob(retry_policy, None, future, 0, monotonic(), fn, args, kwargs)
-        self._append_job(job)
+            job = RetryJob(retry_policy, None, future, 0, monotonic(), fn, args, kwargs)
+            self._append_job(job)
 
-        # Let the submit thread know it should wake up to check for new jobs
-        self._wake_thread()
+            # Let the submit thread know it should wake up to check for new jobs
+            self._wake_thread()
 
-        self._log.debug("Returning future %s", future)
-        return future
+            self._log.debug("Returning future %s", future)
+            return future
 
     def _wake_thread(self):
         self._submit_event.set()
@@ -492,7 +493,7 @@ def _submit_loop(executor_ref):
         if not executor:
             break
 
-        if executor._shutdown or is_shutdown():
+        if executor._shutdown.is_shutdown or is_shutdown():
             break
 
         executor._log.debug("_submit_loop iter")

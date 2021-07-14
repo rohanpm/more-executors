@@ -2,6 +2,7 @@ from concurrent.futures import Executor
 import asyncio
 
 from .metrics import metrics
+from .helpers import ShutdownHelper
 
 
 class AsyncioExecutor(Executor):
@@ -38,6 +39,7 @@ class AsyncioExecutor(Executor):
         self._delegate = delegate
         self._loop = loop
         self._name = name
+        self._shutdown = ShutdownHelper()
         metrics.EXEC_TOTAL.labels(type="asyncio", executor=self._name).inc()
         metrics.EXEC_INPROGRESS.labels(type="asyncio", executor=self._name).inc()
 
@@ -58,11 +60,13 @@ class AsyncioExecutor(Executor):
             asyncio.Future:
                 a future for the given callable
         """
-        if not loop:
-            loop = asyncio.get_event_loop()
-        future = self._delegate.submit(fn, *args, **kwargs)
-        return asyncio.wrap_future(future, loop=loop)
+        with self._shutdown.ensure_alive():
+            if not loop:
+                loop = asyncio.get_event_loop()
+            future = self._delegate.submit(fn, *args, **kwargs)
+            return asyncio.wrap_future(future, loop=loop)
 
     def shutdown(self, wait=True, **_kwargs):
-        metrics.EXEC_INPROGRESS.labels(type="asyncio", executor=self._name).dec()
-        self._delegate.shutdown(wait, **_kwargs)
+        if self._shutdown():
+            metrics.EXEC_INPROGRESS.labels(type="asyncio", executor=self._name).dec()
+            self._delegate.shutdown(wait, **_kwargs)

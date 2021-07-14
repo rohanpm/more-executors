@@ -3,6 +3,7 @@ from concurrent.futures import Executor
 from .common import _Future, copy_exception, copy_future_exception
 from .wrap import CanCustomizeBind
 from .metrics import metrics, track_future
+from .helpers import ShutdownHelper
 
 
 def identity(x):
@@ -152,18 +153,21 @@ class MapExecutor(CanCustomizeBind, Executor):
         self._delegate = delegate
         self._fn = fn
         self._name = name
+        self._shutdown = ShutdownHelper()
         self._error_fn = kwargs.get("error_fn")
         self._metric_exec_total.inc()
         self._metric_exec_inprogress.inc()
 
     def shutdown(self, wait=True, **_kwargs):
-        self._metric_exec_inprogress.dec()
-        self._delegate.shutdown(wait, **_kwargs)
+        if self._shutdown():
+            self._metric_exec_inprogress.dec()
+            self._delegate.shutdown(wait, **_kwargs)
 
     def submit(self, *args, **kwargs):  # pylint: disable=arguments-differ
-        inner_f = self._delegate.submit(*args, **kwargs)
-        return track_future(
-            self._FUTURE_CLASS(inner_f, self._fn, self._error_fn),
-            type=self._TYPE,
-            executor=self._name,
-        )
+        with self._shutdown.ensure_alive():
+            inner_f = self._delegate.submit(*args, **kwargs)
+            return track_future(
+                self._FUTURE_CLASS(inner_f, self._fn, self._error_fn),
+                type=self._TYPE,
+                executor=self._name,
+            )

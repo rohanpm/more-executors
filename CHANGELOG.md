@@ -14,6 +14,11 @@ from version 1.20.0 onwards.
 
 ## Changed
 - Internal refactoring to improve usability of prometheus metrics.
+- Improved consistency of shutdown behavior. Previously, the behavior on
+  incorrect usage of executors such as submit-after-shutdown or multiple calls
+  to shutdown was not strictly defined and could differ between executors.
+  Every executor will now raise an exception on submit-after-shutdown and
+  will tolerate multiple calls to shutdown.
 
 ## [2.7.0] - 2021-07-11
 
