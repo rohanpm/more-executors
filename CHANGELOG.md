@@ -7,6 +7,10 @@ from version 1.20.0 onwards.
 
 ## [Unreleased]
 
+- n/a
+
+## [2.8.0] - 2021-07-14
+
 ### Added
 - Type stubs are now included. These have been tested with mypy and pylance.
   Type information is not complete, but is sufficient for most typical
@@ -263,7 +267,8 @@ from version 1.20.0 onwards.
 - Minor improvements to logging
 
 
-[Unreleased]: https://github.com/rohanpm/more-executors/compare/v2.7.0...HEAD
+[Unreleased]: https://github.com/rohanpm/more-executors/compare/v2.8.0...HEAD
+[2.8.0]: https://github.com/rohanpm/more-executors/compare/v2.7.0...v2.8.0
 [2.7.0]: https://github.com/rohanpm/more-executors/compare/v2.6.0...v2.7.0
 [2.6.0]: https://github.com/rohanpm/more-executors/compare/v2.5.1...v2.6.0
 [2.5.1]: https://github.com/rohanpm/more-executors/compare/v2.5.0...v2.5.1
