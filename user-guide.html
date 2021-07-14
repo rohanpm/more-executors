@@ -394,11 +394,13 @@ shutdown via <a class="reference internal" href="reference/cancel.html#more_exec
 </div></blockquote>
 <p>Metrics include the following labels:</p>
 <blockquote>
-<div><dl class="simple">
+<div><dl>
 <dt><code class="docutils literal notranslate"><span class="pre">type</span></code></dt><dd><p>The type of executor or future in use; e.g. <code class="docutils literal notranslate"><span class="pre">map</span></code>, <code class="docutils literal notranslate"><span class="pre">retry</span></code>,
 <code class="docutils literal notranslate"><span class="pre">poll</span></code>.</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">executor</span></code></dt><dd><p>Name of executor (see <a class="reference internal" href="#naming-executors"><span class="std std-ref">Naming executors</span></a>).</p>
+<p>Executors created for internal use by this library are named
+<code class="docutils literal notranslate"><span class="pre">internal</span></code>.</p>
 </dd>
 </dl>
 </div></blockquote>
