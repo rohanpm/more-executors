@@ -346,3 +346,5 @@ Metrics include the following labels:
     ``executor``
         Name of executor (see :ref:`Naming executors`).
 
+        Executors created for internal use by this library are named
+        ``internal``.

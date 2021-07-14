@@ -4,6 +4,9 @@ from concurrent.futures import Future
 
 from ..executors import Executors
 from ..common import copy_exception
+from ..metrics import track_future
+
+EXECUTOR = Executors.sync(name="internal")
 
 
 def f_return(x=None):
@@ -23,7 +26,10 @@ def f_return(x=None):
     .. versionchanged:: 2.1.0
         value now defaults to :code:`None`
     """
-    return Executors.sync().submit(lambda: x)
+    future = Future()
+    track_future(future, type="return", executor="none")
+    future.set_result(x)
+    return future
 
 
 def f_return_error(x, traceback=None):
@@ -50,6 +56,7 @@ def f_return_error(x, traceback=None):
     """
 
     f = Future()
+    track_future(f, type="return_error", executor="none")
     copy_exception(f, x, traceback)
     return f
 
@@ -63,6 +70,7 @@ def f_return_cancelled():
     .. versionadded:: 1.19.0
     """
     f = Future()
+    track_future(f, type="return_cancelled", executor="none")
     f.cancel()
     f.set_running_or_notify_cancel()
     return f
@@ -96,4 +104,4 @@ def chain_cancel(f_outer, f_inner):
 
 
 def wrap(f):
-    return Executors.sync().flat_bind(lambda: f)
+    return EXECUTOR.flat_bind(lambda: f)

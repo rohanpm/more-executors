@@ -12,6 +12,9 @@ from version 1.20.0 onwards.
   Type information is not complete, but is sufficient for most typical
   scenarios for composing executors and futures. Requires Python 3.9 or later.
 
+## Changed
+- Internal refactoring to improve usability of prometheus metrics.
+
 ## [2.7.0] - 2021-07-11
 
 ### Added
