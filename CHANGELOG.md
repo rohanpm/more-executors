@@ -7,7 +7,11 @@ from version 1.20.0 onwards.
 
 ## [Unreleased]
 
-- n/a
+### Fixed
+
+- Fix a bug specific to Python 2 where mixing `f_proxy` with other future
+  composition functions such as `f_map` could result in the proxy future being
+  eagerly evaluated.
 
 ## [2.8.0] - 2021-07-14
 
