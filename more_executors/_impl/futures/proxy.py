@@ -22,6 +22,10 @@ class ProxyFuture(MapFuture):
         return len(self.__result)
 
     def __getattr__(self, name):
+        if name.startswith("__"):
+            # Do not allow any special properties to trigger resolution
+            # of the future, other than those we've explicitly proxied.
+            raise AttributeError()
         return getattr(self.__result, name)
 
     def __getitem__(self, key):
