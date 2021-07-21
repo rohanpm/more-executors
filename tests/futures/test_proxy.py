@@ -1,8 +1,10 @@
 from math import floor, ceil, trunc
+from threading import Semaphore
 import pytest
 
 
-from more_executors.futures import f_return, f_proxy
+from more_executors import Executors
+from more_executors.futures import f_return, f_proxy, f_map
 
 
 def test_len():
@@ -147,3 +149,19 @@ def test_bool():
     assert xtrue
     assert xfalse
     assert xempty
+
+
+def test_map():
+    sem = Semaphore(0)
+    with Executors.thread_pool() as exc:
+        # This future cannot possibly proceed until we unblock the semaphore.
+        f = exc.submit(sem.acquire)
+        f = f_proxy(f)
+
+        # If bug #278 exists, we will hang here indefinitely.
+        f = f_map(f, lambda _: 123)
+
+        # If bug is fixed, future is still not evaluated.
+        # Let it proceed now.
+        sem.release()
+        assert f.result() == 123

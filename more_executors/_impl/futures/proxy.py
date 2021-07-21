@@ -22,6 +22,10 @@ class ProxyFuture(MapFuture):
         return len(self.__result)
 
     def __getattr__(self, name):
+        if name.startswith("__"):
+            # Do not allow any special properties to trigger resolution
+            # of the future, other than those we've explicitly proxied.
+            raise AttributeError()
         return getattr(self.__result, name)
 
     def __getitem__(self, key):
@@ -82,16 +86,16 @@ class ProxyFuture(MapFuture):
         return self.__result | other
 
     def __neg__(self):
-        return -self.__result
+        return -self.__result  # pylint: disable=invalid-unary-operand-type
 
     def __pos__(self):
-        return +self.__result
+        return +self.__result  # pylint: disable=invalid-unary-operand-type
 
     def __abs__(self):
         return abs(self.__result)
 
     def __invert__(self):
-        return ~self.__result
+        return ~self.__result  # pylint: disable=invalid-unary-operand-type
 
     def __complex__(self):
         return complex(self.__result)
