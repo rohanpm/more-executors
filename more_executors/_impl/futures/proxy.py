@@ -86,16 +86,16 @@ class ProxyFuture(MapFuture):
         return self.__result | other
 
     def __neg__(self):
-        return -self.__result
+        return -self.__result  # pylint: disable=invalid-unary-operand-type
 
     def __pos__(self):
-        return +self.__result
+        return +self.__result  # pylint: disable=invalid-unary-operand-type
 
     def __abs__(self):
         return abs(self.__result)
 
     def __invert__(self):
-        return ~self.__result
+        return ~self.__result  # pylint: disable=invalid-unary-operand-type
 
     def __complex__(self):
         return complex(self.__result)
