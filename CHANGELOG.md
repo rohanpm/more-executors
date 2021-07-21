@@ -7,6 +7,10 @@ from version 1.20.0 onwards.
 
 ## [Unreleased]
 
+- n/a
+
+## [2.8.1] - 2021-07-21
+
 ### Fixed
 
 - Fix a bug specific to Python 2 where mixing `f_proxy` with other future
@@ -271,7 +275,8 @@ from version 1.20.0 onwards.
 - Minor improvements to logging
 
 
-[Unreleased]: https://github.com/rohanpm/more-executors/compare/v2.8.0...HEAD
+[Unreleased]: https://github.com/rohanpm/more-executors/compare/v2.8.1...HEAD
+[2.8.1]: https://github.com/rohanpm/more-executors/compare/v2.8.0...v2.8.1
 [2.8.0]: https://github.com/rohanpm/more-executors/compare/v2.7.0...v2.8.0
 [2.7.0]: https://github.com/rohanpm/more-executors/compare/v2.6.0...v2.7.0
 [2.6.0]: https://github.com/rohanpm/more-executors/compare/v2.5.1...v2.6.0
