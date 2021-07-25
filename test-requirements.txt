@@ -151,9 +151,9 @@ pyhamcrest==2.0.2 \
     --hash=sha256:412e00137858f04bde0729913874a48485665f2d36fe9ee449f26be864af9316 \
     --hash=sha256:7ead136e03655af85069b6f47b23eb7c3e5c221aa9f022a4fbb499f5b7308f29
     # via -r test-requirements.in
-pylint==2.9.4 ; python_version >= "3" \
-    --hash=sha256:2a971129fb2d594068913a7e531d4b6d2785b2a68c6857e2baa40d3214da30f4 \
-    --hash=sha256:a622c4c4c79dc8fe5e784efccacec3afe9d5e5ffab5fda2264fb5afa7c9b5797
+pylint==2.9.5 ; python_version >= "3" \
+    --hash=sha256:1f333dc72ef7f5ea166b3230936ebcfb1f3b722e76c980cb9fe6b9f95e8d3172 \
+    --hash=sha256:748f81e5776d6273a6619506e08f1b48ff9bcb8198366a56821cf11aac14fc87
     # via -r test-requirements.in
 pyparsing==2.4.7 \
     --hash=sha256:c203ec8783bf771a155b207279b9bccb8dea02d8f0c9e5f8ead507bc3246ecc1 \
