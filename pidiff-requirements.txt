@@ -40,9 +40,9 @@ lazy-object-proxy==1.6.0 \
     --hash=sha256:ed361bb83436f117f9917d282a456f9e5009ea12fd6de8742d1a4752c3017e93 \
     --hash=sha256:f5144c75445ae3ca2057faac03fda5a902eff196702b0a24daf1d6ce0650514b
     # via astroid
-pidiff==1.6.0 \
-    --hash=sha256:70ac90d477e39b87fd5cc26d487c277b83b1663b613b3c5dae06ffd5077b5c57 \
-    --hash=sha256:a1b75e65c7b3cc6b3ef26cb39a3c1cf408f27e7462d21fcaaa2ec160c8f4c079
+pidiff==1.7.0 \
+    --hash=sha256:8c586a117618d996861607831794c7e565c82e43c68451d83ecbbacff5defdf4 \
+    --hash=sha256:d34450d317a6e7dc4e3f91f305737b8208d720328ca625ba0dc6584c9c7edec6
     # via -r pidiff-requirements.in
 pyrsistent==0.18.0 \
     --hash=sha256:097b96f129dd36a8c9e33594e7ebb151b1515eb52cceb08474c10a5479e799f2 \
