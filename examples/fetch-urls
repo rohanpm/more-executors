@@ -10,6 +10,7 @@ from more_executors.retry import RetryPolicy, ExceptionRetryPolicy
 
 class LoggingRetryPolicy(RetryPolicy):
     """A RetryPolicy which prints a message before each retry."""
+
     def __init__(self):
         # Inherit the behavior from the default policy
         self.policy = ExceptionRetryPolicy()
@@ -38,14 +39,14 @@ def fetch_urls(urls):
     # - run get_content on each response
     # - retry up to several minutes on any errors
     # - custom retry policy used to log before each retry
-    executor = Executors.\
-        thread_pool(max_workers=4).\
-        with_map(get_content).\
-        with_retry(LoggingRetryPolicy())
+    executor = (
+        Executors.thread_pool(max_workers=4)
+        .with_map(get_content)
+        .with_retry(LoggingRetryPolicy())
+    )
 
     # Submit requests for each given URL
-    futures = [executor.submit(requests.get, url)
-               for url in urls]
+    futures = [executor.submit(requests.get, url) for url in urls]
 
     # Iterate through completed futures.
     # The status code has already been checked on each response.
@@ -57,5 +58,5 @@ def fetch_urls(urls):
         print("")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     fetch_urls(sys.argv[1:])

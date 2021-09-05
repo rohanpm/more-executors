@@ -10,22 +10,22 @@ import yaml
 
 import github3
 
-CONFIG_PATH = '~/.config/hub'
-OWNER = 'rohanpm'
-REPO = 'more-executors'
+CONFIG_PATH = "~/.config/hub"
+OWNER = "rohanpm"
+REPO = "more-executors"
 
 
 def github_session():
     with open(os.path.expanduser(CONFIG_PATH)) as f:
         hub_config = yaml.load(f)
 
-    creds = hub_config.get('github.com', [])
+    creds = hub_config.get("github.com", [])
     if not creds:
         raise RuntimeError("Login with 'hub' command first")
     if len(creds) != 1:
         raise RuntimeError("Unexpected content in %s" % CONFIG_PATH)
 
-    token = creds[0].get('oauth_token')
+    token = creds[0].get("oauth_token")
     if not token:
         raise RuntimeError("Missing token in %s" % CONFIG_PATH)
 
@@ -34,34 +34,38 @@ def github_session():
 
 def run(raw_args):
     parser = ArgumentParser()
-    parser.add_argument('name', help='name for branch')
-    parser.add_argument('--remove-branch', action='store_true',
-                        help='remove branch if it already exists')
-    parser.add_argument('--skip-rebase', action='store_true',
-                        help='do not rebase on master before push')
-    parser.add_argument('-m', help='pull-request message')
+    parser.add_argument("name", help="name for branch")
+    parser.add_argument(
+        "--remove-branch",
+        action="store_true",
+        help="remove branch if it already exists",
+    )
+    parser.add_argument(
+        "--skip-rebase", action="store_true", help="do not rebase on master before push"
+    )
+    parser.add_argument("-m", help="pull-request message")
     args = parser.parse_args(raw_args)
 
     if args.remove_branch:
         try:
-            check_call(['git', 'branch', '-D', args.name])
+            check_call(["git", "branch", "-D", args.name])
         except CalledProcessError:
             pass
 
-    check_call(['git', 'checkout', '-b', args.name])
+    check_call(["git", "checkout", "-b", args.name])
 
     if not args.skip_rebase:
-        check_call(['git', 'fetch', 'origin'])
-        check_call(['git', 'rebase', '-i', 'origin/master'])
+        check_call(["git", "fetch", "origin"])
+        check_call(["git", "rebase", "-i", "origin/master"])
 
-    check_call(['git', 'push', '-f', '--set-upstream', 'origin', args.name])
+    check_call(["git", "push", "-f", "--set-upstream", "origin", args.name])
 
-    pr_cmd = ['hub', 'pull-request']
+    pr_cmd = ["hub", "pull-request"]
     if args.m:
-        pr_cmd.extend(['-m', args.m])
+        pr_cmd.extend(["-m", args.m])
 
     check_call(pr_cmd)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     run(sys.argv[1:])

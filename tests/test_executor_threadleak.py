@@ -75,7 +75,7 @@ EXECUTORS_WITH_WORKER_THREAD = [
 ]
 
 
-@fixture(params=["sync", "thread_pool",] + EXECUTORS_WITH_WORKER_THREAD)
+@fixture(params=["sync", "thread_pool"] + EXECUTORS_WITH_WORKER_THREAD)
 def executor_ctor(request):
     return request.getfixturevalue("ctor_" + request.param)
 
