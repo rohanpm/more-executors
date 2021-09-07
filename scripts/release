@@ -6,37 +6,40 @@ from subprocess import check_output, check_call
 
 
 def bump(version):
-    components = version.split('.')
+    components = version.split(".")
     components[1] = str(int(components[1]) + 1)
-    components[2] = '0'
-    return '.'.join(components)
+    components[2] = "0"
+    return ".".join(components)
 
 
 def run():
     os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
     current_version = check_output(
-        [sys.executable, 'setup.py', '--version'],
-        encoding='utf-8'
+        [sys.executable, "setup.py", "--version"], encoding="utf-8"
     ).strip()
     new_version = bump(current_version)
 
-    check_call([
-        'sed',
-        '-r',
-        '-e', 's|%s|%s|g' % (re.escape(current_version), new_version),
-        '-i', 'setup.py',
-    ])
+    check_call(
+        [
+            "sed",
+            "-r",
+            "-e",
+            "s|%s|%s|g" % (re.escape(current_version), new_version),
+            "-i",
+            "setup.py",
+        ]
+    )
 
-    check_call(['git', 'add', 'setup.py'])
+    check_call(["git", "add", "setup.py"])
 
-    tag = 'v' + new_version
-    msg = 'Release ' + tag
-    check_call(['git', 'commit', '-m', msg])
-    check_call(['git', 'tag', '-a', '-m', msg, tag])
+    tag = "v" + new_version
+    msg = "Release " + tag
+    check_call(["git", "commit", "-m", msg])
+    check_call(["git", "tag", "-a", "-m", msg, tag])
 
     print("Check `git log', then `git push --follow-tags'")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     run()
