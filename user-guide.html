@@ -38,14 +38,14 @@
 <section id="base-executors">
 <span id="id1"></span><h2>Base executors<a class="headerlink" href="#base-executors" title="Permalink to this headline">¶</a></h2>
 <p>These methods on the <code class="xref py py-class docutils literal notranslate"><span class="pre">more_executors.Executors</span></code> class
-create standalone <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>
+create standalone <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>
 instances which may serve as the basis of <a class="reference internal" href="#composing-executors">composing executors</a>.</p>
 <blockquote>
 <div><dl class="simple">
-<dt><a class="reference internal" href="reference/base-executors.html#more_executors.Executors.thread_pool" title="more_executors.Executors.thread_pool"><code class="xref py py-meth docutils literal notranslate"><span class="pre">thread_pool()</span></code></a></dt><dd><p>creates a new <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.ThreadPoolExecutor" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ThreadPoolExecutor</span></code></a>
+<dt><a class="reference internal" href="reference/base-executors.html#more_executors.Executors.thread_pool" title="more_executors.Executors.thread_pool"><code class="xref py py-meth docutils literal notranslate"><span class="pre">thread_pool()</span></code></a></dt><dd><p>creates a new <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.ThreadPoolExecutor" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ThreadPoolExecutor</span></code></a>
 to execute callables in threads.</p>
 </dd>
-<dt><a class="reference internal" href="reference/base-executors.html#more_executors.Executors.process_pool" title="more_executors.Executors.process_pool"><code class="xref py py-meth docutils literal notranslate"><span class="pre">process_pool()</span></code></a></dt><dd><p>creates a new <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.ProcessPoolExecutor" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProcessPoolExecutor</span></code></a>
+<dt><a class="reference internal" href="reference/base-executors.html#more_executors.Executors.process_pool" title="more_executors.Executors.process_pool"><code class="xref py py-meth docutils literal notranslate"><span class="pre">process_pool()</span></code></a></dt><dd><p>creates a new <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.ProcessPoolExecutor" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProcessPoolExecutor</span></code></a>
 to execute callables in processes.</p>
 </dd>
 <dt><a class="reference internal" href="reference/base-executors.html#more_executors.Executors.sync" title="more_executors.Executors.sync"><code class="xref py py-meth docutils literal notranslate"><span class="pre">sync()</span></code></a></dt><dd><p>creates a new <a class="reference internal" href="reference/base-executors.html#more_executors.sync.SyncExecutor" title="more_executors.sync.SyncExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyncExecutor</span></code></a>
@@ -82,7 +82,7 @@ use-cases.</p>
 </dd>
 <dt><a class="reference internal" href="reference/cancel.html#more_executors.Executors.with_cancel_on_shutdown" title="more_executors.Executors.with_cancel_on_shutdown"><code class="xref py py-meth docutils literal notranslate"><span class="pre">with_cancel_on_shutdown()</span></code></a></dt><dd><p>cancel any pending futures on executor shutdown</p>
 </dd>
-<dt><a class="reference internal" href="reference/asyncio.html#more_executors.Executors.with_asyncio" title="more_executors.Executors.with_asyncio"><code class="xref py py-meth docutils literal notranslate"><span class="pre">with_asyncio()</span></code></a></dt><dd><p>bridge between <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#module-concurrent.futures" title="(in Python v3.9)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">concurrent.futures</span></code></a> and <a class="reference external" href="https://docs.python.org/3/library/asyncio.html#module-asyncio" title="(in Python v3.9)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">asyncio</span></code></a></p>
+<dt><a class="reference internal" href="reference/asyncio.html#more_executors.Executors.with_asyncio" title="more_executors.Executors.with_asyncio"><code class="xref py py-meth docutils literal notranslate"><span class="pre">with_asyncio()</span></code></a></dt><dd><p>bridge between <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#module-concurrent.futures" title="(in Python v3.10)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">concurrent.futures</span></code></a> and <a class="reference external" href="https://docs.python.org/3/library/asyncio.html#module-asyncio" title="(in Python v3.10)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">asyncio</span></code></a></p>
 </dd>
 </dl>
 </div></blockquote>
@@ -268,17 +268,17 @@ timeout has elapsed</p></td>
 <p>Several executors internally make use of threads. Thus, executors should be
 considered relatively heavyweight: creating dozens of executors within a
 process is probably fine, creating thousands is possibly not.</p>
-<p>Callbacks added by <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future.add_done_callback" title="(in Python v3.9)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_done_callback()</span></code></a> may
+<p>Callbacks added by <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future.add_done_callback" title="(in Python v3.10)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_done_callback()</span></code></a> may
 be invoked from any thread and should avoid any slow blocking operations.</p>
 <p>All provided executors are thread-safe with the exception of the
-<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor.shutdown" title="(in Python v3.9)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">shutdown()</span></code></a> method, which should be called
+<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor.shutdown" title="(in Python v3.10)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">shutdown()</span></code></a> method, which should be called
 from one thread only.</p>
 </section>
 <section id="executor-shutdown">
 <h2>Executor shutdown<a class="headerlink" href="#executor-shutdown" title="Permalink to this headline">¶</a></h2>
 <p>Shutting down an executor will also shut down all wrapped executors.</p>
 <p>In the example below, any threads created by the
-<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.ThreadPoolExecutor" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ThreadPoolExecutor</span></code></a>, as well as the thread
+<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.ThreadPoolExecutor" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ThreadPoolExecutor</span></code></a>, as well as the thread
 created by the <a class="reference internal" href="reference/retry.html#more_executors.retry.RetryExecutor" title="more_executors.retry.RetryExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">RetryExecutor</span></code></a>, will be joined
 at the end of the <cite>with</cite> block:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">executor</span> <span class="o">=</span> <span class="n">Executors</span><span class="o">.</span><span class="n">thread_pool</span><span class="p">()</span><span class="o">.</span> \
@@ -313,7 +313,7 @@ accidentally create a circular reference between the provided code and the
 executor. When this happens, it will no longer be possible for the garbage
 collector to clean up the executor’s resources automatically and a thread
 leak may occur. If in doubt, call
-<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor.shutdown" title="(in Python v3.9)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">shutdown()</span></code></a>.</p>
+<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor.shutdown" title="(in Python v3.10)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">shutdown()</span></code></a>.</p>
 </section>
 <section id="prometheus-metrics">
 <span id="metrics"></span><h2>Prometheus metrics<a class="headerlink" href="#prometheus-metrics" title="Permalink to this headline">¶</a></h2>
