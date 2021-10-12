@@ -4,17 +4,17 @@
 #
 #    pip-compile --generate-hashes pidiff-requirements.in
 #
-astroid==2.8.0 \
-    --hash=sha256:dcc06f6165f415220013801642bd6c9808a02967070919c4b746c6864c205471 \
-    --hash=sha256:fe81f80c0b35264acb5653302ffbd935d394f1775c5e4487df745bf9c2442708
+astroid==2.8.2 \
+    --hash=sha256:304e99c129794f2cfda584a12b71fde85205da950e2f330f4be09150525ae949 \
+    --hash=sha256:9eaeaf92b3e21b70bec1a262e7eb118d2e96294892a5de595c92a12adc80dfc2
     # via pidiff
 attrs==21.2.0 \
     --hash=sha256:149e90d6d8ac20db7a955ad60cf0e6881a3f20d37096140088356da6c716b0b1 \
     --hash=sha256:ef6aaac3ca6cd92904cdd0d83f629a15f18053ec84e6432106f7a4d04ae4f5fb
     # via jsonschema
-jsonschema==4.0.1 \
-    --hash=sha256:48f4e74f8bec0c2f75e9fcfffa264e78342873e1b57e2cfeae54864cc5e9e4dd \
-    --hash=sha256:9938802041347f2c62cad2aef59e9a0826cd34584f3609db950efacb4dbf6518
+jsonschema==4.1.0 \
+    --hash=sha256:2b3cca28580511d44326f0e7fc582eab3cbe31aabd1a1c2cfa74a399796ffd84 \
+    --hash=sha256:9dd7c33b4a96138dc37bb86b3610d3b12d30d96433d4d73435ca3025804154a8
     # via pidiff
 lazy-object-proxy==1.6.0 \
     --hash=sha256:17e0967ba374fc24141738c69736da90e94419338fd4c7c7bef01ee26b339653 \
