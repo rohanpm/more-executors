@@ -4,9 +4,9 @@
 #
 #    pip-compile --generate-hashes pidiff-requirements.in
 #
-astroid==2.8.4 \
-    --hash=sha256:0755c998e7117078dcb7d0bda621391dd2a85da48052d948c7411ab187325346 \
-    --hash=sha256:1e83a69fd51b013ebf5912d26b9338d6643a55fec2f20c787792680610eed4a2
+astroid==2.8.5 \
+    --hash=sha256:11f7356737b624c42e21e71fe85eea6875cb94c03c82ac76bd535a0ff10b0f25 \
+    --hash=sha256:abc423a1e85bc1553954a14f2053473d2b7f8baf32eae62a328be24f436b5107
     # via pidiff
 attrs==21.2.0 \
     --hash=sha256:149e90d6d8ac20db7a955ad60cf0e6881a3f20d37096140088356da6c716b0b1 \
