@@ -1,2 +1,3 @@
-from ._impl.cancel_on_shutdown import \
-    CancelOnShutdownExecutor as CancelOnShutdownExecutor
+from ._impl.cancel_on_shutdown import (
+    CancelOnShutdownExecutor as CancelOnShutdownExecutor,
+)
