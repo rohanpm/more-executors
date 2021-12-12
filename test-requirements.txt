@@ -146,9 +146,9 @@ py==1.11.0 \
     --hash=sha256:51c75c4126074b472f746a24399ad32f6053d1b34b68d2fa41e558e6f4a98719 \
     --hash=sha256:607c53218732647dff4acdfcd50cb62615cedf612e72d1724fb1a0cc6405b378
     # via pytest
-pyhamcrest==2.0.2 \
-    --hash=sha256:412e00137858f04bde0729913874a48485665f2d36fe9ee449f26be864af9316 \
-    --hash=sha256:7ead136e03655af85069b6f47b23eb7c3e5c221aa9f022a4fbb499f5b7308f29
+pyhamcrest==2.0.3 \
+    --hash=sha256:c29dc977154c49e17c30d1ed49a0a6e31cb0dc7bcf733ac4aa9cb58519c2b00c \
+    --hash=sha256:dfb19cf6d71743e086fbb761ed7faea5aacbc8ec10c17a08b93ecde39192a3db
     # via -r test-requirements.in
 pylint==2.12.2 ; python_version >= "3" \
     --hash=sha256:9d945a73640e1fec07ee34b42f5669b770c759acd536ec7b16d7e4b87a9c9ff9 \
