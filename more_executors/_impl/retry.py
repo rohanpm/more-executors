@@ -86,7 +86,7 @@ class ExceptionRetryPolicy(RetryPolicy):
         return False
 
     def sleep_time(self, attempt, future):
-        return min(self._sleep * (self._exponent ** attempt), self._max_sleep)
+        return min(self._sleep * (self._exponent**attempt), self._max_sleep)
 
 
 class RetryJob(object):
