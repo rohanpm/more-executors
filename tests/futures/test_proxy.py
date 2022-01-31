@@ -78,7 +78,7 @@ def test_math_basic():
     assert xint - 2 == 10
     assert xint % 10 == 2
     assert xint / 2 == 6
-    assert xint ** 2 == 144
+    assert xint**2 == 144
 
     assert xfloat // 2.0 == 2.0
 
