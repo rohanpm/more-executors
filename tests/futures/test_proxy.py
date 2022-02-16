@@ -4,7 +4,7 @@ import pytest
 
 
 from more_executors import Executors
-from more_executors.futures import f_return, f_proxy, f_map
+from more_executors.futures import f_return, f_return_error, f_proxy, f_map
 
 
 def test_len():
@@ -165,3 +165,18 @@ def test_map():
         # Let it proceed now.
         sem.release()
         assert f.result() == 123
+
+
+def test_attribute_error():
+    error = AttributeError("quux!")
+    prox = f_proxy(f_return_error(error))
+
+    # I should be able to get the exception normally
+    assert prox.exception() is error
+
+    # If I try to iterate, it should raise the exception
+    with pytest.raises(Exception) as excinfo:
+        iter(prox)
+
+    # The raised exception should be exactly the underlying value
+    assert excinfo.value is error
