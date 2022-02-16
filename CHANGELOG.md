@@ -7,6 +7,10 @@ from version 1.20.0 onwards.
 
 ## [Unreleased]
 
+- n/a
+
+## [2.8.2] - 2022-02-16
+
 ### Fixed
 
 - Fix a bug where `f_proxy` may trigger a `RecursionError`, if used with a
@@ -278,7 +282,8 @@ from version 1.20.0 onwards.
 - Minor improvements to logging
 
 
-[Unreleased]: https://github.com/rohanpm/more-executors/compare/v2.8.1...HEAD
+[Unreleased]: https://github.com/rohanpm/more-executors/compare/v2.8.2...HEAD
+[2.8.2]: https://github.com/rohanpm/more-executors/compare/v2.8.1...v2.8.2
 [2.8.1]: https://github.com/rohanpm/more-executors/compare/v2.8.0...v2.8.1
 [2.8.0]: https://github.com/rohanpm/more-executors/compare/v2.7.0...v2.8.0
 [2.7.0]: https://github.com/rohanpm/more-executors/compare/v2.6.0...v2.7.0
