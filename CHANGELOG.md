@@ -7,7 +7,10 @@ from version 1.20.0 onwards.
 
 ## [Unreleased]
 
-- n/a
+### Fixed
+
+- Fix a bug where `f_proxy` may trigger a `RecursionError`, if used with a
+  future raising an `AttributeError`.
 
 ## [2.8.1] - 2021-07-21
 
