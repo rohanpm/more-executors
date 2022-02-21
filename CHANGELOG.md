@@ -7,6 +7,10 @@ from version 1.20.0 onwards.
 
 ## [Unreleased]
 
+- n/a
+
+## [2.9.0] - 2022-02-21
+
 ### Changed
 
 - `f_zip` now uses `namedtuple` return types to improve debuggability of certain
@@ -285,7 +289,8 @@ from version 1.20.0 onwards.
 - Minor improvements to logging
 
 
-[Unreleased]: https://github.com/rohanpm/more-executors/compare/v2.8.2...HEAD
+[Unreleased]: https://github.com/rohanpm/more-executors/compare/v2.9.0...HEAD
+[2.9.0]: https://github.com/rohanpm/more-executors/compare/v2.8.2...v2.9.0
 [2.8.2]: https://github.com/rohanpm/more-executors/compare/v2.8.1...v2.8.2
 [2.8.1]: https://github.com/rohanpm/more-executors/compare/v2.8.0...v2.8.1
 [2.8.0]: https://github.com/rohanpm/more-executors/compare/v2.7.0...v2.8.0
