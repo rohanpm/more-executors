@@ -7,7 +7,10 @@ from version 1.20.0 onwards.
 
 ## [Unreleased]
 
-- n/a
+### Changed
+
+- `f_zip` now uses `namedtuple` return types to improve debuggability of certain
+  error scenarios.
 
 ## [2.8.2] - 2022-02-16
 
