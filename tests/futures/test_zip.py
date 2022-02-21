@@ -6,12 +6,14 @@ from more_executors.futures import f_zip, f_return, f_return_error
 def test_zip_none():
     future = f_zip()
     assert future.result() == ()
+    assert "ZipTuple0" in repr(future)
 
 
 def test_zip_single():
     value = "foobar"
     future = f_zip(f_return(value))
     assert future.result() == (value,)
+    assert "ZipTuple1" in repr(future)
 
 
 def test_zip_two():

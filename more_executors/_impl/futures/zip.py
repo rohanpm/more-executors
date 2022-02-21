@@ -2,11 +2,32 @@
 from concurrent.futures import Future
 from threading import Lock
 from functools import partial
+from collections import namedtuple
 
 from more_executors._impl.common import copy_future_exception
 from .base import f_return, chain_cancel, weak_callback
 from .check import ensure_futures
 from ..metrics import track_future
+
+
+# For small-ish tuples, we make f_zip return namedtuple instances
+# which can be traced back to here rather than bare tuples. The point
+# is to improve debuggability of code where the future returned by
+# f_zip ends up being logged with repr(), as in that case only the
+# result's type will be logged. Seeing e.g. 'ZipTuple3' in a crash log
+# rather than 'tuple' could be potentially very helpful.
+TUPLE_CLASSES = []
+for i in range(0, 20):
+    TUPLE_CLASSES.append(
+        namedtuple("ZipTuple%s" % i, ["f%s" % idx for idx in range(0, i)])
+    )
+
+
+def maketuple(value):
+    vlen = len(value)
+    if vlen < len(TUPLE_CLASSES):
+        return TUPLE_CLASSES[vlen](*value)
+    return tuple(value)
 
 
 class Zipper(object):
@@ -40,7 +61,7 @@ class Zipper(object):
                     set_result = True
 
         if set_result:
-            self.out.set_result(tuple(self.fs))
+            self.out.set_result(maketuple(self.fs))
         if set_exception:
             copy_future_exception(f, self.out)
 
@@ -70,6 +91,6 @@ def f_zip(*fs):
     .. versionadded:: 1.19.0
     """
     if not fs:
-        return f_return(())
+        return f_return(maketuple([]))
 
     return track_future(Zipper(fs).out, type="zip")
