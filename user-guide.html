@@ -48,7 +48,7 @@ to execute callables in threads.</p>
 <dt><a class="reference internal" href="reference/base-executors.html#more_executors.Executors.process_pool" title="more_executors.Executors.process_pool"><code class="xref py py-meth docutils literal notranslate"><span class="pre">process_pool()</span></code></a></dt><dd><p>creates a new <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.ProcessPoolExecutor" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProcessPoolExecutor</span></code></a>
 to execute callables in processes.</p>
 </dd>
-<dt><a class="reference internal" href="reference/base-executors.html#more_executors.Executors.sync" title="more_executors.Executors.sync"><code class="xref py py-meth docutils literal notranslate"><span class="pre">sync()</span></code></a></dt><dd><p>creates a new <a class="reference internal" href="reference/base-executors.html#more_executors.sync.SyncExecutor" title="more_executors.sync.SyncExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyncExecutor</span></code></a>
+<dt><a class="reference internal" href="reference/base-executors.html#more_executors.Executors.sync" title="more_executors.Executors.sync"><code class="xref py py-meth docutils literal notranslate"><span class="pre">sync()</span></code></a></dt><dd><p>creates a new <a class="reference internal" href="reference/base-executors.html#more_executors.SyncExecutor" title="more_executors.SyncExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyncExecutor</span></code></a>
 to execute callables in the calling thread.</p>
 </dd>
 </dl>
@@ -109,7 +109,7 @@ attempts).</p>
 </div>
 <p>In this example, an unlimited number of futures may be failed and awaiting
 retries. The throttling in this example has no effect, since a
-<a class="reference internal" href="reference/base-executors.html#more_executors.sync.SyncExecutor" title="more_executors.sync.SyncExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyncExecutor</span></code></a> is intrinsically throttled to
+<a class="reference internal" href="reference/base-executors.html#more_executors.SyncExecutor" title="more_executors.SyncExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyncExecutor</span></code></a> is intrinsically throttled to
 a single pending future.</p>
 </section>
 <section id="naming-executors">
@@ -139,9 +139,9 @@ may be used standalone, or in conjunction with the Executor
 implementations in <code class="docutils literal notranslate"><span class="pre">more-executors</span></code>.</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 33%" />
-<col style="width: 44%" />
-<col style="width: 24%" />
+<col style="width: 29%" />
+<col style="width: 46%" />
+<col style="width: 25%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Function</p></th>
@@ -150,7 +150,7 @@ implementations in <code class="docutils literal notranslate"><span class="pre">
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><a class="reference internal" href="reference/futures-create.html#more_executors.futures.f_return" title="more_executors.futures.f_return"><code class="xref py py-meth docutils literal notranslate"><span class="pre">f_return()</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/futures-create.html#more_executors.f_return" title="more_executors.f_return"><code class="xref py py-meth docutils literal notranslate"><span class="pre">f_return()</span></code></a></p></td>
 <td><dl class="simple">
 <dt>X</dt><dd><p>⟶ Future&lt;X&gt;</p>
 </dd>
@@ -158,15 +158,15 @@ implementations in <code class="docutils literal notranslate"><span class="pre">
 </td>
 <td><p>wrap any value in a future</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="reference/futures-create.html#more_executors.futures.f_return_error" title="more_executors.futures.f_return_error"><code class="xref py py-meth docutils literal notranslate"><span class="pre">f_return_error()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/futures-create.html#more_executors.f_return_error" title="more_executors.f_return_error"><code class="xref py py-meth docutils literal notranslate"><span class="pre">f_return_error()</span></code></a></p></td>
 <td><p><cite>n/a</cite></p></td>
 <td><p>wrap any exception in a future</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="reference/futures-create.html#more_executors.futures.f_return_cancelled" title="more_executors.futures.f_return_cancelled"><code class="xref py py-meth docutils literal notranslate"><span class="pre">f_return_cancelled()</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/futures-create.html#more_executors.f_return_cancelled" title="more_executors.f_return_cancelled"><code class="xref py py-meth docutils literal notranslate"><span class="pre">f_return_cancelled()</span></code></a></p></td>
 <td><p><cite>n/a</cite></p></td>
 <td><p>get a cancelled future</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="reference/futures-apply.html#more_executors.futures.f_apply" title="more_executors.futures.f_apply"><code class="xref py py-meth docutils literal notranslate"><span class="pre">f_apply()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/futures-apply.html#more_executors.f_apply" title="more_executors.f_apply"><code class="xref py py-meth docutils literal notranslate"><span class="pre">f_apply()</span></code></a></p></td>
 <td><dl class="simple">
 <dt>Future&lt;fn&lt;A[,B[,…]]⟶R&gt;&gt;, Future&lt;A&gt;[, Future&lt;B&gt;[, …]]</dt><dd><p>⟶ Future&lt;R&gt;</p>
 </dd>
@@ -174,7 +174,7 @@ implementations in <code class="docutils literal notranslate"><span class="pre">
 </td>
 <td><p>apply a function in the future</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="reference/futures-bool.html#more_executors.futures.f_or" title="more_executors.futures.f_or"><code class="xref py py-meth docutils literal notranslate"><span class="pre">f_or()</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/futures-bool.html#more_executors.f_or" title="more_executors.f_or"><code class="xref py py-meth docutils literal notranslate"><span class="pre">f_or()</span></code></a></p></td>
 <td><dl class="simple">
 <dt>Future&lt;A&gt;[, Future&lt;B&gt;[, …]]</dt><dd><p>⟶ Future&lt;A|B|…&gt;</p>
 </dd>
@@ -182,7 +182,7 @@ implementations in <code class="docutils literal notranslate"><span class="pre">
 </td>
 <td><p>boolean <code class="docutils literal notranslate"><span class="pre">OR</span></code></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="reference/futures-bool.html#more_executors.futures.f_and" title="more_executors.futures.f_and"><code class="xref py py-meth docutils literal notranslate"><span class="pre">f_and()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/futures-bool.html#more_executors.f_and" title="more_executors.f_and"><code class="xref py py-meth docutils literal notranslate"><span class="pre">f_and()</span></code></a></p></td>
 <td><dl class="simple">
 <dt>Future&lt;A&gt;[, Future&lt;B&gt;[, …]]</dt><dd><p>⟶ Future&lt;A|B|…&gt;</p>
 </dd>
@@ -190,7 +190,7 @@ implementations in <code class="docutils literal notranslate"><span class="pre">
 </td>
 <td><p>boolean <code class="docutils literal notranslate"><span class="pre">AND</span></code></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="reference/futures-lists.html#more_executors.futures.f_zip" title="more_executors.futures.f_zip"><code class="xref py py-meth docutils literal notranslate"><span class="pre">f_zip()</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/futures-lists.html#more_executors.f_zip" title="more_executors.f_zip"><code class="xref py py-meth docutils literal notranslate"><span class="pre">f_zip()</span></code></a></p></td>
 <td><dl class="simple">
 <dt>Future&lt;A&gt;[, Future&lt;B&gt;[, …]]</dt><dd><p>⟶ Future&lt;A[, B[, …]]&gt;</p>
 </dd>
@@ -198,7 +198,7 @@ implementations in <code class="docutils literal notranslate"><span class="pre">
 </td>
 <td><p>combine futures into a tuple</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="reference/futures-map.html#more_executors.futures.f_map" title="more_executors.futures.f_map"><code class="xref py py-meth docutils literal notranslate"><span class="pre">f_map()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/futures-map.html#more_executors.f_map" title="more_executors.f_map"><code class="xref py py-meth docutils literal notranslate"><span class="pre">f_map()</span></code></a></p></td>
 <td><dl class="simple">
 <dt>Future&lt;A&gt;, fn&lt;A⟶B&gt;</dt><dd><p>⟶ Future&lt;B&gt;</p>
 </dd>
@@ -207,7 +207,7 @@ implementations in <code class="docutils literal notranslate"><span class="pre">
 <td><p>transform output value of a future
 via a blocking function</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="reference/futures-map.html#more_executors.futures.f_flat_map" title="more_executors.futures.f_flat_map"><code class="xref py py-meth docutils literal notranslate"><span class="pre">f_flat_map()</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/futures-map.html#more_executors.f_flat_map" title="more_executors.f_flat_map"><code class="xref py py-meth docutils literal notranslate"><span class="pre">f_flat_map()</span></code></a></p></td>
 <td><dl class="simple">
 <dt>Future&lt;A&gt;, fn&lt;A⟶Future&lt;B&gt;&gt;</dt><dd><p>⟶ Future&lt;B&gt;</p>
 </dd>
@@ -216,7 +216,7 @@ via a blocking function</p></td>
 <td><p>transform output value of a future
 via a non-blocking function</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="reference/futures-lists.html#more_executors.futures.f_traverse" title="more_executors.futures.f_traverse"><code class="xref py py-meth docutils literal notranslate"><span class="pre">f_traverse()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/futures-lists.html#more_executors.f_traverse" title="more_executors.f_traverse"><code class="xref py py-meth docutils literal notranslate"><span class="pre">f_traverse()</span></code></a></p></td>
 <td><dl class="simple">
 <dt>fn&lt;A⟶Future&lt;B&gt;&gt;, iterable&lt;A&gt;</dt><dd><p>⟶ Future&lt;list&lt;B&gt;&gt;</p>
 </dd>
@@ -225,7 +225,7 @@ via a non-blocking function</p></td>
 <td><p>run non-blocking function over
 iterable</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="reference/futures-lists.html#more_executors.futures.f_sequence" title="more_executors.futures.f_sequence"><code class="xref py py-meth docutils literal notranslate"><span class="pre">f_sequence()</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/futures-lists.html#more_executors.f_sequence" title="more_executors.f_sequence"><code class="xref py py-meth docutils literal notranslate"><span class="pre">f_sequence()</span></code></a></p></td>
 <td><dl class="simple">
 <dt>list&lt;Future&lt;X&gt;&gt;</dt><dd><p>⟶ Future&lt;list&lt;X&gt;&gt;</p>
 </dd>
@@ -234,7 +234,7 @@ iterable</p></td>
 <td><p>convert list of futures to a future
 of list</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="reference/cancel.html#more_executors.futures.f_nocancel" title="more_executors.futures.f_nocancel"><code class="xref py py-meth docutils literal notranslate"><span class="pre">f_nocancel()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/cancel.html#more_executors.f_nocancel" title="more_executors.f_nocancel"><code class="xref py py-meth docutils literal notranslate"><span class="pre">f_nocancel()</span></code></a></p></td>
 <td><dl class="simple">
 <dt>Future&lt;X&gt;</dt><dd><p>⟶ Future&lt;X&gt;</p>
 </dd>
@@ -242,7 +242,7 @@ of list</p></td>
 </td>
 <td><p>make a future unable to be cancelled</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="reference/futures-proxy.html#more_executors.futures.f_proxy" title="more_executors.futures.f_proxy"><code class="xref py py-meth docutils literal notranslate"><span class="pre">f_proxy()</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/futures-proxy.html#more_executors.f_proxy" title="more_executors.f_proxy"><code class="xref py py-meth docutils literal notranslate"><span class="pre">f_proxy()</span></code></a></p></td>
 <td><dl class="simple">
 <dt>Future&lt;X&gt;</dt><dd><p>⟶ Future&lt;X&gt;</p>
 </dd>
@@ -251,7 +251,7 @@ of list</p></td>
 <td><p>make a future proxy calls to the
 future’s result</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="reference/timeout.html#more_executors.futures.f_timeout" title="more_executors.futures.f_timeout"><code class="xref py py-meth docutils literal notranslate"><span class="pre">f_timeout()</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/timeout.html#more_executors.f_timeout" title="more_executors.f_timeout"><code class="xref py py-meth docutils literal notranslate"><span class="pre">f_timeout()</span></code></a></p></td>
 <td><dl class="simple">
 <dt>Future&lt;X&gt;, float</dt><dd><p>⟶ Future&lt;X&gt;</p>
 </dd>
@@ -279,7 +279,7 @@ from one thread only.</p>
 <p>Shutting down an executor will also shut down all wrapped executors.</p>
 <p>In the example below, any threads created by the
 <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.ThreadPoolExecutor" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ThreadPoolExecutor</span></code></a>, as well as the thread
-created by the <a class="reference internal" href="reference/retry.html#more_executors.retry.RetryExecutor" title="more_executors.retry.RetryExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">RetryExecutor</span></code></a>, will be joined
+created by the <a class="reference internal" href="reference/retry.html#more_executors.RetryExecutor" title="more_executors.RetryExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">RetryExecutor</span></code></a>, will be joined
 at the end of the <cite>with</cite> block:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">executor</span> <span class="o">=</span> <span class="n">Executors</span><span class="o">.</span><span class="n">thread_pool</span><span class="p">()</span><span class="o">.</span> \
     <span class="n">with_map</span><span class="p">(</span><span class="n">check_result</span><span class="p">)</span><span class="o">.</span> \
@@ -307,8 +307,8 @@ For example, this code is broken:</p>
 <p>Generally, shutting down executors is optional and is not necessary to
 (eventually) reclaim resources.</p>
 <p>However, where executors accept caller-provided code (such as the polling
-function to <a class="reference internal" href="reference/poll.html#more_executors.poll.PollExecutor" title="more_executors.poll.PollExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">PollExecutor</span></code></a> or the retry
-policy to <a class="reference internal" href="reference/retry.html#more_executors.retry.RetryExecutor" title="more_executors.retry.RetryExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">RetryExecutor</span></code></a>), it is easy to
+function to <a class="reference internal" href="reference/poll.html#more_executors.PollExecutor" title="more_executors.PollExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">PollExecutor</span></code></a> or the retry
+policy to <a class="reference internal" href="reference/retry.html#more_executors.RetryExecutor" title="more_executors.RetryExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">RetryExecutor</span></code></a>), it is easy to
 accidentally create a circular reference between the provided code and the
 executor. When this happens, it will no longer be possible for the garbage
 collector to clean up the executor’s resources automatically and a thread
@@ -368,26 +368,26 @@ raised an exception.</p>
 <a class="reference internal" href="reference/poll.html#poll-function"><span class="std std-ref">Poll function</span></a> calls.</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">more_executors_retry_total</span></code></dt><dd><p>A <em>counter</em> for the total number of times a future was retried
-by <a class="reference internal" href="reference/retry.html#more_executors.retry.RetryExecutor" title="more_executors.retry.RetryExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">RetryExecutor</span></code></a>.</p>
+by <a class="reference internal" href="reference/retry.html#more_executors.RetryExecutor" title="more_executors.RetryExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">RetryExecutor</span></code></a>.</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">more_executors_retry_queue</span></code></dt><dd><p>A <em>gauge</em> for the current queue size of a
-<a class="reference internal" href="reference/retry.html#more_executors.retry.RetryExecutor" title="more_executors.retry.RetryExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">RetryExecutor</span></code></a> (i.e. the
+<a class="reference internal" href="reference/retry.html#more_executors.RetryExecutor" title="more_executors.RetryExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">RetryExecutor</span></code></a> (i.e. the
 number of futures currently waiting to retry).</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">more_executors_retry_delay_total</span></code></dt><dd><p>A <em>counter</em> for the total time (in seconds) spent waiting to
-retry futures via <a class="reference internal" href="reference/retry.html#more_executors.retry.RetryExecutor" title="more_executors.retry.RetryExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">RetryExecutor</span></code></a>.</p>
+retry futures via <a class="reference internal" href="reference/retry.html#more_executors.RetryExecutor" title="more_executors.RetryExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">RetryExecutor</span></code></a>.</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">more_executors_throttle_queue</span></code></dt><dd><p>A <em>gauge</em> for the current queue size of a
-<a class="reference internal" href="reference/throttle.html#more_executors.throttle.ThrottleExecutor" title="more_executors.throttle.ThrottleExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">ThrottleExecutor</span></code></a> (i.e. the number of futures
+<a class="reference internal" href="reference/throttle.html#more_executors.ThrottleExecutor" title="more_executors.ThrottleExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">ThrottleExecutor</span></code></a> (i.e. the number of futures
 not yet able to start due to throttling).</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">more_executors_timeout_total</span></code></dt><dd><p>A <em>counter</em> for the total number of futures cancelled due to timeout
-via <a class="reference internal" href="reference/timeout.html#more_executors.timeout.TimeoutExecutor" title="more_executors.timeout.TimeoutExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeoutExecutor</span></code></a> or
-<a class="reference internal" href="reference/timeout.html#more_executors.futures.f_timeout" title="more_executors.futures.f_timeout"><code class="xref py py-func docutils literal notranslate"><span class="pre">f_timeout()</span></code></a>.</p>
+via <a class="reference internal" href="reference/timeout.html#more_executors.TimeoutExecutor" title="more_executors.TimeoutExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeoutExecutor</span></code></a> or
+<a class="reference internal" href="reference/timeout.html#more_executors.f_timeout" title="more_executors.f_timeout"><code class="xref py py-func docutils literal notranslate"><span class="pre">f_timeout()</span></code></a>.</p>
 <p>Only successfully cancelled futures are included.</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">more_executors_shutdown_cancel_total</span></code></dt><dd><p>A <em>counter</em> for the total number of futures cancelled due to executor
-shutdown via <a class="reference internal" href="reference/cancel.html#more_executors.cancel_on_shutdown.CancelOnShutdownExecutor" title="more_executors.cancel_on_shutdown.CancelOnShutdownExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">CancelOnShutdownExecutor</span></code></a>.</p>
+shutdown via <a class="reference internal" href="reference/cancel.html#more_executors.CancelOnShutdownExecutor" title="more_executors.CancelOnShutdownExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">CancelOnShutdownExecutor</span></code></a>.</p>
 <p>Only successfully cancelled futures are included.</p>
 </dd>
 </dl>

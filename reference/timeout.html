@@ -35,11 +35,11 @@
             
   <section id="timing-out-futures-f-timeout-timeoutexecutor">
 <h1>Timing out futures: <code class="docutils literal notranslate"><span class="pre">f_timeout</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeoutExecutor</span></code><a class="headerlink" href="#timing-out-futures-f-timeout-timeoutexecutor" title="Permalink to this headline">¶</a></h1>
-<section id="module-more_executors.futures">
-<span id="futures-api"></span><h2>Futures API<a class="headerlink" href="#module-more_executors.futures" title="Permalink to this headline">¶</a></h2>
+<section id="futures-api">
+<h2>Futures API<a class="headerlink" href="#futures-api" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
-<dt class="sig sig-object py" id="more_executors.futures.f_timeout">
-<span class="sig-prename descclassname"><span class="pre">more_executors.futures.</span></span><span class="sig-name descname"><span class="pre">f_timeout</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">future</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.futures.f_timeout" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="more_executors.f_timeout">
+<span class="sig-prename descclassname"><span class="pre">more_executors.</span></span><span class="sig-name descname"><span class="pre">f_timeout</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">future</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.f_timeout" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wrap a future to cancel it after a timeout is reached.</p>
 <p>Signature: <code class="code docutils literal notranslate"><span class="pre">Future&lt;X&gt;,</span> <span class="pre">float</span> <span class="pre">⟶</span> <span class="pre">Future&lt;X&gt;</span></code></p>
 <dl class="field-list simple">
@@ -69,8 +69,8 @@ is no guarantee that the cancel will succeed.</p>
 <section id="executors-api">
 <h2>Executors API<a class="headerlink" href="#executors-api" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
-<dt class="sig sig-object py" id="more_executors.timeout.TimeoutExecutor">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">more_executors.timeout.</span></span><span class="sig-name descname"><span class="pre">TimeoutExecutor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">delegate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.timeout.TimeoutExecutor" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="more_executors.TimeoutExecutor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">more_executors.</span></span><span class="sig-name descname"><span class="pre">TimeoutExecutor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">delegate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.TimeoutExecutor" title="Permalink to this definition">¶</a></dt>
 <dd><p>An executor which delegates to another executor while applying
 a timeout to each returned future.</p>
 <p>For any futures returned by this executor, if the future hasn’t
@@ -96,8 +96,8 @@ will be invoked on any generated future which has not completed</p></li>
 <p><span class="versionmodified changed">Changed in version 2.7.0: </span>Introduced <code class="docutils literal notranslate"><span class="pre">name</span></code>.</p>
 </div>
 <dl class="py method">
-<dt class="sig sig-object py" id="more_executors.timeout.TimeoutExecutor.submit_timeout">
-<span class="sig-name descname"><span class="pre">submit_timeout</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeout</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fn</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.timeout.TimeoutExecutor.submit_timeout" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="more_executors.TimeoutExecutor.submit_timeout">
+<span class="sig-name descname"><span class="pre">submit_timeout</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeout</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fn</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.TimeoutExecutor.submit_timeout" title="Permalink to this definition">¶</a></dt>
 <dd><p>Like <code class="code docutils literal notranslate"><span class="pre">submit(fn,</span> <span class="pre">*args,</span> <span class="pre">**kwargs)</span></code>, but uses the specified
 timeout rather than this executor’s default.</p>
 <div class="versionadded">
@@ -116,7 +116,7 @@ timeout rather than this executor’s default.</p>
 not completed within the given timeout.</p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference internal" href="#more_executors.timeout.TimeoutExecutor" title="more_executors.timeout.TimeoutExecutor"><em>TimeoutExecutor</em></a></p>
+<dd class="field-even"><p><a class="reference internal" href="#more_executors.TimeoutExecutor" title="more_executors.TimeoutExecutor"><em>TimeoutExecutor</em></a></p>
 </dd>
 </dl>
 <div class="versionadded">

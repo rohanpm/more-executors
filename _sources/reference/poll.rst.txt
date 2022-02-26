@@ -13,12 +13,12 @@ Poll function
 The poll function has the following semantics:
 
 - It's called with a single argument, a list of zero or more
-  :class:`~more_executors.poll.PollDescriptor` objects.
+  :class:`~more_executors.PollDescriptor` objects.
 
 - If the poll function can determine that a particular future should be
   completed, either successfully or in error, it should call the
   :meth:`yield_result` or :meth:`yield_exception` methods on the appropriate
-  :class:`~more_executors.poll.PollDescriptor`.
+  :class:`~more_executors.PollDescriptor`.
 
 - If the poll function raises an exception, all futures depending on that poll
   will fail with that exception.  The poll function will be retried later.
@@ -29,7 +29,7 @@ The poll function has the following semantics:
 .. warning::
 
   The poll function should avoid holding a reference to the corresponding
-  :class:`~more_executors.poll.PollExecutor`. If it holds a reference to the
+  :class:`~more_executors.PollExecutor`. If it holds a reference to the
   executor, invoking :meth:`~concurrent.futures.Executor.shutdown` becomes
   mandatory in order to stop the polling thread.
 
@@ -98,7 +98,7 @@ Two obvious approaches include:
       :mod:`concurrent.futures` cannot be used and different types of
       asynchronous work will be handled inconsistently.
 
-:class:`~more_executors.poll.PollExecutor` bridges the gap between the two
+:class:`~more_executors.PollExecutor` bridges the gap between the two
 approaches.  By providing a custom poll function, the tasks can be monitored
 by one thread efficiently, while at the same time allowing full usage of the
 API provided by `Future` objects.
@@ -172,10 +172,10 @@ like this:
         # ...
 
 
-.. autoclass:: more_executors.poll.PollExecutor
+.. autoclass:: more_executors.PollExecutor
    :members:
 
 .. automethod:: more_executors.Executors.with_poll(executor, poll_fn, cancel_fn=None, default_interval=5.0, logger=None)
 
-.. autoclass:: more_executors.poll.PollDescriptor()
+.. autoclass:: more_executors.PollDescriptor()
    :members:

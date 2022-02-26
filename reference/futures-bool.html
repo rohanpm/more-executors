@@ -42,7 +42,7 @@
 where possible.</p>
 <p>Futures which are no longer needed in order to calculate the output value will
 be canceled. In cases where this is not appropriate, consider wrapping the
-input(s) in <a class="reference internal" href="cancel.html#more_executors.futures.f_nocancel" title="more_executors.futures.f_nocancel"><code class="xref py py-meth docutils literal notranslate"><span class="pre">f_nocancel()</span></code></a>.</p>
+input(s) in <a class="reference internal" href="cancel.html#more_executors.f_nocancel" title="more_executors.f_nocancel"><code class="xref py py-meth docutils literal notranslate"><span class="pre">f_nocancel()</span></code></a>.</p>
 <section id="example">
 <h3>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h3>
 <p>Consider this Python statement:</p>
@@ -64,10 +64,10 @@ value would not be used, we can instead write:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">future</span> <span class="o">=</span> <span class="n">f_or</span><span class="p">(</span><span class="n">f_x</span><span class="p">,</span> <span class="n">f_y</span><span class="p">,</span> <span class="n">f_nocancel</span><span class="p">(</span><span class="n">f_z</span><span class="p">))</span>
 </pre></div>
 </div>
-<span class="target" id="module-more_executors.futures"></span><dl class="py function">
-<dt class="sig sig-object py" id="more_executors.futures.f_and">
-<span class="sig-prename descclassname"><span class="pre">more_executors.futures.</span></span><span class="sig-name descname"><span class="pre">f_and</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">fs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.futures.f_and" title="Permalink to this definition">¶</a></dt>
-<dd><p>Boolean <code class="docutils literal notranslate"><span class="pre">AND</span></code> over a number of futures.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="more_executors.f_or">
+<span class="sig-prename descclassname"><span class="pre">more_executors.</span></span><span class="sig-name descname"><span class="pre">f_or</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">fs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.f_or" title="Permalink to this definition">¶</a></dt>
+<dd><p>Boolean <code class="docutils literal notranslate"><span class="pre">OR</span></code> over a number of futures.</p>
 <p>Signature: <code class="code docutils literal notranslate"><span class="pre">Future&lt;A&gt;[,</span> <span class="pre">Future&lt;B&gt;[,</span> <span class="pre">...]]</span> <span class="pre">⟶</span> <span class="pre">Future&lt;A|B|...&gt;</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -78,11 +78,11 @@ value would not be used, we can instead write:</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><dl class="simple">
-<dt><a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a></dt><dd><p>A future resolved from the inputs using <code class="docutils literal notranslate"><span class="pre">AND</span></code> semantics:</p>
+<dt><a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a></dt><dd><p>A future resolved from the inputs using <code class="docutils literal notranslate"><span class="pre">OR</span></code> semantics:</p>
 <ul class="simple">
-<li><p>Resolved with the latest value returned by an input
-future, if all futures are resolved with true values.</p></li>
-<li><p>Otherwise, resolved with the earliest false value or exception
+<li><p>Resolved with the earliest true value returned by an input
+future, if any.</p></li>
+<li><p>Otherwise, resolved with the latest false value or exception
 returned by the input futures.</p></li>
 </ul>
 </dd>
@@ -101,9 +101,9 @@ Exceeding this limit may result in performance issues.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="more_executors.futures.f_or">
-<span class="sig-prename descclassname"><span class="pre">more_executors.futures.</span></span><span class="sig-name descname"><span class="pre">f_or</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">fs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.futures.f_or" title="Permalink to this definition">¶</a></dt>
-<dd><p>Boolean <code class="docutils literal notranslate"><span class="pre">OR</span></code> over a number of futures.</p>
+<dt class="sig sig-object py" id="more_executors.f_and">
+<span class="sig-prename descclassname"><span class="pre">more_executors.</span></span><span class="sig-name descname"><span class="pre">f_and</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">fs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.f_and" title="Permalink to this definition">¶</a></dt>
+<dd><p>Boolean <code class="docutils literal notranslate"><span class="pre">AND</span></code> over a number of futures.</p>
 <p>Signature: <code class="code docutils literal notranslate"><span class="pre">Future&lt;A&gt;[,</span> <span class="pre">Future&lt;B&gt;[,</span> <span class="pre">...]]</span> <span class="pre">⟶</span> <span class="pre">Future&lt;A|B|...&gt;</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -114,11 +114,11 @@ Exceeding this limit may result in performance issues.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><dl class="simple">
-<dt><a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a></dt><dd><p>A future resolved from the inputs using <code class="docutils literal notranslate"><span class="pre">OR</span></code> semantics:</p>
+<dt><a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a></dt><dd><p>A future resolved from the inputs using <code class="docutils literal notranslate"><span class="pre">AND</span></code> semantics:</p>
 <ul class="simple">
-<li><p>Resolved with the earliest true value returned by an input
-future, if any.</p></li>
-<li><p>Otherwise, resolved with the latest false value or exception
+<li><p>Resolved with the latest value returned by an input
+future, if all futures are resolved with true values.</p></li>
+<li><p>Otherwise, resolved with the earliest false value or exception
 returned by the input futures.</p></li>
 </ul>
 </dd>

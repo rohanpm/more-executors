@@ -18,7 +18,7 @@ Sync
 SyncExecutor is a base executor which invokes any submitted callables
 immediately in the calling thread.
 
-.. autoclass:: more_executors.sync.SyncExecutor
+.. autoclass:: more_executors.SyncExecutor
    :members:
 
 .. automethod:: more_executors.Executors.sync(logger=None)

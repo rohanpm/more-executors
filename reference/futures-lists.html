@@ -32,11 +32,41 @@
 
           <div class="body" role="main">
             
-  <section id="module-more_executors.futures">
-<span id="futures-and-sequences-f-traverse-f-sequence-f-zip"></span><h1>Futures and sequences: <code class="docutils literal notranslate"><span class="pre">f_traverse</span></code>, <code class="docutils literal notranslate"><span class="pre">f_sequence</span></code>, <code class="docutils literal notranslate"><span class="pre">f_zip</span></code><a class="headerlink" href="#module-more_executors.futures" title="Permalink to this headline">¶</a></h1>
+  <section id="futures-and-sequences-f-traverse-f-sequence-f-zip">
+<h1>Futures and sequences: <code class="docutils literal notranslate"><span class="pre">f_traverse</span></code>, <code class="docutils literal notranslate"><span class="pre">f_sequence</span></code>, <code class="docutils literal notranslate"><span class="pre">f_zip</span></code><a class="headerlink" href="#futures-and-sequences-f-traverse-f-sequence-f-zip" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="more_executors.futures.f_sequence">
-<span class="sig-prename descclassname"><span class="pre">more_executors.futures.</span></span><span class="sig-name descname"><span class="pre">f_sequence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">futures</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.futures.f_sequence" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="more_executors.f_zip">
+<span class="sig-prename descclassname"><span class="pre">more_executors.</span></span><span class="sig-name descname"><span class="pre">f_zip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">fs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.f_zip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new future holding the return values of any number of input futures.</p>
+<p>Signature: <code class="code docutils literal notranslate"><span class="pre">Future&lt;A&gt;[,</span> <span class="pre">Future&lt;B&gt;[,</span> <span class="pre">...]]</span> <span class="pre">⟶</span> <span class="pre">Future&lt;A[,</span> <span class="pre">B[,</span> <span class="pre">...]]&gt;</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fs</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.10)"><em>Future</em></a>) – Any number of futures.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl>
+<dt><a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a></dt><dd><p>A future holding the returned values of all input futures as a tuple.
+The returned tuple has the same length and order as the input futures.</p>
+<p>Alternatively, a future raising an exception, if any input futures raised
+an exception.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This function is tested with up to 100,000 input futures.
+Exceeding this limit may result in performance issues.</p>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.19.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="more_executors.f_sequence">
+<span class="sig-prename descclassname"><span class="pre">more_executors.</span></span><span class="sig-name descname"><span class="pre">f_sequence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">futures</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.f_sequence" title="Permalink to this definition">¶</a></dt>
 <dd><p>Transform a list of futures into a future containing a list.</p>
 <p>Signature: <code class="code docutils literal notranslate"><span class="pre">list&lt;Future&lt;X&gt;&gt;</span> <span class="pre">⟶</span> <span class="pre">Future&lt;list&lt;X&gt;&gt;</span></code></p>
 <dl class="field-list simple">
@@ -66,8 +96,8 @@ Exceeding this limit may result in performance issues.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="more_executors.futures.f_traverse">
-<span class="sig-prename descclassname"><span class="pre">more_executors.futures.</span></span><span class="sig-name descname"><span class="pre">f_traverse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.futures.f_traverse" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="more_executors.f_traverse">
+<span class="sig-prename descclassname"><span class="pre">more_executors.</span></span><span class="sig-name descname"><span class="pre">f_traverse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.f_traverse" title="Permalink to this definition">¶</a></dt>
 <dd><p>Traverse over an iterable calling a future-returning function,
 and return a future holding the returned values as a list.</p>
 <p>Signature: <code class="code docutils literal notranslate"><span class="pre">fn&lt;A⟶Future&lt;B&gt;&gt;,</span> <span class="pre">iterable&lt;A&gt;</span> <span class="pre">⟶</span> <span class="pre">Future&lt;list&lt;B&gt;&gt;</span></code></p>
@@ -90,36 +120,6 @@ and return a future holding the returned values as a list.</p>
 </p>
 </dd>
 </dl>
-<div class="versionadded">
-<p><span class="versionmodified added">New in version 1.19.0.</span></p>
-</div>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="more_executors.futures.f_zip">
-<span class="sig-prename descclassname"><span class="pre">more_executors.futures.</span></span><span class="sig-name descname"><span class="pre">f_zip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">fs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.futures.f_zip" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a new future holding the return values of any number of input futures.</p>
-<p>Signature: <code class="code docutils literal notranslate"><span class="pre">Future&lt;A&gt;[,</span> <span class="pre">Future&lt;B&gt;[,</span> <span class="pre">...]]</span> <span class="pre">⟶</span> <span class="pre">Future&lt;A[,</span> <span class="pre">B[,</span> <span class="pre">...]]&gt;</span></code></p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>fs</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.10)"><em>Future</em></a>) – Any number of futures.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><dl>
-<dt><a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a></dt><dd><p>A future holding the returned values of all input futures as a tuple.
-The returned tuple has the same length and order as the input futures.</p>
-<p>Alternatively, a future raising an exception, if any input futures raised
-an exception.</p>
-</dd>
-</dl>
-</p>
-</dd>
-</dl>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This function is tested with up to 100,000 input futures.
-Exceeding this limit may result in performance issues.</p>
-</div>
 <div class="versionadded">
 <p><span class="versionmodified added">New in version 1.19.0.</span></p>
 </div>

@@ -11,7 +11,7 @@ where possible.
 
 Futures which are no longer needed in order to calculate the output value will
 be canceled. In cases where this is not appropriate, consider wrapping the
-input(s) in :meth:`~more_executors.futures.f_nocancel`.
+input(s) in :meth:`~more_executors.f_nocancel`.
 
 Example
 .......
@@ -44,5 +44,7 @@ value would not be used, we can instead write:
    future = f_or(f_x, f_y, f_nocancel(f_z))
 
 
-.. automodule:: more_executors.futures
-   :members: f_or, f_and
+.. autofunction:: more_executors.f_or
+
+.. autofunction:: more_executors.f_and
+

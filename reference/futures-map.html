@@ -37,13 +37,49 @@
 <h1>Transforming futures: <code class="docutils literal notranslate"><span class="pre">f_map</span></code>, <code class="docutils literal notranslate"><span class="pre">f_flat_map</span></code>, <code class="docutils literal notranslate"><span class="pre">MapExecutor</span></code>, <code class="docutils literal notranslate"><span class="pre">FlatMapExecutor</span></code><a class="headerlink" href="#transforming-futures-f-map-f-flat-map-mapexecutor-flatmapexecutor" title="Permalink to this headline">¶</a></h1>
 <p>The output value of a future can be mapped to other values using a
 provided function.</p>
-<section id="module-more_executors.futures">
-<span id="futures-api"></span><h2>Futures API<a class="headerlink" href="#module-more_executors.futures" title="Permalink to this headline">¶</a></h2>
+<section id="futures-api">
+<h2>Futures API<a class="headerlink" href="#futures-api" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
-<dt class="sig sig-object py" id="more_executors.futures.f_flat_map">
-<span class="sig-prename descclassname"><span class="pre">more_executors.futures.</span></span><span class="sig-name descname"><span class="pre">f_flat_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">future</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_fn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.futures.f_flat_map" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="more_executors.f_map">
+<span class="sig-prename descclassname"><span class="pre">more_executors.</span></span><span class="sig-name descname"><span class="pre">f_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">future</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_fn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.f_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Map the output value of a future using the given functions.</p>
+<p>Signature: <code class="code docutils literal notranslate"><span class="pre">Future&lt;A&gt;,</span> <span class="pre">fn&lt;A⟶B&gt;</span> <span class="pre">⟶</span> <span class="pre">Future&lt;B&gt;</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>future</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.10)"><em>Future</em></a>) – Any future.</p></li>
+<li><p><strong>fn</strong> (<em>callable</em>) – Any callable to be applied on successful futures.
+This function is provided the result of the input future.</p></li>
+<li><p><strong>error_fn</strong> (<em>callable</em>) – Any callable to be applied on unsuccessful futures.
+This function is provided the exception of the input future.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a></dt><dd><p>A future resolved with:</p>
+<ul class="simple">
+<li><p>the returned value of <code class="code docutils literal notranslate"><span class="pre">fn(future.result())</span></code></p></li>
+<li><p>or the returned value of <code class="code docutils literal notranslate"><span class="pre">error_fn(future.exception())</span></code></p></li>
+<li><p>or with the exception raised by <code class="xref py py-obj docutils literal notranslate"><span class="pre">future</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">fn</span></code> or <code class="xref py py-obj docutils literal notranslate"><span class="pre">error_fn</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.19.0.</span></p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.2.0: </span>Introduced <code class="docutils literal notranslate"><span class="pre">error_fn</span></code>.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="more_executors.f_flat_map">
+<span class="sig-prename descclassname"><span class="pre">more_executors.</span></span><span class="sig-name descname"><span class="pre">f_flat_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">future</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_fn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.f_flat_map" title="Permalink to this definition">¶</a></dt>
 <dd><p>Map the output value of a future using the given future-returning functions.</p>
-<p>Like <a class="reference internal" href="#more_executors.futures.f_map" title="more_executors.futures.f_map"><code class="xref py py-meth docutils literal notranslate"><span class="pre">f_map()</span></code></a>, except that the mapping functions must return a future,
+<p>Like <a class="reference internal" href="#more_executors.f_map" title="more_executors.f_map"><code class="xref py py-meth docutils literal notranslate"><span class="pre">f_map()</span></code></a>, except that the mapping functions must return a future,
 and that future will be flattened into the output value (avoiding a nested future).</p>
 <p>Signature: <code class="code docutils literal notranslate"><span class="pre">Future&lt;A&gt;,</span> <span class="pre">fn&lt;A⟶Future&lt;B&gt;&gt;</span> <span class="pre">⟶</span> <span class="pre">Future&lt;B&gt;</span></code></p>
 <dl class="field-list simple">
@@ -78,48 +114,12 @@ This function is provided the exception of the input future.</p></li>
 </div>
 </dd></dl>
 
-<dl class="py function">
-<dt class="sig sig-object py" id="more_executors.futures.f_map">
-<span class="sig-prename descclassname"><span class="pre">more_executors.futures.</span></span><span class="sig-name descname"><span class="pre">f_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">future</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_fn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.futures.f_map" title="Permalink to this definition">¶</a></dt>
-<dd><p>Map the output value of a future using the given functions.</p>
-<p>Signature: <code class="code docutils literal notranslate"><span class="pre">Future&lt;A&gt;,</span> <span class="pre">fn&lt;A⟶B&gt;</span> <span class="pre">⟶</span> <span class="pre">Future&lt;B&gt;</span></code></p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>future</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.10)"><em>Future</em></a>) – Any future.</p></li>
-<li><p><strong>fn</strong> (<em>callable</em>) – Any callable to be applied on successful futures.
-This function is provided the result of the input future.</p></li>
-<li><p><strong>error_fn</strong> (<em>callable</em>) – Any callable to be applied on unsuccessful futures.
-This function is provided the exception of the input future.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><dl class="simple">
-<dt><a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a></dt><dd><p>A future resolved with:</p>
-<ul class="simple">
-<li><p>the returned value of <code class="code docutils literal notranslate"><span class="pre">fn(future.result())</span></code></p></li>
-<li><p>or the returned value of <code class="code docutils literal notranslate"><span class="pre">error_fn(future.exception())</span></code></p></li>
-<li><p>or with the exception raised by <code class="xref py py-obj docutils literal notranslate"><span class="pre">future</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">fn</span></code> or <code class="xref py py-obj docutils literal notranslate"><span class="pre">error_fn</span></code>.</p></li>
-</ul>
-</dd>
-</dl>
-</p>
-</dd>
-</dl>
-<div class="versionadded">
-<p><span class="versionmodified added">New in version 1.19.0.</span></p>
-</div>
-<div class="versionchanged">
-<p><span class="versionmodified changed">Changed in version 2.2.0: </span>Introduced <code class="docutils literal notranslate"><span class="pre">error_fn</span></code>.</p>
-</div>
-</dd></dl>
-
 </section>
 <section id="executors-api">
 <h2>Executors API<a class="headerlink" href="#executors-api" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
-<dt class="sig sig-object py" id="more_executors.map.MapExecutor">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">more_executors.map.</span></span><span class="sig-name descname"><span class="pre">MapExecutor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">delegate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.map.MapExecutor" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="more_executors.MapExecutor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">more_executors.</span></span><span class="sig-name descname"><span class="pre">MapExecutor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">delegate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.MapExecutor" title="Permalink to this definition">¶</a></dt>
 <dd><p>An executor which delegates to another executor while mapping
 output values/exceptions through given functions.</p>
 <dl class="field-list simple">
@@ -159,17 +159,17 @@ the <code class="docutils literal notranslate"><span class="pre">exception()</sp
 <dd class="field-odd"><p>a new executor which will transform results through the given function</p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference internal" href="#more_executors.map.MapExecutor" title="more_executors.map.MapExecutor"><em>MapExecutor</em></a></p>
+<dd class="field-even"><p><a class="reference internal" href="#more_executors.MapExecutor" title="more_executors.MapExecutor"><em>MapExecutor</em></a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="more_executors.flat_map.FlatMapExecutor">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">more_executors.flat_map.</span></span><span class="sig-name descname"><span class="pre">FlatMapExecutor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">delegate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.flat_map.FlatMapExecutor" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="more_executors.FlatMapExecutor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">more_executors.</span></span><span class="sig-name descname"><span class="pre">FlatMapExecutor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">delegate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.FlatMapExecutor" title="Permalink to this definition">¶</a></dt>
 <dd><p>An executor which delegates to another executor while mapping
 output values through given future-producing functions.</p>
-<p>This executor behaves like <a class="reference internal" href="#more_executors.map.MapExecutor" title="more_executors.map.MapExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">MapExecutor</span></code></a>,
+<p>This executor behaves like <a class="reference internal" href="#more_executors.MapExecutor" title="more_executors.MapExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">MapExecutor</span></code></a>,
 except that the given mapping/error functions must return instances of
 <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a>, and the mapped future is
 flattened into the future returned from this executor.
@@ -222,7 +222,7 @@ the <code class="docutils literal notranslate"><span class="pre">exception()</sp
 <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a>-providing function</p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference internal" href="#more_executors.flat_map.FlatMapExecutor" title="more_executors.flat_map.FlatMapExecutor"><em>FlatMapExecutor</em></a></p>
+<dd class="field-even"><p><a class="reference internal" href="#more_executors.FlatMapExecutor" title="more_executors.FlatMapExecutor"><em>FlatMapExecutor</em></a></p>
 </dd>
 </dl>
 <div class="versionadded">

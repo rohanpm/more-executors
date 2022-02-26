@@ -75,8 +75,8 @@ include the <code class="xref py py-class docutils literal notranslate"><span cl
 <p>SyncExecutor is a base executor which invokes any submitted callables
 immediately in the calling thread.</p>
 <dl class="py class">
-<dt class="sig sig-object py" id="more_executors.sync.SyncExecutor">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">more_executors.sync.</span></span><span class="sig-name descname"><span class="pre">SyncExecutor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.sync.SyncExecutor" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="more_executors.SyncExecutor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">more_executors.</span></span><span class="sig-name descname"><span class="pre">SyncExecutor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.SyncExecutor" title="Permalink to this definition">¶</a></dt>
 <dd><p>An executor which immediately invokes all submitted callables.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -90,8 +90,8 @@ immediately in the calling thread.</p>
 <p><span class="versionmodified changed">Changed in version 2.7.0: </span>Introduced <code class="docutils literal notranslate"><span class="pre">name</span></code>.</p>
 </div>
 <dl class="py method">
-<dt class="sig sig-object py" id="more_executors.sync.SyncExecutor.submit">
-<span class="sig-name descname"><span class="pre">submit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fn</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.sync.SyncExecutor.submit" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="more_executors.SyncExecutor.submit">
+<span class="sig-name descname"><span class="pre">submit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fn</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.SyncExecutor.submit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Immediately invokes <cite>fn(*args, **kwargs)</cite> and returns a future
 with the result (or exception).</p>
 </dd></dl>
@@ -107,7 +107,7 @@ with the result (or exception).</p>
 <dd class="field-odd"><p>a new synchronous executor</p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference internal" href="#more_executors.sync.SyncExecutor" title="more_executors.sync.SyncExecutor"><em>SyncExecutor</em></a></p>
+<dd class="field-even"><p><a class="reference internal" href="#more_executors.SyncExecutor" title="more_executors.SyncExecutor"><em>SyncExecutor</em></a></p>
 </dd>
 </dl>
 <p>Submitted functions will be immediately invoked on the calling thread.</p>

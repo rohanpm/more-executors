@@ -1,5 +1,9 @@
 Creating futures from values: ``f_return*``
 ===========================================
 
-.. automodule:: more_executors.futures
-   :members: f_return, f_return_error, f_return_cancelled
+.. autofunction:: more_executors.f_return
+
+.. autofunction:: more_executors.f_return_error
+
+.. autofunction:: more_executors.f_return_cancelled
+

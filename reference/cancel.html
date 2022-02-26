@@ -35,11 +35,11 @@
             
   <section id="cancellation-of-futures-f-nocancel-cancelonshutdownexecutor">
 <h1>Cancellation of futures: <code class="docutils literal notranslate"><span class="pre">f_nocancel</span></code>, <code class="docutils literal notranslate"><span class="pre">CancelOnShutdownExecutor</span></code><a class="headerlink" href="#cancellation-of-futures-f-nocancel-cancelonshutdownexecutor" title="Permalink to this headline">¶</a></h1>
-<section id="module-more_executors.futures">
-<span id="futures-api"></span><h2>Futures API<a class="headerlink" href="#module-more_executors.futures" title="Permalink to this headline">¶</a></h2>
+<section id="futures-api">
+<h2>Futures API<a class="headerlink" href="#futures-api" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
-<dt class="sig sig-object py" id="more_executors.futures.f_nocancel">
-<span class="sig-prename descclassname"><span class="pre">more_executors.futures.</span></span><span class="sig-name descname"><span class="pre">f_nocancel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">future</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.futures.f_nocancel" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="more_executors.f_nocancel">
+<span class="sig-prename descclassname"><span class="pre">more_executors.</span></span><span class="sig-name descname"><span class="pre">f_nocancel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">future</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.f_nocancel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wrap a future to block cancellation.</p>
 <p>Signature: <code class="code docutils literal notranslate"><span class="pre">Future&lt;X&gt;</span> <span class="pre">⟶</span> <span class="pre">Future&lt;X&gt;</span></code></p>
 <dl class="field-list simple">
@@ -63,12 +63,12 @@
 <section id="executors-api">
 <h2>Executors API<a class="headerlink" href="#executors-api" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
-<dt class="sig sig-object py" id="more_executors.cancel_on_shutdown.CancelOnShutdownExecutor">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">more_executors.cancel_on_shutdown.</span></span><span class="sig-name descname"><span class="pre">CancelOnShutdownExecutor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">delegate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.cancel_on_shutdown.CancelOnShutdownExecutor" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="more_executors.CancelOnShutdownExecutor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">more_executors.</span></span><span class="sig-name descname"><span class="pre">CancelOnShutdownExecutor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">delegate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.CancelOnShutdownExecutor" title="Permalink to this definition">¶</a></dt>
 <dd><p>An executor which delegates to another executor and cancels all
 futures when the executor is shut down.</p>
 <p>This class is useful in conjunction with executors having custom cancel
-behavior, such as <a class="reference internal" href="poll.html#more_executors.poll.PollExecutor" title="more_executors.poll.PollExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">PollExecutor</span></code></a>.</p>
+behavior, such as <a class="reference internal" href="poll.html#more_executors.PollExecutor" title="more_executors.PollExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">PollExecutor</span></code></a>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>From Python 3.9 onwards, the standard
@@ -102,8 +102,8 @@ in the standard library).</p>
 <p><span class="versionmodified changed">Changed in version 2.7.0: </span>Introduced <code class="docutils literal notranslate"><span class="pre">name</span></code>.</p>
 </div>
 <dl class="py method">
-<dt class="sig sig-object py" id="more_executors.cancel_on_shutdown.CancelOnShutdownExecutor.shutdown">
-<span class="sig-name descname"><span class="pre">shutdown</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wait</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">_kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.cancel_on_shutdown.CancelOnShutdownExecutor.shutdown" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="more_executors.CancelOnShutdownExecutor.shutdown">
+<span class="sig-name descname"><span class="pre">shutdown</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wait</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">_kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.CancelOnShutdownExecutor.shutdown" title="Permalink to this definition">¶</a></dt>
 <dd><p>Shut down the executor.</p>
 <p>All futures created by this executor which have not yet been completed
 will have <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future.cancel" title="(in Python v3.10)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">cancel()</span></code></a> invoked.</p>
@@ -122,7 +122,7 @@ attempt is made to cancel any future.</p>
 the executor is shut down.</p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference internal" href="#more_executors.cancel_on_shutdown.CancelOnShutdownExecutor" title="more_executors.cancel_on_shutdown.CancelOnShutdownExecutor"><em>CancelOnShutdownExecutor</em></a></p>
+<dd class="field-even"><p><a class="reference internal" href="#more_executors.CancelOnShutdownExecutor" title="more_executors.CancelOnShutdownExecutor"><em>CancelOnShutdownExecutor</em></a></p>
 </dd>
 </dl>
 </dd></dl>

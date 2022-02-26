@@ -42,11 +42,11 @@ custom poll function.</p>
 <p>The poll function has the following semantics:</p>
 <ul class="simple">
 <li><p>It’s called with a single argument, a list of zero or more
-<a class="reference internal" href="#more_executors.poll.PollDescriptor" title="more_executors.poll.PollDescriptor"><code class="xref py py-class docutils literal notranslate"><span class="pre">PollDescriptor</span></code></a> objects.</p></li>
+<a class="reference internal" href="#more_executors.PollDescriptor" title="more_executors.PollDescriptor"><code class="xref py py-class docutils literal notranslate"><span class="pre">PollDescriptor</span></code></a> objects.</p></li>
 <li><p>If the poll function can determine that a particular future should be
 completed, either successfully or in error, it should call the
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">yield_result()</span></code> or <code class="xref py py-meth docutils literal notranslate"><span class="pre">yield_exception()</span></code> methods on the appropriate
-<a class="reference internal" href="#more_executors.poll.PollDescriptor" title="more_executors.poll.PollDescriptor"><code class="xref py py-class docutils literal notranslate"><span class="pre">PollDescriptor</span></code></a>.</p></li>
+<a class="reference internal" href="#more_executors.PollDescriptor" title="more_executors.PollDescriptor"><code class="xref py py-class docutils literal notranslate"><span class="pre">PollDescriptor</span></code></a>.</p></li>
 <li><p>If the poll function raises an exception, all futures depending on that poll
 will fail with that exception.  The poll function will be retried later.</p></li>
 <li><p>If the poll function returns an int or float, it is used as the delay
@@ -55,7 +55,7 @@ in seconds until the next poll.</p></li>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>The poll function should avoid holding a reference to the corresponding
-<a class="reference internal" href="#more_executors.poll.PollExecutor" title="more_executors.poll.PollExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">PollExecutor</span></code></a>. If it holds a reference to the
+<a class="reference internal" href="#more_executors.PollExecutor" title="more_executors.PollExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">PollExecutor</span></code></a>. If it holds a reference to the
 executor, invoking <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor.shutdown" title="(in Python v3.10)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">shutdown()</span></code></a> becomes
 mandatory in order to stop the polling thread.</p>
 </div>
@@ -130,7 +130,7 @@ asynchronous work will be handled inconsistently.</p></li>
 </div></blockquote>
 </li>
 </ul>
-<p><a class="reference internal" href="#more_executors.poll.PollExecutor" title="more_executors.poll.PollExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">PollExecutor</span></code></a> bridges the gap between the two
+<p><a class="reference internal" href="#more_executors.PollExecutor" title="more_executors.PollExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">PollExecutor</span></code></a> bridges the gap between the two
 approaches.  By providing a custom poll function, the tasks can be monitored
 by one thread efficiently, while at the same time allowing full usage of the
 API provided by <cite>Future</cite> objects.</p>
@@ -197,8 +197,8 @@ like this:</p>
 </pre></div>
 </div>
 <dl class="py class">
-<dt class="sig sig-object py" id="more_executors.poll.PollExecutor">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">more_executors.poll.</span></span><span class="sig-name descname"><span class="pre">PollExecutor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">delegate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">poll_fn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cancel_fn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.poll.PollExecutor" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="more_executors.PollExecutor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">more_executors.</span></span><span class="sig-name descname"><span class="pre">PollExecutor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">delegate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">poll_fn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cancel_fn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.PollExecutor" title="Permalink to this definition">¶</a></dt>
 <dd><p>Instances of <cite>PollExecutor</cite> submit callables to a delegate executor
 and resolve the returned futures via a provided poll function.</p>
 <p>A cancel function may also be provided to perform additional processing
@@ -219,8 +219,8 @@ when a returned future is cancelled.</p>
 <p><span class="versionmodified changed">Changed in version 2.7.0: </span>Introduced <code class="docutils literal notranslate"><span class="pre">name</span></code>.</p>
 </div>
 <dl class="py method">
-<dt class="sig sig-object py" id="more_executors.poll.PollExecutor.notify">
-<span class="sig-name descname"><span class="pre">notify</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.poll.PollExecutor.notify" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="more_executors.PollExecutor.notify">
+<span class="sig-name descname"><span class="pre">notify</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.PollExecutor.notify" title="Permalink to this definition">¶</a></dt>
 <dd><p>Request the executor to re-run the polling function as soon as possible.</p>
 <p>This method may be used to perform the next poll earlier than it would
 otherwise run.</p>
@@ -244,27 +244,27 @@ a poll function.</p>
 </p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference internal" href="#more_executors.poll.PollExecutor" title="more_executors.poll.PollExecutor"><em>PollExecutor</em></a></p>
+<dd class="field-even"><p><a class="reference internal" href="#more_executors.PollExecutor" title="more_executors.PollExecutor"><em>PollExecutor</em></a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="more_executors.poll.PollDescriptor">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">more_executors.poll.</span></span><span class="sig-name descname"><span class="pre">PollDescriptor</span></span><a class="headerlink" href="#more_executors.poll.PollDescriptor" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="more_executors.PollDescriptor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">more_executors.</span></span><span class="sig-name descname"><span class="pre">PollDescriptor</span></span><a class="headerlink" href="#more_executors.PollDescriptor" title="Permalink to this definition">¶</a></dt>
 <dd><p>Represents an unresolved <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a>.</p>
-<p>The poll function used by <a class="reference internal" href="#more_executors.poll.PollExecutor" title="more_executors.poll.PollExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">PollExecutor</span></code></a> will be
+<p>The poll function used by <a class="reference internal" href="#more_executors.PollExecutor" title="more_executors.PollExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">PollExecutor</span></code></a> will be
 invoked with a list of PollDescriptor objects.</p>
 <dl class="py property">
-<dt class="sig sig-object py" id="more_executors.poll.PollDescriptor.result">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">result</span></span><a class="headerlink" href="#more_executors.poll.PollDescriptor.result" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="more_executors.PollDescriptor.result">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">result</span></span><a class="headerlink" href="#more_executors.PollDescriptor.result" title="Permalink to this definition">¶</a></dt>
 <dd><p>The result from the delegate executor’s future, which should be used to
 drive the poll.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="more_executors.poll.PollDescriptor.yield_exception">
-<span class="sig-name descname"><span class="pre">yield_exception</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exception</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">traceback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.poll.PollDescriptor.yield_exception" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="more_executors.PollDescriptor.yield_exception">
+<span class="sig-name descname"><span class="pre">yield_exception</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exception</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">traceback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.PollDescriptor.yield_exception" title="Permalink to this definition">¶</a></dt>
 <dd><p>The poll function can call this function to make the future raise the given exception.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -279,8 +279,8 @@ where exception objects do not include a traceback.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="more_executors.poll.PollDescriptor.yield_result">
-<span class="sig-name descname"><span class="pre">yield_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.poll.PollDescriptor.yield_result" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="more_executors.PollDescriptor.yield_result">
+<span class="sig-name descname"><span class="pre">yield_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.PollDescriptor.yield_result" title="Permalink to this definition">¶</a></dt>
 <dd><p>The poll function can call this function to make the future yield the given result.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>

@@ -89,9 +89,9 @@ blocking coding style without requiring explicit calls to <code class="docutils 
 <span class="n">results</span> <span class="o">=</span> <span class="n">process_results</span><span class="p">(</span><span class="n">cursor</span><span class="p">)</span>
 </pre></div>
 </div>
-<span class="target" id="module-more_executors.futures"></span><dl class="py function">
-<dt class="sig sig-object py" id="more_executors.futures.f_proxy">
-<span class="sig-prename descclassname"><span class="pre">more_executors.futures.</span></span><span class="sig-name descname"><span class="pre">f_proxy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.futures.f_proxy" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="more_executors.f_proxy">
+<span class="sig-prename descclassname"><span class="pre">more_executors.</span></span><span class="sig-name descname"><span class="pre">f_proxy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.f_proxy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Proxy calls on a future through to the future’s result.</p>
 <p>The value returned by this function is a future resolved with the
 same result (or exception) as the input future <code class="docutils literal notranslate"><span class="pre">f</span></code>.  It will also

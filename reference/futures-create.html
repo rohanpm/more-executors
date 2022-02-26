@@ -33,11 +33,11 @@
 
           <div class="body" role="main">
             
-  <section id="module-more_executors.futures">
-<span id="creating-futures-from-values-f-return"></span><h1>Creating futures from values: <code class="docutils literal notranslate"><span class="pre">f_return*</span></code><a class="headerlink" href="#module-more_executors.futures" title="Permalink to this headline">¶</a></h1>
+  <section id="creating-futures-from-values-f-return">
+<h1>Creating futures from values: <code class="docutils literal notranslate"><span class="pre">f_return*</span></code><a class="headerlink" href="#creating-futures-from-values-f-return" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="more_executors.futures.f_return">
-<span class="sig-prename descclassname"><span class="pre">more_executors.futures.</span></span><span class="sig-name descname"><span class="pre">f_return</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.futures.f_return" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="more_executors.f_return">
+<span class="sig-prename descclassname"><span class="pre">more_executors.</span></span><span class="sig-name descname"><span class="pre">f_return</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.f_return" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a future which provides the value <cite>x</cite>.</p>
 <p>Signature: <code class="code docutils literal notranslate"><span class="pre">A</span> <span class="pre">⟶</span> <span class="pre">Future&lt;A&gt;</span></code></p>
 <dl class="field-list simple">
@@ -61,25 +61,8 @@
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="more_executors.futures.f_return_cancelled">
-<span class="sig-prename descclassname"><span class="pre">more_executors.futures.</span></span><span class="sig-name descname"><span class="pre">f_return_cancelled</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.futures.f_return_cancelled" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><dl class="simple">
-<dt><a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a></dt><dd><p>A future which is cancelled.</p>
-</dd>
-</dl>
-</p>
-</dd>
-</dl>
-<div class="versionadded">
-<p><span class="versionmodified added">New in version 1.19.0.</span></p>
-</div>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="more_executors.futures.f_return_error">
-<span class="sig-prename descclassname"><span class="pre">more_executors.futures.</span></span><span class="sig-name descname"><span class="pre">f_return_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">traceback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.futures.f_return_error" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="more_executors.f_return_error">
+<span class="sig-prename descclassname"><span class="pre">more_executors.</span></span><span class="sig-name descname"><span class="pre">f_return_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">traceback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.f_return_error" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a future which returns/raises the exception <cite>x</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -96,6 +79,23 @@ which only exists on Python 2.</p>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><dl class="simple">
 <dt><a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a> of <code class="xref py py-obj docutils literal notranslate"><span class="pre">x</span></code></dt><dd><p>A future immediately resolved with the exception <code class="xref py py-obj docutils literal notranslate"><span class="pre">x</span></code>.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.19.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="more_executors.f_return_cancelled">
+<span class="sig-prename descclassname"><span class="pre">more_executors.</span></span><span class="sig-name descname"><span class="pre">f_return_cancelled</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.f_return_cancelled" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a></dt><dd><p>A future which is cancelled.</p>
 </dd>
 </dl>
 </p>

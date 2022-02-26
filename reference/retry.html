@@ -37,8 +37,8 @@
 <h1>Retrying: <code class="docutils literal notranslate"><span class="pre">RetryExecutor</span></code><a class="headerlink" href="#retrying-retryexecutor" title="Permalink to this headline">¶</a></h1>
 <p>RetryExecutor produces futures which will implicitly retry on error.</p>
 <dl class="py class">
-<dt class="sig sig-object py" id="more_executors.retry.RetryExecutor">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">more_executors.retry.</span></span><span class="sig-name descname"><span class="pre">RetryExecutor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">delegate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retry_policy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.retry.RetryExecutor" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="more_executors.RetryExecutor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">more_executors.</span></span><span class="sig-name descname"><span class="pre">RetryExecutor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">delegate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retry_policy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.RetryExecutor" title="Permalink to this definition">¶</a></dt>
 <dd><p>An executor which delegates to another executor while adding
 implicit retry behavior.</p>
 <ul class="simple">
@@ -59,8 +59,8 @@ were exhausted.  This includes activation of the done callback.</p></li>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>delegate</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor" title="(in Python v3.10)"><em>Executor</em></a>) – executor to which callables will be submitted</p></li>
-<li><p><strong>retry_policy</strong> (<a class="reference internal" href="#more_executors.retry.RetryPolicy" title="more_executors.retry.RetryPolicy"><em>RetryPolicy</em></a>) – policy used to determine when futures shall be retried; if omitted,
-an <a class="reference internal" href="#more_executors.retry.ExceptionRetryPolicy" title="more_executors.retry.ExceptionRetryPolicy"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExceptionRetryPolicy</span></code></a> is used, supplied with keyword
+<li><p><strong>retry_policy</strong> (<a class="reference internal" href="#more_executors.RetryPolicy" title="more_executors.RetryPolicy"><em>RetryPolicy</em></a>) – policy used to determine when futures shall be retried; if omitted,
+an <a class="reference internal" href="#more_executors.ExceptionRetryPolicy" title="more_executors.ExceptionRetryPolicy"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExceptionRetryPolicy</span></code></a> is used, supplied with keyword
 arguments to this constructor</p></li>
 <li><p><strong>logger</strong> (<a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.10)"><em>Logger</em></a>) – a logger used for messages from this executor</p></li>
 <li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – a name for this executor</p></li>
@@ -71,12 +71,12 @@ arguments to this constructor</p></li>
 <p><span class="versionmodified changed">Changed in version 2.7.0: </span>Introduced <code class="docutils literal notranslate"><span class="pre">name</span></code>.</p>
 </div>
 <dl class="py method">
-<dt class="sig sig-object py" id="more_executors.retry.RetryExecutor.submit_retry">
-<span class="sig-name descname"><span class="pre">submit_retry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">retry_policy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fn</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.retry.RetryExecutor.submit_retry" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="more_executors.RetryExecutor.submit_retry">
+<span class="sig-name descname"><span class="pre">submit_retry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">retry_policy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fn</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.RetryExecutor.submit_retry" title="Permalink to this definition">¶</a></dt>
 <dd><p>Submit a callable with a specific retry policy.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>retry_policy</strong> (<a class="reference internal" href="#more_executors.retry.RetryPolicy" title="more_executors.retry.RetryPolicy"><em>RetryPolicy</em></a>) – a policy which is used for this call only</p>
+<dd class="field-odd"><p><strong>retry_policy</strong> (<a class="reference internal" href="#more_executors.RetryPolicy" title="more_executors.RetryPolicy"><em>RetryPolicy</em></a>) – a policy which is used for this call only</p>
 </dd>
 </dl>
 </dd></dl>
@@ -91,21 +91,21 @@ arguments to this constructor</p></li>
 <dd class="field-odd"><p>a new executor which will retry callables on failure</p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference internal" href="#more_executors.retry.RetryExecutor" title="more_executors.retry.RetryExecutor"><em>RetryExecutor</em></a></p>
+<dd class="field-even"><p><a class="reference internal" href="#more_executors.RetryExecutor" title="more_executors.RetryExecutor"><em>RetryExecutor</em></a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="more_executors.retry.RetryPolicy">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">more_executors.retry.</span></span><span class="sig-name descname"><span class="pre">RetryPolicy</span></span><a class="headerlink" href="#more_executors.retry.RetryPolicy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Instances of this class may be supplied to <a class="reference internal" href="#more_executors.retry.RetryExecutor" title="more_executors.retry.RetryExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">RetryExecutor</span></code></a>
+<dt class="sig sig-object py" id="more_executors.RetryPolicy">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">more_executors.</span></span><span class="sig-name descname"><span class="pre">RetryPolicy</span></span><a class="headerlink" href="#more_executors.RetryPolicy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Instances of this class may be supplied to <a class="reference internal" href="#more_executors.RetryExecutor" title="more_executors.RetryExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">RetryExecutor</span></code></a>
 to customize the retry behavior.</p>
-<p>This base class will never retry.  See <a class="reference internal" href="#more_executors.retry.ExceptionRetryPolicy" title="more_executors.retry.ExceptionRetryPolicy"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExceptionRetryPolicy</span></code></a> for
+<p>This base class will never retry.  See <a class="reference internal" href="#more_executors.ExceptionRetryPolicy" title="more_executors.ExceptionRetryPolicy"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExceptionRetryPolicy</span></code></a> for
 a general-purpose implementation.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="more_executors.retry.RetryPolicy.should_retry">
-<span class="sig-name descname"><span class="pre">should_retry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attempt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">future</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.retry.RetryPolicy.should_retry" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="more_executors.RetryPolicy.should_retry">
+<span class="sig-name descname"><span class="pre">should_retry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attempt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">future</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.RetryPolicy.should_retry" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -123,8 +123,8 @@ a general-purpose implementation.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="more_executors.retry.RetryPolicy.sleep_time">
-<span class="sig-name descname"><span class="pre">sleep_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attempt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">future</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.retry.RetryPolicy.sleep_time" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="more_executors.RetryPolicy.sleep_time">
+<span class="sig-name descname"><span class="pre">sleep_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attempt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">future</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.RetryPolicy.sleep_time" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -145,8 +145,8 @@ attempt at running a future.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="more_executors.retry.ExceptionRetryPolicy">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">more_executors.retry.</span></span><span class="sig-name descname"><span class="pre">ExceptionRetryPolicy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_attempts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exponent</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sleep</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_sleep</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exception_base</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.retry.ExceptionRetryPolicy" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="more_executors.ExceptionRetryPolicy">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">more_executors.</span></span><span class="sig-name descname"><span class="pre">ExceptionRetryPolicy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_attempts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exponent</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sleep</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_sleep</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exception_base</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.ExceptionRetryPolicy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retries on any exceptions under the given base class(es),
 up to a fixed number of attempts, with an exponential
 backoff between each attempt.</p>
