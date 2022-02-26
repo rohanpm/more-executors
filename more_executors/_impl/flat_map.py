@@ -33,7 +33,7 @@ class FlatMapExecutor(MapExecutor):
     """An executor which delegates to another executor while mapping
     output values through given future-producing functions.
 
-    This executor behaves like :class:`~more_executors.map.MapExecutor`,
+    This executor behaves like :class:`~more_executors.MapExecutor`,
     except that the given mapping/error functions must return instances of
     :class:`~concurrent.futures.Future`, and the mapped future is
     flattened into the future returned from this executor.

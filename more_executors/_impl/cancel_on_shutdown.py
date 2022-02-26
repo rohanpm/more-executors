@@ -13,7 +13,7 @@ class CancelOnShutdownExecutor(CanCustomizeBind, Executor):
     futures when the executor is shut down.
 
     This class is useful in conjunction with executors having custom cancel
-    behavior, such as :class:`~more_executors.poll.PollExecutor`.
+    behavior, such as :class:`~more_executors.PollExecutor`.
 
     .. note::
         From Python 3.9 onwards, the standard

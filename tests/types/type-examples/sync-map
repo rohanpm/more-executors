@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 from concurrent.futures import Future
-from more_executors import Executors
-from more_executors.sync import SyncExecutor
-from more_executors.map import MapExecutor
+from more_executors import Executors, SyncExecutor, MapExecutor
 
 exc1 = Executors.sync().with_map(str)
 exc2 = MapExecutor(SyncExecutor(), str)

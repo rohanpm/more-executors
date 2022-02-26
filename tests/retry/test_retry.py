@@ -21,7 +21,7 @@ try:
 except ImportError:
     from mock import MagicMock, call
 
-from more_executors.retry import RetryExecutor, ExceptionRetryPolicy, RetryPolicy
+from more_executors import RetryExecutor, ExceptionRetryPolicy, RetryPolicy
 
 from ..util import assert_soon
 

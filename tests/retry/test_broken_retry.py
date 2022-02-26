@@ -1,5 +1,4 @@
-from more_executors import Executors
-from more_executors.retry import RetryPolicy
+from more_executors import Executors, RetryPolicy
 
 
 def test_broken_policy(caplog):

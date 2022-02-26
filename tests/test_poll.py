@@ -20,7 +20,7 @@ from hamcrest import (
     matches_regexp,
 )
 
-from more_executors.poll import PollExecutor
+from more_executors import PollExecutor
 
 from .util import assert_soon
 

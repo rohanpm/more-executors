@@ -1,7 +1,7 @@
 import pytest
 
 
-from more_executors.futures import (
+from more_executors import (
     f_or,
     f_and,
     f_map,

@@ -2,7 +2,7 @@
 from concurrent.futures import Future
 from collections.abc import Callable
 from typing import Union, Optional
-from more_executors.futures import *
+from more_executors import *
 
 
 x1: int = f_return(123).result()

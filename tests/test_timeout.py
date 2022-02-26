@@ -3,8 +3,7 @@ import time
 from concurrent.futures import CancelledError
 from hamcrest import assert_that, equal_to, calling, raises
 
-from more_executors import Executors
-from more_executors.timeout import TimeoutExecutor
+from more_executors import Executors, TimeoutExecutor
 
 
 TIMEOUT = 0.02

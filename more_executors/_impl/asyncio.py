@@ -1,8 +1,12 @@
 from concurrent.futures import Executor
-import asyncio
 
 from .metrics import metrics
 from .helpers import ShutdownHelper
+
+try:
+    import asyncio
+except Exception:  # pylint: disable=broad-except
+    pass
 
 
 class AsyncioExecutor(Executor):

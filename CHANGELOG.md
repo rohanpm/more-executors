@@ -7,7 +7,10 @@ from version 1.20.0 onwards.
 
 ## [Unreleased]
 
-- n/a
+### Changed
+
+- Flattened the `more_executors` module namespace; all public API may now
+  be imported directly from `more_executors` without specifying a submodule.
 
 ## [2.9.0] - 2022-02-21
 

@@ -1,6 +1,5 @@
 from functools import partial
-from more_executors import Executors
-from more_executors.sync import SyncExecutor
+from more_executors import Executors, SyncExecutor
 
 
 def mult2(x):

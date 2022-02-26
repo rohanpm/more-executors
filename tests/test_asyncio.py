@@ -4,8 +4,7 @@ import sys
 import pytest
 from hamcrest import assert_that, equal_to, calling, raises
 
-from more_executors import Executors
-from more_executors.asyncio import AsyncioExecutor
+from more_executors import Executors, AsyncioExecutor
 
 
 @pytest.fixture

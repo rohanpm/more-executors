@@ -4,8 +4,7 @@ from __future__ import print_function
 import sys
 import requests
 from concurrent.futures import as_completed
-from more_executors import Executors
-from more_executors.retry import RetryPolicy, ExceptionRetryPolicy
+from more_executors import Executors, RetryPolicy, ExceptionRetryPolicy
 
 
 class LoggingRetryPolicy(RetryPolicy):

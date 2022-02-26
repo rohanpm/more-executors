@@ -1,8 +1,7 @@
 import time
 import pytest
 
-from more_executors import Executors
-from more_executors.futures import f_return, f_and, f_nocancel
+from more_executors import Executors, f_return, f_and, f_nocancel
 from .bool_utils import (
     falsey,
     truthy,

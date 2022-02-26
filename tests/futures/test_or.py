@@ -5,8 +5,7 @@ import gc
 
 import pytest
 
-from more_executors import Executors
-from more_executors.futures import f_or, f_nocancel, f_return
+from more_executors import Executors, f_or, f_nocancel, f_return
 from .bool_utils import (
     falsey,
     truthy,
