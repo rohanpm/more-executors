@@ -3,8 +3,7 @@ from threading import Semaphore
 import pytest
 
 
-from more_executors import Executors
-from more_executors.futures import f_return, f_return_error, f_proxy, f_map
+from more_executors import Executors, f_return, f_return_error, f_proxy, f_map
 
 
 def test_len():

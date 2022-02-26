@@ -11,8 +11,7 @@ from hamcrest import (
     greater_than_or_equal_to,
 )
 
-from more_executors import Executors
-from more_executors.cancel_on_shutdown import CancelOnShutdownExecutor
+from more_executors import Executors, CancelOnShutdownExecutor
 
 
 def test_cancels():

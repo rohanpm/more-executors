@@ -3,8 +3,7 @@ import time
 
 from hamcrest import assert_that, less_than_or_equal_to, equal_to, instance_of
 
-from more_executors import Executors
-from more_executors.throttle import ThrottleExecutor
+from more_executors import Executors, ThrottleExecutor
 
 
 def test_throttle():

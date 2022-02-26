@@ -95,7 +95,7 @@ class Executors(object):
         """Creates a new synchronous executor.
 
         Returns:
-            ~more_executors.sync.SyncExecutor:
+            ~more_executors.SyncExecutor:
                 a new synchronous executor
 
         Submitted functions will be immediately invoked on the calling thread."""
@@ -115,7 +115,7 @@ class Executors(object):
     def with_retry(cls, executor, *args, **kwargs):
         """
         Returns:
-            ~more_executors.retry.RetryExecutor:
+            ~more_executors.RetryExecutor:
                 a new executor which will retry callables on failure
         """
         return cls._customize(executor, RetryExecutor, *args, **kwargs)
@@ -124,7 +124,7 @@ class Executors(object):
     def with_map(cls, executor, *args, **kwargs):
         """
         Returns:
-            ~more_executors.map.MapExecutor:
+            ~more_executors.MapExecutor:
                 a new executor which will transform results through the given function
         """
         return cls._customize(executor, MapExecutor, *args, **kwargs)
@@ -133,7 +133,7 @@ class Executors(object):
     def with_flat_map(cls, executor, *args, **kwargs):
         """
         Returns:
-            ~more_executors.flat_map.FlatMapExecutor:
+            ~more_executors.FlatMapExecutor:
                 a new executor which will transform results through the given
                 :class:`~concurrent.futures.Future`-providing function
 
@@ -145,7 +145,7 @@ class Executors(object):
     def with_poll(cls, executor, *args, **kwargs):
         """
         Returns:
-            ~more_executors.poll.PollExecutor:
+            ~more_executors.PollExecutor:
                 a new executor which produces polled futures.
 
                 Submitted callables will have their output passed into
@@ -157,7 +157,7 @@ class Executors(object):
     def with_timeout(cls, executor, *args, **kwargs):
         """
         Returns:
-            ~more_executors.timeout.TimeoutExecutor:
+            ~more_executors.TimeoutExecutor:
                 a new executor which will attempt to cancel any futures if they've
                 not completed within the given timeout.
 
@@ -169,7 +169,7 @@ class Executors(object):
     def with_throttle(cls, executor, *args, **kwargs):
         """
         Returns:
-            ~more_executors.throttle.ThrottleExecutor:
+            ~more_executors.ThrottleExecutor:
                 a new executor which enforces a limit on the number of concurrently
                 pending futures.
 
@@ -181,7 +181,7 @@ class Executors(object):
     def with_cancel_on_shutdown(cls, executor, *args, **kwargs):
         """
         Returns:
-            ~more_executors.cancel_on_shutdown.CancelOnShutdownExecutor:
+            ~more_executors.CancelOnShutdownExecutor:
                 a new executor which attempts to cancel any pending futures when
                 the executor is shut down.
         """
@@ -191,7 +191,7 @@ class Executors(object):
     def with_asyncio(cls, executor, *args, **kwargs):
         """
         Returns:
-            ~more_executors.asyncio.AsyncioExecutor:
+            ~more_executors.AsyncioExecutor:
                 a new executor which returns :class:`asyncio.Future` instances
                 rather than :class:`concurrent.futures.Future` instances, i.e. may be used
                 with the `await` keyword and coroutines.

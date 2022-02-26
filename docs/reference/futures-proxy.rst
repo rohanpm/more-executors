@@ -66,6 +66,4 @@ blocking coding style without requiring explicit calls to ``.result()``:
     cursor = connection.query(some_sql)
     results = process_results(cursor)
 
-.. automodule:: more_executors.futures
-
-    .. autofunction:: f_proxy(f, timeout=None)
+.. autofunction:: more_executors.f_proxy(f, timeout=None)

@@ -1,4 +1,4 @@
-from more_executors.futures import f_return, f_apply
+from more_executors import f_return, f_apply
 
 
 def mult2(x):

@@ -1,4 +1,4 @@
-from more_executors.futures import f_flat_map, f_return, f_return_error
+from more_executors import f_flat_map, f_return, f_return_error
 
 
 def div10(x):

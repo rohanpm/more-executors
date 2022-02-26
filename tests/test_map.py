@@ -3,7 +3,7 @@ import traceback
 from pytest import fixture
 from hamcrest import assert_that, equal_to, instance_of, calling, raises
 
-from more_executors.map import MapExecutor
+from more_executors import MapExecutor
 
 
 @fixture

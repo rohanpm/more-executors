@@ -1,6 +1,6 @@
 import traceback
 
-from more_executors.futures import f_sequence, f_traverse, f_return, f_return_error
+from more_executors import f_sequence, f_traverse, f_return, f_return_error
 
 from ..util import get_traceback
 

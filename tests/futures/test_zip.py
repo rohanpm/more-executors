@@ -1,6 +1,6 @@
 from concurrent.futures import Future
 
-from more_executors.futures import f_zip, f_return, f_return_error
+from more_executors import f_zip, f_return, f_return_error
 
 
 def test_zip_none():

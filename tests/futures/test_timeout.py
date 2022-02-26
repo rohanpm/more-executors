@@ -1,8 +1,7 @@
 import time
 
 from concurrent.futures import CancelledError
-from more_executors import Executors
-from more_executors.futures import f_timeout, f_nocancel
+from more_executors import Executors, f_timeout, f_nocancel
 
 
 def test_timeout():

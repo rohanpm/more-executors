@@ -1,6 +1,5 @@
 import time
-from more_executors import Executors
-from more_executors.futures import f_nocancel
+from more_executors import Executors, f_nocancel
 
 
 def delay_then(x, delay=0.01):

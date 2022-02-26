@@ -23,9 +23,7 @@ from hamcrest import (
 )
 from pytest import fixture, skip
 
-from more_executors.retry import RetryPolicy
-from more_executors import Executors
-from more_executors.futures import f_proxy, f_return
+from more_executors import Executors, RetryPolicy, f_proxy, f_return
 
 from .util import assert_soon, run_or_timeout
 from .logging_util import dump_executor, add_debug_logging

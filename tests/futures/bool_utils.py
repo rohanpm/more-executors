@@ -1,6 +1,6 @@
 import pytest
 
-from more_executors.futures import f_return, f_return_error, f_return_cancelled
+from more_executors import f_return, f_return_error, f_return_cancelled
 
 
 CANCELLED = object()

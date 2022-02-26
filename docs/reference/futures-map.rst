@@ -7,18 +7,20 @@ provided function.
 Futures API
 -----------
 
-.. automodule:: more_executors.futures
-   :members: f_map, f_flat_map
+.. autofunction:: more_executors.f_map
+
+.. autofunction:: more_executors.f_flat_map
+
 
 Executors API
 -------------
 
-.. autoclass:: more_executors.map.MapExecutor
+.. autoclass:: more_executors.MapExecutor
    :members: submit
 
 .. automethod:: more_executors.Executors.with_map(executor, fn=None, error_fn=None, logger=None)
 
 
-.. autoclass:: more_executors.flat_map.FlatMapExecutor
+.. autoclass:: more_executors.FlatMapExecutor
 
 .. automethod:: more_executors.Executors.with_flat_map(executor, fn=None, error_fn=None, logger=None)
