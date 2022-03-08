@@ -19,6 +19,11 @@ from ..util import assert_in_traceback
 LOG = logging.getLogger("test_or")
 
 
+def delay_then(delay, value):
+    time.sleep(delay)
+    return value
+
+
 cases = [
     [(falsey,), falsey],
     [(truthy,), truthy],
@@ -178,3 +183,23 @@ def test_or_large():
     inputs = [f_return(0) for _ in range(0, 100000)]
 
     assert f_or(*inputs).result() == 0
+
+
+def test_or_chain_true():
+    with Executors.thread_pool() as exec:
+        f = exec.submit(delay_then, 0.4, 123)
+
+        for _ in range(0, 10000):
+            f = f_or(f_return(True), f)
+
+        assert f.result() is True
+
+
+def test_or_chain_false():
+    with Executors.thread_pool() as exec:
+        f = exec.submit(delay_then, 0.4, False)
+
+        for _ in range(0, 10000):
+            f = f_or(f_return(False), f)
+
+        assert f.result() is False

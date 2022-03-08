@@ -31,6 +31,11 @@ cases = [
 ]
 
 
+def delay_then(delay, value):
+    time.sleep(delay)
+    return value
+
+
 @pytest.mark.parametrize("inputs, expected_result", cases)
 def test_and(inputs, expected_result, falsey, truthy):
     inputs = resolve_inputs(inputs, falsey, truthy)
@@ -50,10 +55,6 @@ def test_and_order_sync():
 
 def test_and_order_async():
     executor = Executors.thread_pool(max_workers=2)
-
-    def delay_then(delay, value):
-        time.sleep(delay)
-        return value
 
     f_inputs = [
         executor.submit(delay_then, 0.1, 123),
@@ -168,3 +169,23 @@ def test_and_large():
     inputs = [f_return(True) for _ in range(0, 100000)]
 
     assert f_and(*inputs).result() is True
+
+
+def test_and_chain_true():
+    with Executors.thread_pool() as exec:
+        f = exec.submit(delay_then, 0.4, 123)
+
+        for _ in range(0, 10000):
+            f = f_and(f_return(True), f)
+
+        assert f.result() in (123, True)
+
+
+def test_and_chain_false():
+    with Executors.thread_pool() as exec:
+        f = exec.submit(delay_then, 0.4, 123)
+
+        for _ in range(0, 10000):
+            f = f_and(f_return(False), f)
+
+        assert f.result() == False
