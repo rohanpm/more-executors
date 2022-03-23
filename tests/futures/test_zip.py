@@ -50,6 +50,21 @@ def test_zip_cancel():
     assert f_c.cancelled()
 
 
+def test_zip_inner_cancel():
+    f_a = f_return("a")
+    f_b = Future()
+    f_c = Future()
+    future = f_zip(f_a, f_b, f_c)
+
+    assert f_b.cancel()
+
+    # Cancelling the inner future should cause the outer
+    # future to also become cancelled, as well as the
+    # other inner futures.
+    assert f_c.cancelled()
+    assert future.cancelled()
+
+
 def test_zip_large():
     fs = [f_return(i) for i in range(0, 100000)]
     future = f_zip(*fs)
