@@ -9,6 +9,12 @@ from version 1.20.0 onwards.
 
 - n/a
 
+## [2.10.1] - 2022-03-23
+
+### Fixed
+
+- Fixed output of `f_zip` never resolving if an input future was cancelled. 
+
 ## [2.10.0] - 2022-02-27
 
 ### Changed
@@ -296,7 +302,8 @@ from version 1.20.0 onwards.
 - Minor improvements to logging
 
 
-[Unreleased]: https://github.com/rohanpm/more-executors/compare/v2.10.0...HEAD
+[Unreleased]: https://github.com/rohanpm/more-executors/compare/v2.10.1...HEAD
+[2.10.1]: https://github.com/rohanpm/more-executors/compare/v2.10.0...v2.10.1
 [2.10.0]: https://github.com/rohanpm/more-executors/compare/v2.9.0...v2.10.0
 [2.9.0]: https://github.com/rohanpm/more-executors/compare/v2.8.2...v2.9.0
 [2.8.2]: https://github.com/rohanpm/more-executors/compare/v2.8.1...v2.8.2
