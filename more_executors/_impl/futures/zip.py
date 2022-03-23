@@ -45,10 +45,14 @@ class Zipper(object):
     def handle_done(self, index, f):
         set_result = False
         set_exception = False
+        cancel = False
 
         with self.lock:
             if self.done:
                 pass
+            elif f.cancelled():
+                self.done = True
+                cancel = True
             elif f.exception():
                 self.done = True
                 set_exception = True
@@ -60,6 +64,8 @@ class Zipper(object):
                     self.done = True
                     set_result = True
 
+        if cancel:
+            self.out.cancel()
         if set_result:
             self.out.set_result(maketuple(self.fs))
         if set_exception:
@@ -81,8 +87,8 @@ def f_zip(*fs):
             A future holding the returned values of all input futures as a tuple.
             The returned tuple has the same length and order as the input futures.
 
-            Alternatively, a future raising an exception, if any input futures raised
-            an exception.
+            Alternatively, a future raising an exception or a cancelled future,
+            if any input futures raised an exception or was cancelled.
 
     .. note::
         This function is tested with up to 100,000 input futures.
