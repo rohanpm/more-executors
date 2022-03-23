@@ -47,8 +47,8 @@
 <dd class="field-even"><p><dl>
 <dt><a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a></dt><dd><p>A future holding the returned values of all input futures as a tuple.
 The returned tuple has the same length and order as the input futures.</p>
-<p>Alternatively, a future raising an exception, if any input futures raised
-an exception.</p>
+<p>Alternatively, a future raising an exception or a cancelled future,
+if any input futures raised an exception or was cancelled.</p>
 </dd>
 </dl>
 </p>
