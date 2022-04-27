@@ -1,3 +1,5 @@
+import pytest
+
 from threading import Lock
 import time
 
@@ -6,7 +8,8 @@ from hamcrest import assert_that, less_than_or_equal_to, equal_to, instance_of
 from more_executors import Executors, ThrottleExecutor
 
 
-def test_throttle():
+@pytest.mark.parametrize("block", [True, False])
+def test_throttle(block):
     THREADS = 8
     COUNT = 3
     samples = []
@@ -27,7 +30,9 @@ def test_throttle():
             running_now.remove(x)
 
     futures = []
-    executor = ThrottleExecutor(Executors.thread_pool(max_workers=THREADS), count=COUNT)
+    executor = ThrottleExecutor(
+        Executors.thread_pool(max_workers=THREADS), count=COUNT, block=block
+    )
     with executor:
         for i in range(0, 1000):
             future = executor.submit(record, i)
@@ -51,6 +56,6 @@ def test_throttle():
 
 def test_with_throttle():
     assert_that(
-        Executors.sync(name="throttle-test").with_throttle(4),
+        Executors.sync(name="throttle-test").with_throttle(4, block=True),
         instance_of(ThrottleExecutor),
     )
