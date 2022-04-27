@@ -59,13 +59,14 @@ class ThrottleExecutor(CanCustomizeBind, Executor):
     - Where `count` is used to initialize this executor, if there
       are already `count` futures submitted to the delegate executor and not
       yet :meth:`~concurrent.futures.Future.done`, additional callables will
-      be queued and only submitted to the delegate executor once there are
-      less than `count` futures in progress.
+      either be queued or will block on submit, and will only be submitted
+      to the delegate executor once there are less than `count` futures in
+      progress.
 
     .. versionadded:: 1.9.0
     """
 
-    def __init__(self, delegate, count, logger=None, name="default"):
+    def __init__(self, delegate, count, logger=None, name="default", block=False):
         """
         Parameters:
             delegate (~concurrent.futures.Executor):
@@ -84,6 +85,13 @@ class ThrottleExecutor(CanCustomizeBind, Executor):
 
                     .. versionadded:: 2.5.0
 
+            block (bool)
+                If ``True``, calls to ``submit()`` on this executor may block if
+                there are already ``count`` futures in progress.
+
+                Otherwise, calls to ``submit()`` will always return immediately
+                and callables will be queued internally.
+
             logger (~logging.Logger):
                 a logger used for messages from this executor
 
@@ -92,10 +100,14 @@ class ThrottleExecutor(CanCustomizeBind, Executor):
 
         .. versionchanged:: 2.7.0
             Introduced ``name``.
+
+        .. versionchanged:: 2.11.0
+            Introduced ``block``.
         """
         self._log = LogWrapper(
             logger if logger else logging.getLogger("ThrottleExecutor")
         )
+        self._block = block
         self._name = name
         self._delegate = delegate
         self._to_submit = deque()
@@ -120,6 +132,8 @@ class ThrottleExecutor(CanCustomizeBind, Executor):
 
     def submit(self, fn, *args, **kwargs):  # pylint: disable=arguments-differ
         with self._shutdown.ensure_alive():
+            self._block_until_ready(self._eval_throttle())
+
             out = ThrottleFuture(self)
             track_future(out, type="throttle", executor=self._name)
 
@@ -139,6 +153,13 @@ class ThrottleExecutor(CanCustomizeBind, Executor):
             self._event.set()
             if wait:
                 self._thread.join(MAX_TIMEOUT)
+
+    def _block_until_ready(self, throttle_val):
+        while self._block and not self._shutdown.is_shutdown:
+            if len(self._to_submit) < throttle_val:
+                return
+            self._log.debug("%s: throttling on submit", self._name)
+            self._event.wait(30.0)
 
     def _eval_throttle(self):
         try:
