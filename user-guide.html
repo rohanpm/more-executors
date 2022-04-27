@@ -319,7 +319,8 @@ leak may occur. If in doubt, call
 <span id="metrics"></span><h2>Prometheus metrics<a class="headerlink" href="#prometheus-metrics" title="Permalink to this headline">¶</a></h2>
 <p>This library automatically collects <a class="reference external" href="https://prometheus.io/">Prometheus</a>
 metrics if the <code class="docutils literal notranslate"><span class="pre">prometheus_client</span></code> Python module is available.
-The feature is disabled when this module is not installed.</p>
+The feature is disabled when this module is not installed or if the
+<code class="docutils literal notranslate"><span class="pre">MORE_EXECUTORS_PROMETHEUS</span></code> environment variable is set to <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
 <p>If you want to ensure that <code class="docutils literal notranslate"><span class="pre">more-executors</span></code> is installed along with
 all prometheus dependencies, you may request the ‘prometheus’ extras,
 as in example:</p>
