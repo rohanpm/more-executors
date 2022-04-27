@@ -1,3 +1,4 @@
+import os
 import logging
 from functools import partial
 
@@ -7,14 +8,17 @@ from .null import NullMetrics
 
 LOG = logging.getLogger("more-executors.metrics")
 
-try:  # pylint: disable=import-error
-    from .prometheus import PrometheusMetrics
-
-    metrics = PrometheusMetrics()
-except Exception:
-    LOG.debug("disabling prometheus support", exc_info=True)
-
+if os.environ.get("MORE_EXECUTORS_PROMETHEUS", "1") == "0":
     metrics = NullMetrics()  # type: ignore
+else:
+    try:  # pylint: disable=import-error
+        from .prometheus import PrometheusMetrics
+
+        metrics = PrometheusMetrics()
+    except Exception:
+        LOG.debug("disabling prometheus support", exc_info=True)
+
+        metrics = NullMetrics()  # type: ignore
 
 
 def record_done(f, started_when, time, inprogress, cancelled, failed):
@@ -60,3 +64,11 @@ def track_future(f, **labels):
     f.add_done_callback(cb)
 
     return f
+
+
+def track_future_noop(f, **_labels):
+    return f
+
+
+if isinstance(metrics, NullMetrics):
+    track_future = track_future_noop
