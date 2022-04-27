@@ -9,6 +9,15 @@ from version 1.20.0 onwards.
 
 - n/a
 
+## [2.11.0] - 2022-04-27
+
+### Added
+
+- Prometheus support can now be disabled by setting the environment variable
+  `MORE_EXECUTORS_PROMETHEUS=0`.
+- `ThrottleExecutor` now supports a blocking mode which can be used to block
+  on submit, reducing memory usage.
+
 ## [2.10.1] - 2022-03-23
 
 ### Fixed
@@ -302,7 +311,8 @@ from version 1.20.0 onwards.
 - Minor improvements to logging
 
 
-[Unreleased]: https://github.com/rohanpm/more-executors/compare/v2.10.1...HEAD
+[Unreleased]: https://github.com/rohanpm/more-executors/compare/v2.11.0...HEAD
+[2.11.0]: https://github.com/rohanpm/more-executors/compare/v2.10.1...v2.11.0
 [2.10.1]: https://github.com/rohanpm/more-executors/compare/v2.10.0...v2.10.1
 [2.10.0]: https://github.com/rohanpm/more-executors/compare/v2.9.0...v2.10.0
 [2.9.0]: https://github.com/rohanpm/more-executors/compare/v2.8.2...v2.9.0
