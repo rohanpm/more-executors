@@ -38,7 +38,7 @@
 <p>ThrottleExecutor limits the number of concurrently executing futures.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="more_executors.ThrottleExecutor">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">more_executors.</span></span><span class="sig-name descname"><span class="pre">ThrottleExecutor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">delegate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.ThrottleExecutor" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">more_executors.</span></span><span class="sig-name descname"><span class="pre">ThrottleExecutor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">delegate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.ThrottleExecutor" title="Permalink to this definition">¶</a></dt>
 <dd><p>An executor which delegates to another executor while enforcing
 a limit on the number of futures running concurrently.</p>
 <ul class="simple">
@@ -47,8 +47,9 @@ thread than the calling thread.</p></li>
 <li><p>Where <cite>count</cite> is used to initialize this executor, if there
 are already <cite>count</cite> futures submitted to the delegate executor and not
 yet <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future.done" title="(in Python v3.10)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">done()</span></code></a>, additional callables will
-be queued and only submitted to the delegate executor once there are
-less than <cite>count</cite> futures in progress.</p></li>
+either be queued or will block on submit, and will only be submitted
+to the delegate executor once there are less than <cite>count</cite> futures in
+progress.</p></li>
 </ul>
 <div class="versionadded">
 <p><span class="versionmodified added">New in version 1.9.0.</span></p>
@@ -71,6 +72,11 @@ to implement dynamic throttling.</p>
 </dd>
 </dl>
 </p></li>
+<li><p><strong>block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a>) – <p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, calls to <code class="docutils literal notranslate"><span class="pre">submit()</span></code> on this executor may block if
+there are already <code class="docutils literal notranslate"><span class="pre">count</span></code> futures in progress.</p>
+<p>Otherwise, calls to <code class="docutils literal notranslate"><span class="pre">submit()</span></code> will always return immediately
+and callables will be queued internally.</p>
+</p></li>
 <li><p><strong>logger</strong> (<a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.10)"><em>Logger</em></a>) – a logger used for messages from this executor</p></li>
 <li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – a name for this executor</p></li>
 </ul>
@@ -78,6 +84,9 @@ to implement dynamic throttling.</p>
 </dl>
 <div class="versionchanged">
 <p><span class="versionmodified changed">Changed in version 2.7.0: </span>Introduced <code class="docutils literal notranslate"><span class="pre">name</span></code>.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.11.0: </span>Introduced <code class="docutils literal notranslate"><span class="pre">block</span></code>.</p>
 </div>
 </dd></dl>
 
