@@ -15,6 +15,7 @@ class ThrottleExecutor(ExecutorProtocol):
         count: int | Callable[[], int],
         logger: logging.Logger | None = ...,
         name: str = ...,
+        block: bool = ...,
     ): ...
     def __enter__(self) -> ThrottleExecutor: ...
 
@@ -25,5 +26,6 @@ class TypedThrottleExecutor(TypedExecutorProtocol[A, B]):
         count: int | Callable[[], int],
         logger: logging.Logger | None = ...,
         name: str = ...,
+        block: bool = ...,
     ): ...
     def __enter__(self) -> TypedThrottleExecutor[A, B]: ...

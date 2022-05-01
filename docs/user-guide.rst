@@ -240,7 +240,8 @@ Prometheus metrics
 
 This library automatically collects `Prometheus <https://prometheus.io/>`_
 metrics if the ``prometheus_client`` Python module is available.
-The feature is disabled when this module is not installed.
+The feature is disabled when this module is not installed or if the
+``MORE_EXECUTORS_PROMETHEUS`` environment variable is set to ``0``.
 
 If you want to ensure that ``more-executors`` is installed along with
 all prometheus dependencies, you may request the 'prometheus' extras,
