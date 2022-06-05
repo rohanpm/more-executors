@@ -1,6 +1,11 @@
 from concurrent.futures import Executor
 
-from .common import _Future, copy_exception, copy_future_exception
+from .common import (
+    _Future,
+    copy_exception,
+    copy_future_exception,
+    try_set_result,
+)
 from .wrap import CanCustomizeBind
 from .metrics import metrics, track_future
 from .helpers import ShutdownHelper
@@ -71,7 +76,7 @@ class MapFuture(_Future):
             copy_exception(self)
 
     def _on_mapped(self, result):
-        self.set_result(result)
+        try_set_result(self, result)
 
     def set_result(self, result):
         with self._me_lock:

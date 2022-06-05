@@ -4,7 +4,10 @@ from threading import Lock
 from functools import partial
 from collections import namedtuple
 
-from more_executors._impl.common import copy_future_exception
+from more_executors._impl.common import (
+    copy_future_exception,
+    try_set_result,
+)
 from .base import f_return, chain_cancel, weak_callback
 from .check import ensure_futures
 from ..metrics import track_future
@@ -67,7 +70,7 @@ class Zipper(object):
         if cancel:
             self.out.cancel()
         if set_result:
-            self.out.set_result(maketuple(self.fs))
+            try_set_result(self.out, maketuple(self.fs))
         if set_exception:
             copy_future_exception(f, self.out)
 

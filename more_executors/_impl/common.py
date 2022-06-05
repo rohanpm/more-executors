@@ -5,6 +5,15 @@ import logging
 
 from .logwrap import LogWrapper
 
+try:
+    from concurrent.futures import InvalidStateError
+except ImportError:  # pragma: no cover
+    # InvalidStateError doesn't exist on older versions.
+    # Keep code simple by declaring a class of same name (which will never
+    # have any instances created).
+    class InvalidStateError(RuntimeError):
+        pass
+
 
 LOG = LogWrapper(logging.getLogger("more_executors._Future"))
 
@@ -93,9 +102,26 @@ def copy_exception(future, exception=None, traceback=None):
         traceback = exc_info[2]
 
     try:
-        future.set_exception_info(exception, traceback)
-        return
-    except AttributeError:
-        pass
+        try:
+            future.set_exception_info(exception, traceback)
+            return
+        except AttributeError:
+            pass
 
-    future.set_exception(exception)
+        future.set_exception(exception)
+
+    except InvalidStateError:
+        # See commentary on try_set_result below.
+        LOG.debug("%s: can't set exception %s", future, exception, exc_info=True)
+
+
+def try_set_result(future, result):
+    # Try to set a result on a future, but tolerate an InvalidStateError.
+    #
+    # The intended usage of this function is to set results on futures we've
+    # already handed out to the user and which therefore could potentially
+    # have been cancelled by them at any time..
+    try:
+        future.set_result(result)
+    except InvalidStateError:
+        LOG.debug("%s: can't set result %s", future, result, exc_info=True)
