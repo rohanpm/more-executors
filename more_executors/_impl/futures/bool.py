@@ -5,7 +5,7 @@ import logging
 from concurrent.futures import Future
 
 from .base import chain_cancel, weak_callback
-from ..common import copy_future_exception
+from ..common import copy_future_exception, try_set_result
 from .check import ensure_futures
 from ..logwrap import LogWrapper
 from ..metrics import track_future
@@ -44,7 +44,7 @@ class BoolOperation(object):
             (set_result, set_exception, cancel_futures) = self.get_state_update(f)
 
         if set_result:
-            self.out.set_result(f.result())
+            try_set_result(self.out, f.result())
         if set_exception:
             copy_future_exception(f, self.out)
 

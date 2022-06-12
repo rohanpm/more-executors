@@ -5,7 +5,13 @@ import logging
 
 from monotonic import monotonic
 
-from .common import _Future, MAX_TIMEOUT, copy_exception, copy_future_exception
+from .common import (
+    _Future,
+    MAX_TIMEOUT,
+    copy_exception,
+    copy_future_exception,
+    try_set_result,
+)
 from .wrap import CanCustomizeBind
 from .helpers import executor_loop
 from .event import get_event, is_shutdown
@@ -108,8 +114,7 @@ class PollDescriptor(object):
             result (object):
                 a result to be returned by the future associated with this descriptor
         """
-
-        self.__future.set_result(result)
+        try_set_result(self.__future, result)
 
     def yield_exception(self, exception, traceback=None):
         """The poll function can call this function to make the future raise the given exception.
