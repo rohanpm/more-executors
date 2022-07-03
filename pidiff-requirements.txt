@@ -16,9 +16,9 @@ importlib-resources==5.8.0 \
     --hash=sha256:568c9f16cb204f9decc8d6d24a572eeea27dacbb4cee9e6b03a8025736769751 \
     --hash=sha256:7952325ffd516c05a8ad0858c74dff2c3343f136fe66a6002b2623dd1d43f223
     # via jsonschema
-jsonschema==4.6.0 \
-    --hash=sha256:1c92d2db1900b668201f1797887d66453ab1fbfea51df8e4b46236689c427baf \
-    --hash=sha256:9d6397ba4a6c0bf0300736057f649e3e12ecbc07d3e81a0dacb72de4e9801957
+jsonschema==4.6.1 \
+    --hash=sha256:5eb781753403847fb320f05e9ab2191725b58c5e7f97f1bed63285ca423159bc \
+    --hash=sha256:ec2802e6a37517f09d47d9ba107947589ae1d25ff557b925d83a321fc2aa5d3b
     # via pidiff
 lazy-object-proxy==1.7.1 \
     --hash=sha256:043651b6cb706eee4f91854da4a089816a6606c1428fd391573ef8cb642ae4f7 \
@@ -94,9 +94,9 @@ six==1.16.0 \
     --hash=sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926 \
     --hash=sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254
     # via virtualenv-api
-typing-extensions==4.2.0 \
-    --hash=sha256:6657594ee297170d19f67d55c05852a874e7eb634f4f753dbd667855e07c1708 \
-    --hash=sha256:f1c24655a0da0d1b67f07e17a5e6b2a105894e6824b92096378bb3668ef02376
+typing-extensions==4.3.0 \
+    --hash=sha256:25642c956049920a5aa49edcdd6ab1e06d7e5d467fc00e0506c44ac86fbfca02 \
+    --hash=sha256:e6d2677a32f47fc7eb2795db1dd15c1f34eff616bcaf2cfb5e997f854fa1c4a6
     # via astroid
 virtualenv-api==2.1.18 \
     --hash=sha256:2115cceaeab27faf2909780c442f4ee7a33fda9a49fe8255967432290a0557af \
