@@ -16,9 +16,9 @@ importlib-resources==5.9.0 \
     --hash=sha256:5481e97fb45af8dcf2f798952625591c58fe599d0735d86b10f54de086a61681 \
     --hash=sha256:f78a8df21a79bcc30cfd400bdc38f314333de7c0fb619763f6b9dabab8268bb7
     # via jsonschema
-jsonschema==4.9.0 \
-    --hash=sha256:5d0be0cd1b670438b71c3d3145b2abba1f9d197e3e91adc4c4bae4c0e114e252 \
-    --hash=sha256:df10e65c8f3687a48e93d0d348ce0ce5f897b5a28e9bbcbbe8f7c7eaf019e850
+jsonschema==4.9.1 \
+    --hash=sha256:408c4c8ed0dede3b268f7a441784f74206380b04f93eb2d537c7befb3df3099f \
+    --hash=sha256:8ebad55894c002585271af2d327d99339ef566fb085d9129b69e2623867c4106
     # via pidiff
 lazy-object-proxy==1.7.1 \
     --hash=sha256:043651b6cb706eee4f91854da4a089816a6606c1428fd391573ef8cb642ae4f7 \
