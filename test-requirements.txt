@@ -4,9 +4,9 @@
 #
 #    pip-compile --generate-hashes test-requirements.in
 #
-astroid==2.11.7 \
-    --hash=sha256:86b0a340a512c65abf4368b80252754cda17c02cdbbd3f587dddf98112233e7b \
-    --hash=sha256:bb24615c77f4837c707669d16907331374ae8a964650a66999da3f5ca68dc946
+astroid==2.12.4 \
+    --hash=sha256:39fa822c82dc112f5072a208ddf01c58184043aa90e3e469786fa0520c71aaa7 \
+    --hash=sha256:af71cdc0775b6e4d88076746620e2c8cd1bf4533a9977cfdd00eeea97d95530c
     # via pylint
 attrs==22.1.0 \
     --hash=sha256:29adc2665447e5191d0e7c568fde78b21f9672d344281d0c6e1ab085429b22b6 \
@@ -172,9 +172,9 @@ pyhamcrest==2.0.4 \
     --hash=sha256:60a41d4783b9d56c9ec8586635d2301db5072b3ea8a51c32dd03c408ae2b0f79 \
     --hash=sha256:b5d9ce6b977696286cf232ce2adf8969b4d0b045975b0936ac9005e84e67e9c1
     # via -r test-requirements.in
-pylint==2.14.5 ; python_version >= "3" \
-    --hash=sha256:487ce2192eee48211269a0e976421f334cf94de1806ca9d0a99449adcdf0285e \
-    --hash=sha256:fabe30000de7d07636d2e82c9a518ad5ad7908590fe135ace169b44839c15f90
+pylint==2.15.0 ; python_version >= "3" \
+    --hash=sha256:4b124affc198b7f7c9b5f9ab690d85db48282a025ef9333f51d2d7281b92a6c3 \
+    --hash=sha256:4f3f7e869646b0bd63b3dfb79f3c0f28fc3d2d923ea220d52620fd625aed92b0
     # via -r test-requirements.in
 pyparsing==3.0.9 \
     --hash=sha256:2b020ecf7d21b687f219b71ecad3631f644a47f01403fa1d1036b0c6416d70fb \
@@ -275,7 +275,3 @@ wrapt==1.14.1 \
     --hash=sha256:ee6acae74a2b91865910eef5e7de37dc6895ad96fa23603d1d27ea69df545015 \
     --hash=sha256:ef3f72c9666bba2bab70d2a8b79f2c6d2c1a42a7f7e2b0ec83bb2f9e383950af
     # via astroid
-
-# WARNING: The following packages were not pinned, but pip requires them to be
-# pinned when the requirements file includes hashes. Consider using the --allow-unsafe flag.
-# setuptools
