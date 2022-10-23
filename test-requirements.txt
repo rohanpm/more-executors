@@ -4,9 +4,9 @@
 #
 #    pip-compile --generate-hashes test-requirements.in
 #
-astroid==2.12.11 \
-    --hash=sha256:2df4f9980c4511474687895cbfdb8558293c1a826d9118bb09233d7c2bff1c83 \
-    --hash=sha256:867a756bbf35b7bc07b35bfa6522acd01f91ad9919df675e8428072869792dce
+astroid==2.12.12 \
+    --hash=sha256:1c00a14f5a3ed0339d38d2e2e5b74ea2591df5861c0936bb292b84ccf3a78d83 \
+    --hash=sha256:72702205200b2a638358369d90c222d74ebc376787af8fb2f7f2a86f7b5cc85f
     # via pylint
 attrs==22.1.0 \
     --hash=sha256:29adc2665447e5191d0e7c568fde78b21f9672d344281d0c6e1ab085429b22b6 \
@@ -173,9 +173,9 @@ pyhamcrest==2.0.4 \
     --hash=sha256:60a41d4783b9d56c9ec8586635d2301db5072b3ea8a51c32dd03c408ae2b0f79 \
     --hash=sha256:b5d9ce6b977696286cf232ce2adf8969b4d0b045975b0936ac9005e84e67e9c1
     # via -r test-requirements.in
-pylint==2.15.4 ; python_version >= "3" \
-    --hash=sha256:5441e9294335d354b7bad57c1044e5bd7cce25c433475d76b440e53452fa5cb8 \
-    --hash=sha256:629cf1dbdfb6609d7e7a45815a8bb59300e34aa35783b5ac563acaca2c4022e9
+pylint==2.15.5 ; python_version >= "3" \
+    --hash=sha256:3b120505e5af1d06a5ad76b55d8660d44bf0f2fc3c59c2bdd94e39188ee3a4df \
+    --hash=sha256:c2108037eb074334d9e874dc3c783752cc03d0796c88c9a9af282d0f161a1004
     # via -r test-requirements.in
 pyparsing==3.0.9 \
     --hash=sha256:2b020ecf7d21b687f219b71ecad3631f644a47f01403fa1d1036b0c6416d70fb \
