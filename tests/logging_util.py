@@ -5,7 +5,10 @@ import collections
 import pprint
 from threading import Lock
 
-from monotonic import monotonic
+try:
+    from time import monotonic
+except ImportError:  # pragma: no cover
+    from monotonic import monotonic
 
 
 class CollectionLogger(logging.Logger, object):

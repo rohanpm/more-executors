@@ -2,7 +2,10 @@ import os
 import logging
 from functools import partial
 
-from monotonic import monotonic
+try:
+    from time import monotonic
+except ImportError:  # pragma: no cover
+    from monotonic import monotonic
 
 from .null import NullMetrics
 

@@ -3,7 +3,10 @@ from threading import RLock, Thread
 import logging
 import weakref
 
-from monotonic import monotonic
+try:
+    from time import monotonic
+except ImportError:  # pragma: no cover
+    from monotonic import monotonic
 
 from .common import _Future, MAX_TIMEOUT, copy_future_exception
 from .wrap import CanCustomizeBind

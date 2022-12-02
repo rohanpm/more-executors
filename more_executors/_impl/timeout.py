@@ -4,7 +4,10 @@ from collections import namedtuple
 import weakref
 import logging
 
-from monotonic import monotonic
+try:
+    from time import monotonic
+except ImportError:  # pragma: no cover
+    from monotonic import monotonic
 
 from .map import MapFuture
 from .common import MAX_TIMEOUT
