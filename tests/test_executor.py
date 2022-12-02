@@ -10,6 +10,7 @@ import sys
 from concurrent.futures import Executor, CancelledError, wait, FIRST_COMPLETED
 
 from six.moves.queue import Queue
+
 try:
     from time import monotonic
 except ImportError:
