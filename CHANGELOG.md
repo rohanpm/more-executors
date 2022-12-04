@@ -9,6 +9,12 @@ from version 1.20.0 onwards.
 
 - n/a
 
+## [2.11.2] - 2022-12-05
+
+### Fixed
+
+- Removed unnecessary dependency on `monotonic` for python 3.3 and later
+
 ## [2.11.1] - 2022-06-06
 
 ### Fixed
@@ -317,7 +323,8 @@ from version 1.20.0 onwards.
 - Minor improvements to logging
 
 
-[Unreleased]: https://github.com/rohanpm/more-executors/compare/v2.11.1...HEAD
+[Unreleased]: https://github.com/rohanpm/more-executors/compare/v2.11.2...HEAD
+[2.11.2]: https://github.com/rohanpm/more-executors/compare/v2.11.1...v2.11.2
 [2.11.1]: https://github.com/rohanpm/more-executors/compare/v2.11.0...v2.11.1
 [2.11.0]: https://github.com/rohanpm/more-executors/compare/v2.10.1...v2.11.0
 [2.10.1]: https://github.com/rohanpm/more-executors/compare/v2.10.0...v2.10.1
