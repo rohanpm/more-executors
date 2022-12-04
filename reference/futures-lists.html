@@ -41,11 +41,11 @@
 <p>Signature: <code class="code docutils literal notranslate"><span class="pre">Future&lt;A&gt;[,</span> <span class="pre">Future&lt;B&gt;[,</span> <span class="pre">...]]</span> <span class="pre">⟶</span> <span class="pre">Future&lt;A[,</span> <span class="pre">B[,</span> <span class="pre">...]]&gt;</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>fs</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.10)"><em>Future</em></a>) – Any number of futures.</p>
+<dd class="field-odd"><p><strong>fs</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.11)"><em>Future</em></a>) – Any number of futures.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><dl>
-<dt><a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a></dt><dd><p>A future holding the returned values of all input futures as a tuple.
+<dt><a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a></dt><dd><p>A future holding the returned values of all input futures as a tuple.
 The returned tuple has the same length and order as the input futures.</p>
 <p>Alternatively, a future raising an exception or a cancelled future,
 if any input futures raised an exception or was cancelled.</p>
@@ -71,11 +71,11 @@ Exceeding this limit may result in performance issues.</p>
 <p>Signature: <code class="code docutils literal notranslate"><span class="pre">list&lt;Future&lt;X&gt;&gt;</span> <span class="pre">⟶</span> <span class="pre">Future&lt;list&lt;X&gt;&gt;</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>futures</strong> (iterable of <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a>) – A list or other iterable of futures.</p>
+<dd class="field-odd"><p><strong>futures</strong> (iterable of <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a>) – A list or other iterable of futures.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><dl class="simple">
-<dt><a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a></dt><dd><p>A future resolved with either:</p>
+<dt><a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a></dt><dd><p>A future resolved with either:</p>
 <ul class="simple">
 <li><p>a list holding the output value of each input future</p></li>
 <li><p>or an exception, if any input future raised an exception</p></li>
@@ -110,7 +110,7 @@ and return a future holding the returned values as a list.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><dl class="simple">
-<dt><a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a></dt><dd><p>A future resolved with either:</p>
+<dt><a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a></dt><dd><p>A future resolved with either:</p>
 <ul class="simple">
 <li><p>a list holding the resolved output values of <code class="xref py py-obj docutils literal notranslate"><span class="pre">fn</span></code></p></li>
 <li><p>or an exception, if <code class="xref py py-obj docutils literal notranslate"><span class="pre">fn</span></code> or any future produced by <code class="xref py py-obj docutils literal notranslate"><span class="pre">fn</span></code> failed</p></li>

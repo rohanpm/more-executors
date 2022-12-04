@@ -44,11 +44,11 @@
 <p>Signature: <code class="code docutils literal notranslate"><span class="pre">Future&lt;X&gt;</span> <span class="pre">⟶</span> <span class="pre">Future&lt;X&gt;</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>future</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.10)"><em>Future</em></a>) – Any future.</p>
+<dd class="field-odd"><p><strong>future</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.11)"><em>Future</em></a>) – Any future.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><dl class="simple">
-<dt><a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a></dt><dd><p>A wrapped version of <code class="xref py py-obj docutils literal notranslate"><span class="pre">future</span></code> which cannot be cancelled.</p>
+<dt><a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a></dt><dd><p>A wrapped version of <code class="xref py py-obj docutils literal notranslate"><span class="pre">future</span></code> which cannot be cancelled.</p>
 </dd>
 </dl>
 </p>
@@ -72,7 +72,7 @@ behavior, such as <a class="reference internal" href="poll.html#more_executors.P
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>From Python 3.9 onwards, the standard
-<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor.shutdown" title="(in Python v3.10)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">shutdown()</span></code></a> method includes a
+<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor.shutdown" title="(in Python v3.11)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">shutdown()</span></code></a> method includes a
 <code class="docutils literal notranslate"><span class="pre">cancel_futures</span></code> parameter which can be used to cancel futures
 on shutdown.</p>
 <p>These two approaches of cancelling futures on shutdown have the
@@ -92,9 +92,9 @@ in the standard library).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>delegate</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor" title="(in Python v3.10)"><em>Executor</em></a>) – executor to which callables will be submitted</p></li>
-<li><p><strong>logger</strong> (<a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.10)"><em>Logger</em></a>) – a logger used for messages from this executor</p></li>
-<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – a name for this executor</p></li>
+<li><p><strong>delegate</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor" title="(in Python v3.11)"><em>Executor</em></a>) – executor to which callables will be submitted</p></li>
+<li><p><strong>logger</strong> (<a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.11)"><em>Logger</em></a>) – a logger used for messages from this executor</p></li>
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – a name for this executor</p></li>
 </ul>
 </dd>
 </dl>
@@ -106,7 +106,7 @@ in the standard library).</p>
 <span class="sig-name descname"><span class="pre">shutdown</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wait</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">_kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#more_executors.CancelOnShutdownExecutor.shutdown" title="Permalink to this definition">¶</a></dt>
 <dd><p>Shut down the executor.</p>
 <p>All futures created by this executor which have not yet been completed
-will have <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future.cancel" title="(in Python v3.10)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">cancel()</span></code></a> invoked.</p>
+will have <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future.cancel" title="(in Python v3.11)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">cancel()</span></code></a> invoked.</p>
 <p>Note that there is no guarantee that the cancel will succeed, and only a single
 attempt is made to cancel any future.</p>
 </dd></dl>

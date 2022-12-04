@@ -56,7 +56,7 @@ in seconds until the next poll.</p></li>
 <p class="admonition-title">Warning</p>
 <p>The poll function should avoid holding a reference to the corresponding
 <a class="reference internal" href="#more_executors.PollExecutor" title="more_executors.PollExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">PollExecutor</span></code></a>. If it holds a reference to the
-executor, invoking <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor.shutdown" title="(in Python v3.10)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">shutdown()</span></code></a> becomes
+executor, invoking <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor.shutdown" title="(in Python v3.11)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">shutdown()</span></code></a> becomes
 mandatory in order to stop the polling thread.</p>
 </div>
 </section>
@@ -114,7 +114,7 @@ Two obvious approaches include:</p>
 it completes, and have several threads run that function for different tasks.</p>
 <ul class="simple">
 <li><p>This could be easily encapsulated as a future using only the executors
-from <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#module-concurrent.futures" title="(in Python v3.10)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">concurrent.futures</span></code></a>, but is very inefficient - each task in
+from <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#module-concurrent.futures" title="(in Python v3.11)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">concurrent.futures</span></code></a>, but is very inefficient - each task in
 progress will consume a thread for polling.</p></li>
 </ul>
 </li>
@@ -124,7 +124,7 @@ special-purpose function to wait for all of them to complete.</p>
 <div><ul class="simple">
 <li><p>This is efficient as only one request is needed per poll interval, but
 since tasks aren’t represented as futures, useful features from
-<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#module-concurrent.futures" title="(in Python v3.10)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">concurrent.futures</span></code></a> cannot be used and different types of
+<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#module-concurrent.futures" title="(in Python v3.11)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">concurrent.futures</span></code></a> cannot be used and different types of
 asynchronous work will be handled inconsistently.</p></li>
 </ul>
 </div></blockquote>
@@ -206,12 +206,12 @@ when a returned future is cancelled.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>delegate</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor" title="(in Python v3.10)"><em>Executor</em></a>) – executor to which callables will be submitted</p></li>
+<li><p><strong>delegate</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor" title="(in Python v3.11)"><em>Executor</em></a>) – executor to which callables will be submitted</p></li>
 <li><p><strong>poll_fn</strong> (<em>callable</em>) – a <a class="reference internal" href="#poll-function">poll function</a> used to decide when futures should be resolved</p></li>
 <li><p><strong>cancel_fn</strong> (<em>callable</em>) – a <a class="reference internal" href="#cancel-function">cancel function</a> invoked when future cancel is required</p></li>
-<li><p><strong>default_interval</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a>) – default interval between polls (in seconds)</p></li>
-<li><p><strong>logger</strong> (<a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.10)"><em>Logger</em></a>) – a logger used for messages from this executor</p></li>
-<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – a name for this executor</p></li>
+<li><p><strong>default_interval</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a>) – default interval between polls (in seconds)</p></li>
+<li><p><strong>logger</strong> (<a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.11)"><em>Logger</em></a>) – a logger used for messages from this executor</p></li>
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – a name for this executor</p></li>
 </ul>
 </dd>
 </dl>
@@ -252,7 +252,7 @@ a poll function.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="more_executors.PollDescriptor">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">more_executors.</span></span><span class="sig-name descname"><span class="pre">PollDescriptor</span></span><a class="headerlink" href="#more_executors.PollDescriptor" title="Permalink to this definition">¶</a></dt>
-<dd><p>Represents an unresolved <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a>.</p>
+<dd><p>Represents an unresolved <a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Future" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Future</span></code></a>.</p>
 <p>The poll function used by <a class="reference internal" href="#more_executors.PollExecutor" title="more_executors.PollExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">PollExecutor</span></code></a> will be
 invoked with a list of PollDescriptor objects.</p>
 <dl class="py property">
@@ -269,7 +269,7 @@ drive the poll.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>exception</strong> (<a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.10)"><em>Exception</em></a>) – An exception to be returned or raised by the future associated with this
+<li><p><strong>exception</strong> (<a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.11)"><em>Exception</em></a>) – An exception to be returned or raised by the future associated with this
 descriptor</p></li>
 <li><p><strong>traceback</strong> (<em>traceback</em>) – An optional associated traceback. This argument only has an effect on python 2.x,
 where exception objects do not include a traceback.</p></li>
@@ -284,7 +284,7 @@ where exception objects do not include a traceback.</p></li>
 <dd><p>The poll function can call this function to make the future yield the given result.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>result</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.10)"><em>object</em></a>) – a result to be returned by the future associated with this descriptor</p>
+<dd class="field-odd"><p><strong>result</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.11)"><em>object</em></a>) – a result to be returned by the future associated with this descriptor</p>
 </dd>
 </dl>
 </dd></dl>
