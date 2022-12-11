@@ -10,7 +10,11 @@ import sys
 from concurrent.futures import Executor, CancelledError, wait, FIRST_COMPLETED
 
 from six.moves.queue import Queue
-from monotonic import monotonic
+
+try:
+    from time import monotonic
+except ImportError:
+    from monotonic import monotonic
 from hamcrest import (
     assert_that,
     equal_to,
