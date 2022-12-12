@@ -1,0 +1,34 @@
+name: Tests
+
+on:
+  pull_request: {}
+  push:
+    branches:
+      - master
+
+jobs:
+  tox:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        tox_env: [tests, static, docs, pidiff]
+        py: [3.11]
+        exclude:
+          - tox_env: static # FIXME: not currently working
+            py: 3.11
+        include:
+          - tox_env: tests # oldest py3 version for testing
+            py: 3.8
+          - tox_env: static # see above FIXME
+            py: 3.8
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.py }}
+      - name: Install Tox
+        run: pip install tox
+      - name: Run Tox
+        run: tox -e ${{ matrix.tox_env }}
