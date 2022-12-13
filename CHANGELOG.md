@@ -9,6 +9,12 @@ from version 1.20.0 onwards.
 
 - n/a
 
+## [2.11.3] - 2022-12-14
+
+### Fixed
+
+- Fixed off-by-one error in `RetryExecutor` sleep time calculation
+
 ## [2.11.2] - 2022-12-05
 
 ### Fixed
@@ -323,7 +329,8 @@ from version 1.20.0 onwards.
 - Minor improvements to logging
 
 
-[Unreleased]: https://github.com/rohanpm/more-executors/compare/v2.11.2...HEAD
+[Unreleased]: https://github.com/rohanpm/more-executors/compare/v2.11.3...HEAD
+[2.11.3]: https://github.com/rohanpm/more-executors/compare/v2.11.2...v2.11.3
 [2.11.2]: https://github.com/rohanpm/more-executors/compare/v2.11.1...v2.11.2
 [2.11.1]: https://github.com/rohanpm/more-executors/compare/v2.11.0...v2.11.1
 [2.11.0]: https://github.com/rohanpm/more-executors/compare/v2.10.1...v2.11.0
