@@ -52,8 +52,16 @@ as a delegate executor of other executor instances within this library.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>delegate</strong> (<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.Executor" title="(in Python v3.11)"><em>Executor</em></a>) – executor to which callables will be submitted</p></li>
-<li><p><strong>loop</strong> (<a class="reference external" href="https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.AbstractEventLoop" title="(in Python v3.11)"><em>AbstractEventLoop</em></a>) – asyncio event loop used to wrap futures; if omitted, the default
-event loop is used.</p></li>
+<li><p><strong>loop</strong> (<a class="reference external" href="https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.AbstractEventLoop" title="(in Python v3.11)"><em>AbstractEventLoop</em></a>) – <p>asyncio event loop used to wrap futures; if omitted, the return
+value of <code class="xref py py-meth docutils literal notranslate"><span class="pre">asyncio.get_event_loop()</span></code> is used.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Starting from Python 3.12, <code class="xref py py-meth docutils literal notranslate"><span class="pre">asyncio.get_event_loop()</span></code> raises
+an exception if there is no current event loop, so it is
+necessary to either pass a loop explicitly or ensure there is a
+running loop prior to constructing this executor.</p>
+</div>
+</p></li>
 <li><p><strong>logger</strong> (<a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.11)"><em>Logger</em></a>) – a logger used for messages from this executor</p></li>
 <li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – a name for this executor</p></li>
 </ul>
