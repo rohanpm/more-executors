@@ -13,15 +13,77 @@ from ..metrics import track_future
 LOG = LogWrapper(logging.getLogger("more_executors.futures"))
 
 
+# Our futures here know whether they are an AND or OR future and
+# keep a reference back to the underlying boolean oper.
+# This allows us to be more efficient in certain scenarios.
+class BoolFuture(Future):
+    def __init__(self, oper):
+        self.oper = oper
+        super(BoolFuture, self).__init__()
+
+
+class AndFuture(BoolFuture):
+    pass
+
+
+class OrFuture(BoolFuture):
+    pass
+
+
 class BoolOperation(object):
+    FUTURE_CLASS = BoolFuture
+
     def __init__(self, fs):
+        future_types = {}
+        remainder = []
+
         self.fs = {}
         for f in fs:
             self.fs[f] = True
+            if isinstance(f, BoolFuture):
+                future_types.setdefault(type(f), []).append(f.oper)
+            else:
+                remainder.append(f)
+
+        if list(future_types.keys()) == [self.FUTURE_CLASS]:
+            # Special case: we are being called with input futures
+            # which are themselves the output of f_and/f_or, and all
+            # of the same type as our current operation, for example:
+            # f = f_and(...)
+            # f = f_and(f, ...)
+            # f = f_and(f, ...)
+            # f = f_and(f, ...)
+            # ...and so on.
+            #
+            # In that case: rather than keeping the input futures as
+            # we normally do, we can look inside of them and pull out
+            # their constituent futures. This allows us to return a more
+            # flat data structure, reducing the number of chained futures.
+            # It's useful to do this because a large number of chained
+            # futures can lead to a stack overflow as completion callbacks
+            # are invoked.
+            self.fs = {}
+            for oper in future_types[self.FUTURE_CLASS]:
+                with oper.lock:
+                    if oper.done:
+                        # FIXME: seems like we're still introducing a (hopefully
+                        # very small) chance of stack overflow here.
+                        # We could be in the small window of time where oper.done
+                        # is true but oper.out.set_result hasn't been called.
+                        # If so, then we're unflattening the structure again.
+                        # In theory it could happen for enough futures to cause
+                        # an overflow. Is there a practical way to rule it out
+                        # entirely?
+                        self.fs[oper.out] = True
+                    else:
+                        self.fs.update(oper.fs)
+            for f in remainder:
+                self.fs[f] = True
+            fs = list(self.fs.keys())
 
         self.done = False
         self.lock = Lock()
-        self.out = Future()
+        self.out = self.FUTURE_CLASS(self)
 
         for f in fs:
             chain_cancel(self.out, f)
@@ -53,6 +115,8 @@ class BoolOperation(object):
 
 
 class OrOperation(BoolOperation):
+    FUTURE_CLASS = OrFuture
+
     def get_state_update(self, f):
         set_result = False
         set_exception = False
@@ -111,6 +175,8 @@ def f_or(f, *fs):
 
 
 class AndOperation(BoolOperation):
+    FUTURE_CLASS = AndFuture
+
     def get_state_update(self, f):
         set_result = False
         set_exception = False
