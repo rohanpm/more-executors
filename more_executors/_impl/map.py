@@ -54,6 +54,10 @@ class MapFuture(_Future):
             self._delegate,
         )
 
+        # Drop reference to delegate as soon as no longer needed to reduce
+        # unnecessary reference cycles / memory pressure
+        self._set_delegate(None)
+
         if delegate.cancelled():
             return
 
@@ -104,7 +108,10 @@ class MapFuture(_Future):
             )
 
     def _me_cancel(self):
-        return self._delegate.cancel()
+        with self._me_lock:
+            if self._delegate:
+                return self._delegate.cancel()
+        return False
 
 
 class MapExecutor(CanCustomizeBind, Executor):
