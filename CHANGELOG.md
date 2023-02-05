@@ -9,6 +9,14 @@ from version 1.20.0 onwards.
 
 - n/a
 
+## [2.11.4] - 2023-02-01
+
+### Fixed
+
+- Fixed compatibility with python 3.12 (asyncio)
+- Removed an unnecessary reference cycle, reducing memory usage in some cases
+  ([#344](https://github.com/rohanpm/more-executors/issues/344))
+
 ## [2.11.3] - 2022-12-14
 
 ### Fixed
@@ -329,7 +337,8 @@ from version 1.20.0 onwards.
 - Minor improvements to logging
 
 
-[Unreleased]: https://github.com/rohanpm/more-executors/compare/v2.11.3...HEAD
+[Unreleased]: https://github.com/rohanpm/more-executors/compare/v2.11.4...HEAD
+[2.11.4]: https://github.com/rohanpm/more-executors/compare/v2.11.3...v2.11.4
 [2.11.3]: https://github.com/rohanpm/more-executors/compare/v2.11.2...v2.11.3
 [2.11.2]: https://github.com/rohanpm/more-executors/compare/v2.11.1...v2.11.2
 [2.11.1]: https://github.com/rohanpm/more-executors/compare/v2.11.0...v2.11.1

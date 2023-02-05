@@ -28,8 +28,14 @@ class AsyncioExecutor(Executor):
                 executor to which callables will be submitted
 
             loop (~asyncio.AbstractEventLoop):
-                asyncio event loop used to wrap futures; if omitted, the default
-                event loop is used.
+                asyncio event loop used to wrap futures; if omitted, the return
+                value of :meth:`asyncio.get_event_loop` is used.
+
+                .. note::
+                    Starting from Python 3.12, :meth:`asyncio.get_event_loop` raises
+                    an exception if there is no current event loop, so it is
+                    necessary to either pass a loop explicitly or ensure there is a
+                    running loop prior to constructing this executor.
 
             logger (~logging.Logger):
                 a logger used for messages from this executor

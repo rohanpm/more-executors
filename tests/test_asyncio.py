@@ -13,7 +13,13 @@ def asyncio():
         pytest.skip("needs python >= 3.5")
     import asyncio
 
-    return asyncio
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+
+    yield asyncio
+
+    loop.close()
+    asyncio.set_event_loop(None)
 
 
 def sleep_then_return(timeout, value):
