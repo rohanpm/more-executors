@@ -20,9 +20,9 @@ importlib-resources==6.0.0 \
     # via
     #   jsonschema
     #   jsonschema-specifications
-jsonschema==4.18.0 \
-    --hash=sha256:8caf5b57a990a98e9b39832ef3cb35c176fe331414252b6e1b26fd5866f891a4 \
-    --hash=sha256:b508dd6142bd03f4c3670534c80af68cd7bbff9ea830b9cf2625d4a3c49ddf60
+jsonschema==4.18.3 \
+    --hash=sha256:64b7104d72efe856bea49ca4af37a14a9eba31b40bb7238179f3803130fd34d9 \
+    --hash=sha256:aab78b34c2de001c6b692232f08c21a97b436fe18e0b817bf0511046924fceef
     # via pidiff
 jsonschema-specifications==2023.6.1 \
     --hash=sha256:3d2b82663aff01815f744bb5c7887e2121a63399b49b104a3c96145474d091d7 \
@@ -274,7 +274,7 @@ wrapt==1.15.0 \
     --hash=sha256:fbec11614dba0424ca72f4e8ba3c420dba07b4a7c206c8c8e4e73f2e98f4c559 \
     --hash=sha256:fd69666217b62fa5d7c6aa88e507493a34dec4fa20c5bd925e4bc12fce586639
     # via astroid
-zipp==3.16.0 \
-    --hash=sha256:1876cb065531855bbe83b6c489dcf69ecc28f1068d8e95959fe8bbc77774c941 \
-    --hash=sha256:5dadc3ad0a1f825fe42ce1bce0f2fc5a13af2e6b2d386af5b0ff295bc0a287d3
+zipp==3.16.2 \
+    --hash=sha256:679e51dd4403591b2d6838a48de3d283f3d188412a9782faadf845f298736ba0 \
+    --hash=sha256:ebc15946aa78bd63458992fc81ec3b6f7b1e92d51c35e6de1c3804e73b799147
     # via importlib-resources
