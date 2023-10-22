@@ -4,9 +4,9 @@
 #
 #    pip-compile --generate-hashes pidiff-requirements.in
 #
-astroid==3.0.0 \
-    --hash=sha256:1defdbca052635dd29657ea674edfc45e4b5be9cd53630c5b084fcfed94344a8 \
-    --hash=sha256:f2510e7fdcd6cfda4ec50014726d4857abf79acfc010084ce8c26091913f1b25
+astroid==3.0.1 \
+    --hash=sha256:7d5895c9825e18079c5aeac0572bc2e4c83205c95d416e0b4fee8bc361d2d9ca \
+    --hash=sha256:86b0bb7d7da0be1a7c4aedb7974e391b32d4ed89e33de6ed6902b4b15c97577e
     # via pidiff
 attrs==23.1.0 \
     --hash=sha256:1f28b4522cdc2fb4256ac1a020c78acf9cba2c6b461ccd2c126f3aa8e8335d04 \
@@ -28,9 +28,9 @@ jsonschema-specifications==2023.7.1 \
     --hash=sha256:05adf340b659828a004220a9613be00fa3f223f2b82002e273dee62fd50524b1 \
     --hash=sha256:c91a50404e88a1f6ba40636778e2ee08f6e24c5613fe4c53ac24578a5a7f72bb
     # via jsonschema
-pidiff==1.7.0 \
-    --hash=sha256:8c586a117618d996861607831794c7e565c82e43c68451d83ecbbacff5defdf4 \
-    --hash=sha256:d34450d317a6e7dc4e3f91f305737b8208d720328ca625ba0dc6584c9c7edec6
+pidiff==1.7.1 \
+    --hash=sha256:0146123ce1ac35a12e8f72fdf8757adf5150ea4a983f25427b2fba75b067d89e \
+    --hash=sha256:74e98571bc3ea22e19b97d7b73c1ffda9cd486a8052baec44faa67c279be828a
     # via -r pidiff-requirements.in
 pkgutil-resolve-name==1.3.10 \
     --hash=sha256:357d6c9e6a755653cfd78893817c0853af365dd51ec97f3d358a819373bbd174 \
