@@ -4,9 +4,9 @@
 #
 #    pip-compile --generate-hashes pidiff-requirements.in
 #
-astroid==3.2.0 \
-    --hash=sha256:16ee8ca5c75ac828783028cc1f967777f0e507c6886a295ad143e0f405b975a2 \
-    --hash=sha256:f7f829f8506ade59f1b3c6c93d8fac5b1ebc721685fa9af23e9794daf1d450a3
+astroid==3.2.1 \
+    --hash=sha256:902564b36796ba1eab3ad2c7a694861fbd926f574d5dbb5fa1d86778a2ba2d91 \
+    --hash=sha256:b452064132234819f023b94f4bd045b250ea0009f372b4377cfcd87f10806ca5
     # via pidiff
 attrs==23.2.0 \
     --hash=sha256:935dc3b529c262f6cf76e50877d35a4bd3c1de194fd41f47a2b7ae8f19971f30 \
@@ -161,9 +161,9 @@ virtualenv-api==2.1.18 \
     --hash=sha256:2115cceaeab27faf2909780c442f4ee7a33fda9a49fe8255967432290a0557af \
     --hash=sha256:7b9227a32b97dfddfc1f362cbd78ab768226be663c2ae20c7182e6d428268c28
     # via pidiff
-zipp==3.18.1 \
-    --hash=sha256:206f5a15f2af3dbaee80769fb7dc6f249695e940acca08dfb2a4769fe61e538b \
-    --hash=sha256:2884ed22e7d8961de1c9a05142eb69a247f120291bc0206a00a7642f09b5b715
+zipp==3.18.2 \
+    --hash=sha256:6278d9ddbcfb1f1089a88fde84481528b07b0e10474e09dcfe53dad4069fa059 \
+    --hash=sha256:dce197b859eb796242b0622af1b8beb0a722d52aa2f57133ead08edd5bf5374e
     # via importlib-resources
 
 # WARNING: The following packages were not pinned, but pip requires them to be
