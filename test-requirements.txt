@@ -139,9 +139,9 @@ pylint==3.2.6 ; python_version >= "3" \
     --hash=sha256:03c8e3baa1d9fb995b12c1dbe00aa6c4bcef210c2a2634374aedeb22fb4a8f8f \
     --hash=sha256:a5d01678349454806cff6d886fb072294f56a58c4761278c97fb557d708e1eb3
     # via -r test-requirements.in
-pytest==8.3.1 \
-    --hash=sha256:7e8e5c5abd6e93cb1cc151f23e57adc31fcf8cfd2a3ff2da63e23f732de35db6 \
-    --hash=sha256:e9600ccf4f563976e2c99fa02c7624ab938296551f280835ee6516df8bc4ae8c
+pytest==8.3.2 \
+    --hash=sha256:4ba08f9ae7dcf84ded419494d229b48d0903ea6407b030eaec46df5e6a73bba5 \
+    --hash=sha256:c132345d12ce551242c87269de812483f5bcc87cdbb4722e48487ba194f9fdce
     # via
     #   -r test-requirements.in
     #   pytest-cov
