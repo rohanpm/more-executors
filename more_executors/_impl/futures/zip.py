@@ -41,7 +41,7 @@ class Zipper(object):
         self.lock = Lock()
         self.count_remaining = len(self.fs)
 
-        for (idx, future) in enumerate(self.fs):
+        for idx, future in enumerate(self.fs):
             chain_cancel(self.out, future)
             future.add_done_callback(weak_callback(partial(self.handle_done, idx)))
 
