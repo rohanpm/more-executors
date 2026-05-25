@@ -4,7 +4,6 @@ from .base import wrap
 from .check import ensure_futures
 from ..metrics import track_future
 
-
 # for wrapping arguments.
 # This value means an argument came from *args rather than **kwargs
 ARGS = object()
@@ -49,7 +48,7 @@ def _wrapped_f_apply(future_fn, future_args):
         return wrap(future_fn).with_map(lambda fn: fn())()
 
     future_key_and_x = future_args[0]
-    (key, future_x) = future_key_and_x
+    key, future_x = future_key_and_x
     future_args = future_args[1:]
 
     # future_fn takes multiple arguments.
