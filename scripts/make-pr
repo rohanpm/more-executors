@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 """Make a pull request from HEAD"""
+
 from __future__ import print_function
 from argparse import ArgumentParser
 from subprocess import check_call, check_output, Popen, PIPE, CalledProcessError

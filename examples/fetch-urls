@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 """Example script: fetch URLs"""
+
 from __future__ import print_function
 import sys
 import requests
@@ -51,7 +52,7 @@ def fetch_urls(urls):
     # The status code has already been checked on each response.
     # Requests may have been attempted several times if an error occurred.
     for future in as_completed(futures):
-        (url, content) = future.result()
+        url, content = future.result()
         print("=========== %s" % url)
         print(content)
         print("")

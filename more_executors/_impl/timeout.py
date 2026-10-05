@@ -137,7 +137,7 @@ class TimeoutExecutor(CanCustomizeBind, Executor):
     @executor_loop
     def _job_loop(cls, executor_ref):
         while True:
-            (event, wait_time) = cls._job_loop_iter(executor_ref())
+            event, wait_time = cls._job_loop_iter(executor_ref())
             if not event:
                 break
             event.wait(wait_time)
@@ -156,7 +156,7 @@ class TimeoutExecutor(CanCustomizeBind, Executor):
         executor._log.debug("job loop")
 
         with executor._jobs_lock:
-            (pending, overdue) = executor._partition_jobs()
+            pending, overdue = executor._partition_jobs()
             executor._jobs = pending
 
         executor._log.debug("jobs: %s overdue, %s pending", len(overdue), len(pending))

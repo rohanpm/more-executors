@@ -2,7 +2,6 @@ from functools import partial
 
 import prometheus_client  # pylint: disable=import-error
 
-
 Counter = partial(prometheus_client.Counter, namespace="more_executors")
 Gauge = partial(prometheus_client.Gauge, namespace="more_executors")
 
