@@ -15,7 +15,6 @@ from ._impl.futures import (
     f_proxy,
 )
 
-
 __all__ = [
     "f_apply",
     "f_or",
