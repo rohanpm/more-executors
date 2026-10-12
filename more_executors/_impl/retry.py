@@ -437,7 +437,7 @@ class RetryExecutor(CanCustomizeBind, Executor):
             self._log.debug("Delegate was cancelled: %s", delegate_future)
             return
 
-        (should_retry, sleep_time) = eval_policy(found_job, self._log)
+        should_retry, sleep_time = eval_policy(found_job, self._log)
 
         if should_retry:
             self._retry(found_job, sleep_time)

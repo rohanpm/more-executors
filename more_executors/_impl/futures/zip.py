@@ -12,7 +12,6 @@ from .base import f_return, chain_cancel, weak_callback
 from .check import ensure_futures
 from ..metrics import track_future
 
-
 # For small-ish tuples, we make f_zip return namedtuple instances
 # which can be traced back to here rather than bare tuples. The point
 # is to improve debuggability of code where the future returned by
@@ -41,7 +40,7 @@ class Zipper(object):
         self.lock = Lock()
         self.count_remaining = len(self.fs)
 
-        for (idx, future) in enumerate(self.fs):
+        for idx, future in enumerate(self.fs):
             chain_cancel(self.out, future)
             future.add_done_callback(weak_callback(partial(self.handle_done, idx)))
 

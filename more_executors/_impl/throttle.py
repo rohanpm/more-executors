@@ -244,6 +244,6 @@ def _submit_loop(executor_ref):
         if not result:
             break
 
-        (event, wait_time) = result
+        event, wait_time = result
         event.wait(wait_time)
         event.clear()

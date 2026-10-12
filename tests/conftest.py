@@ -3,7 +3,6 @@ import os
 
 import pytest
 
-
 if sys.version_info < (2, 7, 0):
 
     @pytest.fixture

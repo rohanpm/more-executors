@@ -87,9 +87,9 @@ class _Future(Future):
 
 def copy_future_exception(f1, f2):
     if "exception_info" in dir(f1):
-        (exception, traceback) = f1.exception_info()
+        exception, traceback = f1.exception_info()
     else:
-        (exception, traceback) = (f1.exception(), None)
+        exception, traceback = (f1.exception(), None)
 
     copy_exception(f2, exception, traceback)
 
