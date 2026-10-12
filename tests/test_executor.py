@@ -555,11 +555,11 @@ def do_test_submit_staggered(executor):
     q2.put(True)
     q2.put(True)
 
-    (done, not_done) = wait(futures, return_when=FIRST_COMPLETED, timeout=TIMEOUT)
+    done, not_done = wait(futures, return_when=FIRST_COMPLETED, timeout=TIMEOUT)
 
     # Might have received 1, or 2
     if len(done) == 1:
-        (more_done, _more_not_done) = wait(
+        more_done, _more_not_done = wait(
             not_done, return_when=FIRST_COMPLETED, timeout=TIMEOUT
         )
         done = done | more_done
@@ -671,7 +671,7 @@ class StressTester(object):
 
         # The timeout here is so that the test fails rather than hangs forever,
         # if something goes wrong.
-        (done, _not_done) = wait(self.futures, 60.0)
+        done, _not_done = wait(self.futures, 60.0)
         assert_that(len(done), equal_to(len(self.futures)))
 
         for f in self.futures:

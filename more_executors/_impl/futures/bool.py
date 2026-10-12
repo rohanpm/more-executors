@@ -41,7 +41,7 @@ class BoolOperation(object):
 
             del self.fs[f]
 
-            (set_result, set_exception, cancel_futures) = self.get_state_update(f)
+            set_result, set_exception, cancel_futures = self.get_state_update(f)
 
         if set_result:
             try_set_result(self.out, f.result())

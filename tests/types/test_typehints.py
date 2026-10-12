@@ -4,7 +4,6 @@ import glob
 
 import pytest
 
-
 THIS_DIR = os.path.dirname(__file__)
 EXAMPLES = os.path.join(THIS_DIR, "type-examples")
 
@@ -20,7 +19,7 @@ def test_typehint(file):
 
     import mypy.api
 
-    (out, err, code) = mypy.api.run(
+    out, err, code = mypy.api.run(
         ["--disallow-any-expr", "--follow-imports", "skip", path]
     )
 

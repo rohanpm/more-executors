@@ -5,7 +5,6 @@ from hamcrest import assert_that, equal_to, calling, raises
 
 from more_executors import Executors, TimeoutExecutor
 
-
 TIMEOUT = 0.02
 
 
@@ -56,7 +55,7 @@ def test_cancel_future_outlives_executor():
         f2 = executor.submit(called.append, True)
         return (f1, f2)
 
-    (f1, f2) = get_futures(Executors.thread_pool(max_workers=1).with_timeout(0.5))
+    f1, f2 = get_futures(Executors.thread_pool(max_workers=1).with_timeout(0.5))
 
     # f2 should be cancelled while f1 was still running
     assert_that(calling(f2.result), raises(CancelledError))
